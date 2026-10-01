@@ -1,0 +1,60 @@
+/* 將所有物件加上 outline 來判斷範圍
+*,
+*:before,
+*:after {
+  outline: 1px solid red;
+}
+  */
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  display: inline-block;
+  color: inherit;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin-bottom: 0;
+}
+
+p {
+  margin-bottom: 0;
+}
+
+.fs-sm {
+  font-size: 14px;
+}
+
+.btn-noborder {
+  color: #0d6efd;
+}
+
+/* 自訂 Toast 由下往上浮現的 CSS 動畫 */
+.toast.slide-up-toast {
+  transform: translateY(100%);
+  opacity: 0;
+  transition:
+    transform 0.3s ease-out,
+    opacity 0.3s ease-out;
+}
+
+/* 當 Bootstrap 加上 show 類別時觸發浮現 */
+.toast.slide-up-toast.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+.cursor-pointer {
+  cursor: pointer;
+  transition: opacity 0.2s ease-in-out;
+}
+.cursor-pointer:hover {
+  opacity: 0.8;
+}

@@ -1,0 +1,1494 @@
+// ==========================================
+// 1. 全域 State 與 DOM 元素選取
+// ==========================================
+
+let tasks = []; // 存放所有主任務與子任務資料
+let selectedMainTaskId = null; // 當前選擇的主任務 ID
+let selectedSubtaskId = null; // 當前選擇的子任務 ID
+
+//任務狀態
+const STATUS_MAP = {
+  not_started: {
+    key: "statusNotStarted",
+    class: "bg-secondary-subtle text-secondary",
+  },
+  in_progress: {
+    key: "statusInProgress",
+    class: "bg-primary-subtle text-primary",
+  },
+  completed: {
+    key: "statusCompleted",
+    class: "bg-success-subtle text-success",
+  },
+};
+
+const STATUS_ORDER = {
+  in_progress: 1,
+  not_started: 2,
+  completed: 3,
+};
+
+let currentMainTaskId = null;
+let currentSubtaskId = null;
+let modalSelectedParentId = null;
+
+let timerInterval = null;
+let startTime = 0;
+let elapsedTime = 0;
+let isRunning = false;
+let currentSessionSeconds = 0;
+
+// --- 設定項與閒置機制 State ---
+let showSeconds = localStorage.getItem("setting_show_seconds") !== "false"; // 預設 true
+let idleMinutes = parseInt(
+  localStorage.getItem("setting_idle_minutes") || "45",
+  10,
+); // 預設 45 分鐘
+let idleTimer = null;
+
+// --- DOM 元素選取 ---
+const timerDisplay = document.querySelector("#timer-display");
+const btnStart = document.querySelector("#btn-start");
+const btnGroupActive = document.querySelector("#btn-group-active");
+const btnPause = document.querySelector("#btn-pause");
+const btnStop = document.querySelector("#btn-stop");
+const mainNoteInput = document.querySelector("#task-note");
+const currentMainTaskNameEl = document.querySelector("#current-main-task-name");
+const currentSubtaskNameEl = document.querySelector("#current-subtask-name");
+
+// 計時器下方的控制設定 DOM
+const switchShowSeconds = document.querySelector("#switch-show-seconds");
+const selectIdleTime = document.querySelector("#select-idle-time");
+const offlineBadge = document.querySelector("#offline-badge");
+
+// 下拉選單 DOM
+const dropdownMainTaskBtn = document.querySelector("#dropdown-main-task-btn");
+const dropdownMainTaskMenu = document.querySelector("#dropdown-main-task-menu");
+const dropdownSubtaskBtn = document.querySelector("#dropdown-subtask-btn");
+const dropdownSubtaskMenu = document.querySelector("#dropdown-subtask-menu");
+
+// 計時區管理主任務 DOM
+const inputNewMainTask = document.querySelector("#input-new-main-task");
+const btnAddMainTask = document.querySelector("#btn-add-main-task");
+const manageMainTaskList = document.querySelector("#manage-main-task-list");
+
+// 計時區新增子任務 Modal DOM
+const modalSubtaskParentBtn = document.querySelector(
+  "#modal-subtask-parent-btn",
+);
+const modalSubtaskParentMenu = document.querySelector(
+  "#modal-subtask-parent-menu",
+);
+const inputNewSubtaskName = document.querySelector("#input-new-subtask-name");
+const btnConfirmAddSubtask = document.querySelector("#btn-confirm-add-subtask");
+
+// 列表區管理主任務 Modal DOM
+const listInputNewMainTask = document.querySelector(
+  "#list-input-new-main-task",
+);
+const listBtnAddMainTask = document.querySelector("#list-btn-add-main-task");
+const listManageMainTaskList = document.querySelector(
+  "#list-manage-main-task-list",
+);
+
+// 列表區新增子任務 Modal DOM
+const listModalSubtaskParentBtn = document.querySelector(
+  "#list-modal-subtask-parent-btn",
+);
+const listModalSubtaskParentMenu = document.querySelector(
+  "#list-modal-subtask-parent-menu",
+);
+const listInputNewSubtaskName = document.querySelector(
+  "#list-input-new-subtask-name",
+);
+const listBtnConfirmAddSubtask = document.querySelector(
+  "#list-btn-confirm-add-subtask",
+);
+
+// Modal & Toast DOM
+const saveTimerModalElement = document.querySelector("#saveTimerModal");
+const saveTimerModal = saveTimerModalElement
+  ? new bootstrap.Modal(saveTimerModalElement)
+  : null;
+const modalFocusTime = document.querySelector("#modal-focus-time");
+const modalNote = document.querySelector("#modal-note");
+const modalIsCompleted = document.querySelector("#modal-is-completed");
+const btnDiscardSession = document.querySelector("#btn-discard-session");
+const btnSaveSession = document.querySelector("#btn-save-session");
+
+const actionToastElement = document.querySelector("#actionToast");
+const actionToast = actionToastElement
+  ? new bootstrap.Toast(actionToastElement, { delay: 3000 })
+  : null;
+const toastMessage = document.querySelector("#toast-message");
+
+// ==========================================
+// 2. 工具函式與時間計算
+// ==========================================
+
+function showToast(message, isDanger = false) {
+  if (!actionToast || !toastMessage) return;
+  toastMessage.textContent = message;
+
+  if (isDanger) {
+    actionToastElement.classList.replace("bg-dark", "bg-danger");
+    actionToastElement.classList.replace("bg-success", "bg-danger");
+  } else {
+    actionToastElement.classList.replace("bg-dark", "bg-success");
+    actionToastElement.classList.replace("bg-danger", "bg-success");
+  }
+
+  actionToast.show();
+}
+
+/**
+ * 格式化時間顯示
+ * @param {number} totalSeconds
+ * @returns {string} 00:00:00 (開啟秒數) 或 00:00 (關閉秒數)
+ */
+function formatTime(totalSeconds) {
+  const hrs = String(Math.floor(totalSeconds / 3600)).padStart(2, "0");
+  const mins = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, "0");
+
+  if (showSeconds) {
+    const secs = String(totalSeconds % 60).padStart(2, "0");
+    return `${hrs}:${mins}:${secs}`;
+  }
+
+  return `${hrs}:${mins}`;
+}
+
+function getCalculatedSeconds() {
+  if (!isRunning) return Math.floor(elapsedTime / 1000);
+  const currentSessionMs = Date.now() - startTime;
+  return Math.floor((elapsedTime + currentSessionMs) / 1000);
+}
+
+function getMainTaskStatus(task) {
+  if (!task.subtasks || task.subtasks.length === 0) return "not_started";
+  const allCompleted = task.subtasks.every((s) => s.status === "completed");
+  if (allCompleted) return "completed";
+  const hasStarted = task.subtasks.some((s) => s.status !== "not_started");
+  if (hasStarted) return "in_progress";
+  return "not_started";
+}
+
+function getSubtaskTotalMinutes(subtask) {
+  if (!subtask.records || subtask.records.length === 0) return 0;
+  return subtask.records.reduce(
+    (acc, rec) => acc + (rec.durationMinutes || 0),
+    0,
+  );
+}
+
+function getMainTaskTotalMinutes(task) {
+  if (!task.subtasks || task.subtasks.length === 0) return 0;
+  return task.subtasks.reduce(
+    (acc, sub) => acc + getSubtaskTotalMinutes(sub),
+    0,
+  );
+}
+
+function formatMinutesToReadableText(totalMinutes) {
+  if (totalMinutes === 0) return "0 分鐘";
+
+  const days = Math.floor(totalMinutes / (24 * 60));
+  const hours = Math.floor((totalMinutes % (24 * 60)) / 60);
+  const mins = totalMinutes % 60;
+
+  let result = "";
+  if (days > 0) result += `${days} 天 `;
+  if (hours > 0) result += `${hours} 小時 `;
+  if (mins > 0 || result === "") result += `${mins} 分鐘`;
+
+  return result.trim();
+}
+
+function calculateTaskProgress(task) {
+  if (!task.subtasks || task.subtasks.length === 0) return 0;
+  const completedCount = task.subtasks.filter(
+    (s) => s.status === "completed",
+  ).length;
+  return Math.round((completedCount / task.subtasks.length) * 100);
+}
+
+function updateTimerButtonState() {
+  if (!btnStart) return;
+
+  const currentTask = tasks.find((t) => t.id === currentMainTaskId);
+  const currentSub = currentTask?.subtasks.find(
+    (s) => s.id === currentSubtaskId,
+  );
+
+  if (!currentSub || currentSub.status === "completed") {
+    btnStart.disabled = true;
+    btnStart.classList.add("disabled");
+  } else {
+    btnStart.disabled = false;
+    btnStart.classList.remove("disabled");
+  }
+}
+
+// ==========================================
+// 3. 閒置偵測與離線狀態控制
+// ==========================================
+
+function resetIdleTimer() {
+  clearTimeout(idleTimer);
+
+  // 只有在「計時進行中」時才觸發閒置倒數
+  if (!isRunning) return;
+
+  const idleMs = idleMinutes * 60 * 1000;
+  idleTimer = setTimeout(() => {
+    onUserIdle();
+  }, idleMs);
+}
+
+function initIdleDetector() {
+  const userEvents = ["mousemove", "keydown", "click", "scroll", "touchstart"];
+
+  userEvents.forEach((evt) => {
+    window.addEventListener(evt, () => resetIdleTimer(), { passive: true });
+  });
+
+  resetIdleTimer();
+}
+
+function onUserIdle() {
+  // 自動暫停計時器，避免彈窗期間時間持續跳動
+  if (isRunning) togglePauseTimer();
+
+  const confirmStop = confirm(
+    `⏰ 您已經閒置超過 ${idleMinutes} 分鐘囉，要幫您結束並儲存當前這筆任務計時嗎？`,
+  );
+
+  if (confirmStop) {
+    stopTimer();
+  } else {
+    // 選擇繼續則恢復計時並重新設定倒數
+    togglePauseTimer();
+    resetIdleTimer();
+  }
+}
+
+function initNetworkStatusListener() {
+  updateNetworkStatus(navigator.onLine);
+
+  window.addEventListener("online", () => updateNetworkStatus(true));
+  window.addEventListener("offline", () => updateNetworkStatus(false));
+}
+
+function updateNetworkStatus(isOnline) {
+  if (!isOnline) {
+    showToast("⚠️ 目前處於離線狀態，資料將會安全存於本地 IndexedDB", true);
+    if (offlineBadge) offlineBadge.classList.remove("d-none");
+  } else {
+    if (offlineBadge && !offlineBadge.classList.contains("d-none")) {
+      showToast("🟢 已恢復網路連線");
+      offlineBadge.classList.add("d-none");
+    }
+  }
+}
+
+// ==========================================
+// 4. 計時器核心邏輯
+// ==========================================
+
+function startTimer() {
+  if (isRunning) return;
+
+  const currentTask = tasks.find((t) => t.id === currentMainTaskId);
+  const currentSub = currentTask?.subtasks.find(
+    (s) => s.id === currentSubtaskId,
+  );
+  if (!currentSub || currentSub.status === "completed") return;
+
+  isRunning = true;
+  startTime = Date.now();
+
+  if (btnStart) btnStart.classList.add("d-none");
+  if (btnGroupActive) btnGroupActive.classList.remove("d-none");
+
+  timerInterval = setInterval(() => {
+    const totalSeconds = getCalculatedSeconds();
+    if (timerDisplay) timerDisplay.textContent = formatTime(totalSeconds);
+  }, 200);
+
+  // 啟動閒置監聽倒數
+  resetIdleTimer();
+}
+
+function togglePauseTimer() {
+  if (isRunning) {
+    elapsedTime += Date.now() - startTime;
+    clearInterval(timerInterval);
+    clearTimeout(idleTimer); // 暫停時清除閒置倒數
+    isRunning = false;
+
+    if (btnPause) {
+      btnPause.innerHTML = '<i class="bi bi-play-fill me-1"></i>繼續';
+      btnPause.classList.replace("btn-warning", "btn-primary");
+    }
+  } else {
+    isRunning = true;
+    startTime = Date.now();
+
+    if (btnPause) {
+      btnPause.innerHTML = '<i class="bi bi-pause-fill me-1"></i>暫停';
+      btnPause.classList.replace("btn-primary", "btn-warning");
+    }
+
+    timerInterval = setInterval(() => {
+      const totalSeconds = getCalculatedSeconds();
+      if (timerDisplay) timerDisplay.textContent = formatTime(totalSeconds);
+    }, 200);
+
+    // 恢復計時重置閒置倒數
+    resetIdleTimer();
+  }
+}
+
+function stopTimer() {
+  currentSessionSeconds = getCalculatedSeconds();
+
+  if (currentSessionSeconds < 1) {
+    resetTimerUI();
+    return;
+  }
+
+  clearInterval(timerInterval);
+  clearTimeout(idleTimer);
+  isRunning = false;
+
+  if (modalFocusTime) {
+    modalFocusTime.textContent = formatTime(currentSessionSeconds);
+  }
+
+  const currentMainNote = mainNoteInput ? mainNoteInput.value.trim() : "";
+  if (modalNote) modalNote.value = currentMainNote;
+  if (modalIsCompleted) modalIsCompleted.checked = false;
+
+  if (saveTimerModal) saveTimerModal.show();
+}
+
+function discardSession() {
+  if (saveTimerModal) saveTimerModal.hide();
+  resetTimerUI();
+  showToast("已捨棄本次計時", true);
+}
+
+async function saveSession() {
+  const currentTask = tasks.find((t) => t.id === currentMainTaskId);
+  const currentSub = currentTask?.subtasks.find(
+    (s) => s.id === currentSubtaskId,
+  );
+
+  if (currentSub) {
+    if (modalIsCompleted && modalIsCompleted.checked) {
+      currentSub.status = "completed";
+    } else if (currentSub.status === "not_started") {
+      currentSub.status = "in_progress";
+    }
+
+    if (!currentSub.records) currentSub.records = [];
+    const sessionMinutes = Math.max(1, Math.round(currentSessionSeconds / 60));
+    currentSub.records.push({
+      id: `rec-${Date.now()}`,
+      timeRange: new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+      durationMinutes: sessionMinutes,
+      note: modalNote ? modalNote.value.trim() : "",
+    });
+
+    if (currentSub.status === "completed") {
+      const nextSub = currentTask.subtasks.find(
+        (s) => s.status !== "completed",
+      );
+      currentSubtaskId = nextSub ? nextSub.id : null;
+    }
+
+    // 同步儲存至 IndexedDB
+    if (typeof saveAllTasksToDB === "function") {
+      await saveAllTasksToDB(tasks);
+    }
+  }
+
+  if (saveTimerModal) saveTimerModal.hide();
+  resetTimerUI();
+  showToast("已成功儲存本次計時！");
+  renderAll();
+}
+
+function resetTimerUI() {
+  clearInterval(timerInterval);
+  clearTimeout(idleTimer);
+  isRunning = false;
+  startTime = Date.now();
+  elapsedTime = 0;
+  currentSessionSeconds = 0;
+
+  if (timerDisplay) timerDisplay.textContent = formatTime(0);
+  if (btnStart) btnStart.classList.remove("d-none");
+  if (btnGroupActive) btnGroupActive.classList.add("d-none");
+
+  if (mainNoteInput) mainNoteInput.value = "";
+  if (modalNote) modalNote.value = "";
+
+  if (btnPause) {
+    btnPause.innerHTML = '<i class="bi bi-pause-fill me-1"></i>暫停';
+    btnPause.classList.replace("btn-primary", "btn-warning");
+  }
+}
+
+// ==========================================
+// 5. 主任務 & 子任務 CRUD 與狀態切換
+// ==========================================
+
+async function addMainTask(title) {
+  const cleanTitle = title.trim();
+  if (!cleanTitle) return false;
+
+  const isDuplicate = tasks.some((t) => t.title === cleanTitle);
+  if (isDuplicate) {
+    showToast(`新增失敗：已存在名為「${cleanTitle}」的主任務`, true);
+    return false;
+  }
+
+  const newId = `task-${Date.now()}`;
+  tasks.push({
+    id: newId,
+    title: cleanTitle,
+    subtasks: [],
+  });
+
+  if (!currentMainTaskId) {
+    currentMainTaskId = newId;
+    currentSubtaskId = null;
+    modalSelectedParentId = newId;
+  }
+
+  // 同步寫入 IndexedDB
+  if (typeof saveAllTasksToDB === "function") {
+    await saveAllTasksToDB(tasks);
+  }
+
+  showToast(`已成功新增主任務「${cleanTitle}」`);
+  renderAll();
+  return true;
+}
+
+async function updateMainTask(taskId) {
+  const task = tasks.find((t) => t.id === taskId);
+  if (!task) return;
+
+  const newTitle = prompt("修改主任務名稱：", task.title);
+  if (!newTitle) return;
+
+  const cleanTitle = newTitle.trim();
+  if (!cleanTitle || cleanTitle === task.title) return;
+
+  const isDuplicate = tasks.some(
+    (t) => t.id !== taskId && t.title === cleanTitle,
+  );
+  if (isDuplicate) {
+    showToast(`修改失敗：已存在名為「${cleanTitle}」的主任務`, true);
+    return;
+  }
+
+  task.title = cleanTitle;
+
+  // 同步寫入 IndexedDB
+  if (typeof saveAllTasksToDB === "function") {
+    await saveAllTasksToDB(tasks);
+  }
+
+  showToast("主任務名稱修改成功！");
+  renderAll();
+}
+
+async function deleteMainTask(taskId) {
+  const task = tasks.find((t) => t.id === taskId);
+  const taskTitle = task ? task.title : "";
+
+  const isConfirmed = confirm(
+    `確定要刪除主任務「${taskTitle}」嗎？\n（包含其中的所有子任務與計時紀錄，此動作無法復原）`,
+  );
+  if (!isConfirmed) return;
+
+  tasks = tasks.filter((t) => t.id !== taskId);
+
+  if (currentMainTaskId === taskId) {
+    currentMainTaskId = tasks[0]?.id || null;
+    currentSubtaskId =
+      tasks[0]?.subtasks.find((s) => s.status !== "completed")?.id ||
+      tasks[0]?.subtasks[0]?.id ||
+      null;
+    modalSelectedParentId = currentMainTaskId;
+  }
+
+  // 同步寫入 IndexedDB
+  if (typeof saveAllTasksToDB === "function") {
+    await saveAllTasksToDB(tasks);
+  }
+
+  showToast(`已刪除主任務「${taskTitle}」`, true);
+  renderAll();
+}
+
+async function addSubtask(parentTaskId, title) {
+  const cleanTitle = title.trim();
+  if (!cleanTitle) return false;
+
+  const parentTask = tasks.find((t) => t.id === parentTaskId);
+  if (!parentTask) return false;
+
+  const isDuplicate = parentTask.subtasks.some((s) => s.title === cleanTitle);
+  if (isDuplicate) {
+    showToast(
+      `新增失敗：在「${parentTask.title}」下已有重複的子任務名稱`,
+      true,
+    );
+    return false;
+  }
+
+  const newSubId = `sub-${Date.now()}`;
+  parentTask.subtasks.push({
+    id: newSubId,
+    title: cleanTitle,
+    status: "not_started",
+    records: [],
+  });
+
+  if (currentMainTaskId === parentTaskId && !currentSubtaskId) {
+    currentSubtaskId = newSubId;
+  }
+
+  // 同步寫入 IndexedDB
+  if (typeof saveAllTasksToDB === "function") {
+    await saveAllTasksToDB(tasks);
+  }
+
+  showToast(`已新增子任務「${cleanTitle}」`);
+  renderAll();
+  return true;
+}
+
+async function updateSubtask(parentTaskId, subtaskId) {
+  const parentTask = tasks.find((t) => t.id === parentTaskId);
+  if (!parentTask) return;
+
+  const subtask = parentTask.subtasks.find((s) => s.id === subtaskId);
+  if (!subtask) return;
+
+  const newTitle = prompt("修改子任務名稱：", subtask.title);
+  if (!newTitle) return;
+
+  const cleanTitle = newTitle.trim();
+  if (!cleanTitle) {
+    showToast("子任務名稱不能為空！", true);
+    return;
+  }
+
+  const isDuplicate = parentTask.subtasks.some(
+    (s) => s.id !== subtaskId && s.title === cleanTitle,
+  );
+  if (isDuplicate) {
+    showToast(`修改失敗：已有相同的子任務「${cleanTitle}」`, true);
+    return;
+  }
+
+  subtask.title = cleanTitle;
+
+  // 同步寫入 IndexedDB
+  if (typeof saveAllTasksToDB === "function") {
+    await saveAllTasksToDB(tasks);
+  }
+
+  showToast("子任務名稱修改成功！");
+  renderAll();
+}
+
+async function changeSubtaskStatus(parentTaskId, subtaskId, newStatus) {
+  const parentTask = tasks.find((t) => t.id === parentTaskId);
+  if (!parentTask) return;
+
+  const sub = parentTask.subtasks.find((s) => s.id === subtaskId);
+  if (!sub) return;
+
+  if (sub.status === newStatus) return;
+
+  sub.status = newStatus;
+
+  if (currentSubtaskId === subtaskId && sub.status === "completed") {
+    const nextSub = parentTask.subtasks.find((s) => s.status !== "completed");
+    currentSubtaskId = nextSub ? nextSub.id : null;
+  }
+
+  // 同步寫入 IndexedDB
+  if (typeof saveAllTasksToDB === "function") {
+    await saveAllTasksToDB(tasks);
+  }
+
+  const statusLabel = STATUS_MAP[sub.status]?.label || sub.status;
+  showToast(`「${sub.title}」狀態已更新為：${statusLabel}`);
+  renderAll();
+}
+
+async function deleteSubtask(parentTaskId, subtaskId) {
+  const parentTask = tasks.find((t) => t.id === parentTaskId);
+  if (!parentTask) return;
+
+  const subtask = parentTask.subtasks.find((s) => s.id === subtaskId);
+  const subTitle = subtask ? subtask.title : "";
+
+  const isConfirmed = confirm(
+    `確定要刪除子任務「${subTitle}」嗎？\n（包含其所有計時紀錄，此動作無法復原）`,
+  );
+  if (!isConfirmed) return;
+
+  parentTask.subtasks = parentTask.subtasks.filter((s) => s.id !== subtaskId);
+
+  if (currentSubtaskId === subtaskId) {
+    const nextSub = parentTask.subtasks.find((s) => s.status !== "completed");
+    currentSubtaskId = nextSub ? nextSub.id : null;
+  }
+
+  // 同步寫入 IndexedDB
+  if (typeof saveAllTasksToDB === "function") {
+    await saveAllTasksToDB(tasks);
+  }
+
+  showToast(`已刪除子任務「${subTitle}」`, true);
+  renderAll();
+}
+
+async function editRecordNote(taskId, subtaskId, recordId) {
+  const task = tasks.find((t) => t.id === taskId);
+  const sub = task?.subtasks.find((s) => s.id === subtaskId);
+  const record = sub?.records.find((r) => r.id === recordId);
+
+  if (!record) return;
+
+  const newNote = prompt("修改備註內容：", record.note || "");
+  if (newNote === null) return;
+
+  record.note = newNote.trim();
+
+  // 同步寫入 IndexedDB
+  if (typeof saveAllTasksToDB === "function") {
+    await saveAllTasksToDB(tasks);
+  }
+
+  showToast("備註修改成功！");
+  renderAll();
+}
+
+async function deleteRecord(taskId, subtaskId, recordId) {
+  const task = tasks.find((t) => t.id === taskId);
+  const sub = task?.subtasks.find((s) => s.id === subtaskId);
+
+  if (!sub || !sub.records) return;
+
+  const isConfirmed = confirm("確定要刪除這筆計時紀錄嗎？\n（此動作無法復原）");
+  if (!isConfirmed) return;
+
+  sub.records = sub.records.filter((r) => r.id !== recordId);
+
+  // 同步寫入 IndexedDB
+  if (typeof saveAllTasksToDB === "function") {
+    await saveAllTasksToDB(tasks);
+  }
+
+  showToast("已刪除計時紀錄", true);
+  renderAll();
+}
+
+// ==========================================
+// 將 HTML onclick/onchange 所需的函式掛載至 window 全域
+// ==========================================
+window.updateMainTask = updateMainTask;
+window.deleteMainTask = deleteMainTask;
+window.updateSubtask = updateSubtask;
+window.deleteSubtask = deleteSubtask;
+window.changeSubtaskStatus = changeSubtaskStatus;
+window.editRecordNote = editRecordNote;
+window.deleteRecord = deleteRecord;
+window.selectMainTask = selectMainTask;
+window.selectSubtask = selectSubtask;
+window.selectModalParent = selectModalParent;
+
+// ==========================================
+// 6. UI 畫面動態渲染 (Render All)
+// ==========================================
+
+function renderAll() {
+  renderCurrentTaskDisplay();
+  renderManageMainTaskList();
+  renderMainTaskDropdown();
+  renderSubtaskDropdown();
+  renderModalParentDropdown();
+  renderTaskAccordion();
+  updateTimerButtonState();
+}
+
+function renderCurrentTaskDisplay() {
+  const currentTask = tasks.find((t) => t.id === currentMainTaskId);
+  const currentSub = currentTask?.subtasks.find(
+    (s) => s.id === currentSubtaskId,
+  );
+
+  if (currentMainTaskNameEl) {
+    currentMainTaskNameEl.textContent = currentTask
+      ? currentTask.title
+      : "未選擇主任務";
+  }
+
+  if (currentSubtaskNameEl) {
+    currentSubtaskNameEl.textContent = currentSub
+      ? currentSub.title
+      : "未選擇子任務";
+  }
+
+  // 確保畫面即時顯示對應格式的時間
+  if (timerDisplay) {
+    timerDisplay.textContent = formatTime(getCalculatedSeconds());
+  }
+}
+
+function renderManageMainTaskList() {
+  const sortedTasks = tasks.slice().sort((a, b) => {
+    const orderA = STATUS_ORDER[getMainTaskStatus(a)] || 2;
+    const orderB = STATUS_ORDER[getMainTaskStatus(b)] || 2;
+    return orderA - orderB;
+  });
+
+  const listHTML =
+    sortedTasks.length === 0
+      ? `<li class="p-3 text-center text-muted fs-sm">目前尚無主任務</li>`
+      : sortedTasks
+          .map((task) => {
+            const statusBadge = STATUS_MAP[getMainTaskStatus(task)];
+            return `
+          <li class="p-2 border-bottom">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <span class="fw-bold me-2">${task.title}</span>
+                <span class="badge ${statusBadge.class}">${statusBadge.label || "未開始"}</span>
+              </div>
+              <div class="d-flex">
+                <button type="button" class="btn btn-outline-secondary rounded-circle me-2 btn-sm" onclick="updateMainTask('${task.id}')">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button type="button" class="btn btn-outline-danger rounded-circle btn-sm" onclick="deleteMainTask('${task.id}')">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </div>
+          </li>
+        `;
+          })
+          .join("");
+
+  if (manageMainTaskList) manageMainTaskList.innerHTML = listHTML;
+  if (listManageMainTaskList) listManageMainTaskList.innerHTML = listHTML;
+}
+
+function renderMainTaskDropdown() {
+  if (!dropdownMainTaskBtn || !dropdownMainTaskMenu) return;
+
+  if (tasks.length === 0) {
+    dropdownMainTaskBtn.disabled = true;
+    dropdownMainTaskBtn.innerHTML = `請新增主任務 <i class="bi bi-chevron-down ms-1"></i>`;
+    dropdownMainTaskMenu.innerHTML = `<li><span class="dropdown-item text-muted disabled">尚無主任務</span></li>`;
+    return;
+  }
+
+  dropdownMainTaskBtn.disabled = false;
+
+  const currentTask = tasks.find((t) => t.id === currentMainTaskId);
+  dropdownMainTaskBtn.innerHTML = `
+    ${currentTask ? currentTask.title : "請選擇主任務"}
+    <i class="bi bi-chevron-down ms-1"></i>
+  `;
+
+  const sortedTasks = tasks.slice().sort((a, b) => {
+    const orderA = STATUS_ORDER[getMainTaskStatus(a)] || 2;
+    const orderB = STATUS_ORDER[getMainTaskStatus(b)] || 2;
+    return orderA - orderB;
+  });
+
+  dropdownMainTaskMenu.innerHTML = sortedTasks
+    .map((task) => {
+      const taskStatus = getMainTaskStatus(task);
+      const statusBadge = STATUS_MAP[taskStatus];
+      const isCompleted = taskStatus === "completed";
+
+      return `
+      <li>
+        <a 
+          class="dropdown-item d-flex justify-content-between align-items-center ${task.id === currentMainTaskId ? "active" : ""} ${isCompleted ? "disabled opacity-50 pe-none" : ""}" 
+          href="#" 
+          ${isCompleted ? 'tabindex="-1" aria-disabled="true"' : `onclick="selectMainTask('${task.id}')"`}
+        >
+          <span>${task.title}</span>
+          <span class="badge ${statusBadge.class} ms-2">${statusBadge.label || "未開始"}</span>
+        </a>
+      </li>
+    `;
+    })
+    .join("");
+}
+
+function renderSubtaskDropdown() {
+  if (!dropdownSubtaskBtn || !dropdownSubtaskMenu) return;
+
+  const currentTask = tasks.find((t) => t.id === currentMainTaskId);
+  const subtasks = currentTask ? currentTask.subtasks : [];
+
+  if (!currentTask) {
+    dropdownSubtaskBtn.disabled = true;
+    dropdownSubtaskBtn.innerHTML = `請先選擇主任務 <i class="bi bi-chevron-down ms-1"></i>`;
+    dropdownSubtaskMenu.innerHTML = `<li><span class="dropdown-item text-muted disabled">請先選擇主任務</span></li>`;
+    return;
+  }
+
+  if (subtasks.length === 0) {
+    dropdownSubtaskBtn.disabled = true;
+    dropdownSubtaskBtn.innerHTML = `請新增子任務 <i class="bi bi-chevron-down ms-1"></i>`;
+    dropdownSubtaskMenu.innerHTML = `<li><span class="dropdown-item text-muted disabled">此主任務尚無子任務</span></li>`;
+    return;
+  }
+
+  dropdownSubtaskBtn.disabled = false;
+
+  const currentSub = subtasks.find((s) => s.id === currentSubtaskId);
+  dropdownSubtaskBtn.innerHTML = `
+    ${currentSub ? currentSub.title : "請選擇子任務"}
+    <i class="bi bi-chevron-down ms-1"></i>
+  `;
+
+  const sortedSubtasks = subtasks.slice().sort((a, b) => {
+    const orderA = STATUS_ORDER[a.status || "not_started"] || 2;
+    const orderB = STATUS_ORDER[b.status || "not_started"] || 2;
+    return orderA - orderB;
+  });
+
+  dropdownSubtaskMenu.innerHTML = sortedSubtasks
+    .map((sub) => {
+      const badge = STATUS_MAP[sub.status || "not_started"];
+      const isCompleted = sub.status === "completed";
+
+      return `
+      <li>
+        <a 
+          class="dropdown-item d-flex justify-content-between align-items-center ${sub.id === currentSubtaskId ? "active" : ""} ${isCompleted ? "disabled opacity-50 pe-none" : ""}" 
+          href="#" 
+          ${isCompleted ? 'tabindex="-1" aria-disabled="true"' : `onclick="selectSubtask('${sub.id}')"`}
+        >
+          <span>${sub.title}</span>
+          <span class="badge ${badge.class} ms-2">${badge.label || "未開始"}</span>
+        </a>
+      </li>
+    `;
+    })
+    .join("");
+}
+
+function renderModalParentDropdown() {
+  const selectedParent =
+    tasks.find((t) => t.id === modalSelectedParentId) || tasks[0];
+  if (selectedParent) modalSelectedParentId = selectedParent.id;
+
+  const btnText = `
+    ${selectedParent ? selectedParent.title : "選擇主任務"}
+    <i class="bi bi-chevron-down ms-1"></i>
+  `;
+
+  const menuHTML = tasks
+    .map(
+      (task) => `
+    <li>
+      <a class="dropdown-item" href="#" onclick="selectModalParent('${task.id}')">
+        ${task.title}
+      </a>
+    </li>
+  `,
+    )
+    .join("");
+
+  if (modalSubtaskParentBtn) modalSubtaskParentBtn.innerHTML = btnText;
+  if (modalSubtaskParentMenu) modalSubtaskParentMenu.innerHTML = menuHTML;
+
+  if (listModalSubtaskParentBtn) listModalSubtaskParentBtn.innerHTML = btnText;
+  if (listModalSubtaskParentMenu)
+    listModalSubtaskParentMenu.innerHTML = menuHTML;
+}
+
+function renderTaskAccordion() {
+  const accordionContainer = document.querySelector("#task-accordionExample");
+  if (!accordionContainer) return;
+
+  if (tasks.length === 0) {
+    accordionContainer.innerHTML = `
+      <div class="text-center p-5 text-muted bg-body rounded border">
+        <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+        目前尚無主任務，點擊「管理主任務」開始新增吧！
+      </div>
+    `;
+    return;
+  }
+
+  const accordionHTML = tasks
+    .map((task, index) => {
+      const progress = calculateTaskProgress(task);
+      const totalTaskMinutes = getMainTaskTotalMinutes(task);
+      const readableTotalTime = formatMinutesToReadableText(totalTaskMinutes);
+      const collapseId = `task-collapse-${task.id}`;
+      const headingId = `task-heading-${task.id}`;
+
+      const subtasksHTML =
+        task.subtasks.length === 0
+          ? `<li class="list-group-item text-muted text-center py-3">尚無子任務，請點擊「新增子任務」</li>`
+          : task.subtasks
+              .map((sub) => {
+                const subStatus = sub.status || "not_started";
+                const subBadge = STATUS_MAP[subStatus];
+                const subTotalMinutes = getSubtaskTotalMinutes(sub);
+                const subReadableTime =
+                  formatMinutesToReadableText(subTotalMinutes);
+                const recordCollapseId = `subTaskRecord-${task.id}-${sub.id}`;
+
+                const recordsHTML =
+                  !sub.records || sub.records.length === 0
+                    ? `<p class="text-muted fs-sm mb-0 p-2">尚無計時紀錄</p>`
+                    : sub.records
+                        .map(
+                          (rec, recIdx) => `
+                          <div class="${recIdx < sub.records.length - 1 ? "mb-2 border-bottom pb-2" : ""}">
+                            <div class="d-flex justify-content-between mb-1 align-items-center">
+                              <p class="fw-bold mb-0 fs-sm">${recIdx + 1}. ${rec.timeRange}</p>
+                              <div class="d-flex align-items-center">
+                                <span class="badge rounded-pill text-bg-light me-1">${rec.durationMinutes}分鐘</span>
+                                <button type="button" class="btn btn-sm p-0 text-secondary me-2" title="編輯備註" onclick="editRecordNote('${task.id}', '${sub.id}', '${rec.id}')">
+                                  <i class="bi bi-pencil"></i>
+                                </button>
+                                <button type="button" class="btn btn-sm p-0 text-danger" title="刪除紀錄" onclick="deleteRecord('${task.id}', '${sub.id}', '${rec.id}')">
+                                  <i class="bi bi-trash"></i>
+                                </button>
+                              </div>
+                            </div>
+                            <p class="ps-3 mb-0 fs-sm text-secondary">${rec.note ? `備註：${rec.note}` : "無備註"}</p>
+                          </div>
+                        `,
+                        )
+                        .join("");
+
+                const langDict =
+                  typeof translations !== "undefined" &&
+                  typeof currentLang !== "undefined"
+                    ? translations[currentLang] || translations["zh-TW"]
+                    : null;
+
+                const statusBadgeHTML = `
+  <select 
+    class="form-select form-select-sm border-0 ${subBadge.class} rounded-pill me-2 py-0 ps-2 pe-3 fw-bold" 
+    style="width: auto; display: inline-block; cursor: pointer; font-size: 0.75rem; background-size: 8px 8px; background-position: right 0.4rem center;"
+    onchange="changeSubtaskStatus('${task.id}', '${sub.id}', this.value)"
+  >
+    <option value="not_started" ${subStatus === "not_started" ? "selected" : ""}>
+      ${langDict?.statusNotStarted || "未開始"}
+    </option>
+    <option value="in_progress" ${subStatus === "in_progress" ? "selected" : ""}>
+      ${langDict?.statusInProgress || "進行中"}
+    </option>
+    <option value="completed" ${subStatus === "completed" ? "selected" : ""}>
+      ${langDict?.statusCompleted || "已完成"}
+    </option>
+  </select>
+`;
+                return `
+                  <li class="list-group-item d-flex align-items-start">
+                    
+                    <div class="d-flex justify-content-between w-100 align-items-start">
+                      <div class="ms-2 w-100">
+                        <div class="d-flex align-items-center mb-1">
+                          <p class="fw-bold me-2 mb-0">${sub.title}</p>
+                          ${statusBadgeHTML}
+                        </div>
+
+                        <div class="d-flex align-items-center mb-1">
+                          <p class="me-2 mb-0 fs-sm text-secondary">總計： ${subReadableTime}</p>
+                          <button
+                            class="btn btn-noborder p-0 fs-sm text-primary"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#${recordCollapseId}"
+                            aria-expanded="false"
+                            aria-controls="${recordCollapseId}"
+                          >
+                            檢視計時與備註紀錄
+                          </button>
+                        </div>
+                        
+                        <div class="collapse me-3 my-2" id="${recordCollapseId}">
+                          <div class="card card-body bg-body">
+                            <div class="d-flex justify-content-between border-bottom pb-1 mb-2">
+                              <p class="fw-bold mb-0 fs-sm">計時與備註紀錄</p>
+                              <p class="mb-0 fs-sm text-muted">共 ${sub.records ? sub.records.length : 0} 筆紀錄</p>
+                            </div>
+                            ${recordsHTML}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="d-flex flex-shrink-0 ms-2">
+                        <button
+                          type="button"
+                          class="btn btn-outline-secondary me-2 btn-sm"
+                          title="編輯子任務名稱"
+                          onclick="updateSubtask('${task.id}', '${sub.id}')"
+                        >
+                          <i class="bi bi-pencil"></i>
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-outline-danger btn-sm"
+                          title="刪除子任務"
+                          onclick="deleteSubtask('${task.id}', '${sub.id}')"
+                        >
+                          <i class="bi bi-trash"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </li>
+                `;
+              })
+              .join("");
+
+      return `
+        <div class="accordion-item mb-2 border rounded overflow-hidden">
+          <h2 class="accordion-header" id="${headingId}">
+            <button
+              class="accordion-button ${index === 0 ? "" : "collapsed"} fw-bold"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#${collapseId}"
+              aria-expanded="${index === 0 ? "true" : "false"}"
+              aria-controls="${collapseId}"
+            >
+              <div class="row w-100 align-items-center pe-2">
+                <div class="col-md-4">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <p class="text-truncate me-3 mb-2 mb-md-0 fw-bold fs-6">${task.title}</p>
+                    <p class="text-nowrap d-md-none d-flex fs-sm text-muted mb-0">
+                      總計：${readableTotalTime}
+                    </p>
+                  </div>
+                </div>
+                <div class="col-md-8">
+                  <div class="d-flex align-items-center">
+                    <div class="progress me-3 w-100" style="height: 18px;">
+                      <div
+                        class="progress-bar ${progress === 100 ? "bg-success" : "bg-primary"}"
+                        role="progressbar"
+                        style="width: ${progress}%"
+                        aria-valuenow="${progress}"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                      >
+                        ${progress}%
+                      </div>
+                    </div>
+                    <p class="text-nowrap d-none d-md-flex fs-sm text-secondary mb-0">
+                      總計：${readableTotalTime}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </button>
+          </h2>
+          <div
+            id="${collapseId}"
+            class="accordion-collapse collapse ${index === 0 ? "show" : ""}"
+            aria-labelledby="${headingId}"
+            data-bs-parent="#task-accordionExample"
+          >
+            <div class="accordion-body p-0">
+              <ul class="list-group list-group-flush">
+                ${subtasksHTML}
+              </ul>
+            </div>
+          </div>
+        </div>
+      `;
+    })
+    .join("");
+
+  accordionContainer.innerHTML = accordionHTML;
+}
+
+function selectMainTask(taskId) {
+  currentMainTaskId = taskId;
+  modalSelectedParentId = taskId;
+  const task = tasks.find((t) => t.id === taskId);
+  const nextSub = task?.subtasks.find((s) => s.status !== "completed");
+  currentSubtaskId = nextSub ? nextSub.id : task?.subtasks[0]?.id || null;
+  renderAll();
+}
+
+function selectSubtask(subId) {
+  currentSubtaskId = subId;
+  renderAll();
+}
+
+function selectModalParent(taskId) {
+  modalSelectedParentId = taskId;
+  renderModalParentDropdown();
+}
+
+// ==========================================
+// 7. 事件監聽綁定與非同步初始化 (initApp)
+// ==========================================
+
+if (btnStart) btnStart.addEventListener("click", startTimer);
+if (btnPause) btnPause.addEventListener("click", togglePauseTimer);
+if (btnStop) btnStop.addEventListener("click", stopTimer);
+
+if (btnDiscardSession)
+  btnDiscardSession.addEventListener("click", discardSession);
+if (btnSaveSession) btnSaveSession.addEventListener("click", saveSession);
+
+// 顯示/隱藏秒數 Switch 監聽
+if (switchShowSeconds) {
+  switchShowSeconds.checked = showSeconds;
+  switchShowSeconds.addEventListener("change", (e) => {
+    showSeconds = e.target.checked;
+    localStorage.setItem("setting_show_seconds", showSeconds);
+    if (timerDisplay) {
+      timerDisplay.textContent = formatTime(getCalculatedSeconds());
+    }
+  });
+}
+
+// 閒置提醒時間下拉選單監聽
+if (selectIdleTime) {
+  selectIdleTime.value = String(idleMinutes);
+  selectIdleTime.addEventListener("change", (e) => {
+    idleMinutes = parseInt(e.target.value, 10);
+    localStorage.setItem("setting_idle_minutes", idleMinutes);
+    resetIdleTimer();
+  });
+}
+
+// 計時區新增主任務
+if (btnAddMainTask && inputNewMainTask) {
+  btnAddMainTask.addEventListener("click", async () => {
+    if (await addMainTask(inputNewMainTask.value)) inputNewMainTask.value = "";
+  });
+  inputNewMainTask.addEventListener("keypress", async (e) => {
+    if (e.key === "Enter" && (await addMainTask(inputNewMainTask.value)))
+      inputNewMainTask.value = "";
+  });
+}
+
+// 列表區新增主任務
+if (listBtnAddMainTask && listInputNewMainTask) {
+  listBtnAddMainTask.addEventListener("click", async () => {
+    if (await addMainTask(listInputNewMainTask.value))
+      listInputNewMainTask.value = "";
+  });
+  listInputNewMainTask.addEventListener("keypress", async (e) => {
+    if (e.key === "Enter" && (await addMainTask(listInputNewMainTask.value)))
+      listInputNewMainTask.value = "";
+  });
+}
+
+// 計時區新增子任務
+if (btnConfirmAddSubtask && inputNewSubtaskName) {
+  btnConfirmAddSubtask.addEventListener("click", async () => {
+    const isSuccess = await addSubtask(
+      modalSelectedParentId,
+      inputNewSubtaskName.value,
+    );
+    if (isSuccess) {
+      inputNewSubtaskName.value = "";
+      const modalEl = document.querySelector("#addSubTask");
+      if (modalEl) {
+        const modalObj = bootstrap.Modal.getInstance(modalEl);
+        if (modalObj) modalObj.hide();
+      }
+    }
+  });
+}
+
+// 列表區新增子任務
+if (listBtnConfirmAddSubtask && listInputNewSubtaskName) {
+  listBtnConfirmAddSubtask.addEventListener("click", async () => {
+    const isSuccess = await addSubtask(
+      modalSelectedParentId,
+      listInputNewSubtaskName.value,
+    );
+    if (isSuccess) {
+      listInputNewSubtaskName.value = "";
+      const modalEl = document.querySelector("#listAddSubTask");
+      if (modalEl) {
+        const modalObj = bootstrap.Modal.getInstance(modalEl);
+        if (modalObj) modalObj.hide();
+      }
+    }
+  });
+}
+
+// 應用程式初始化（連線 IndexedDB、閒置監聽、離線監控）
+async function initApp() {
+  try {
+    initIdleDetector();
+    initNetworkStatusListener();
+
+    if (typeof getAllTasksFromDB === "function") {
+      const savedTasks = await getAllTasksFromDB();
+
+      if (savedTasks && savedTasks.length > 0) {
+        tasks = savedTasks;
+      } else if (typeof saveAllTasksToDB === "function") {
+        // 若 DB 無資料，將初始 Demo 資料寫入
+        await saveAllTasksToDB(tasks);
+      }
+    }
+
+    currentMainTaskId = tasks[0]?.id || null;
+    const currentTask = tasks.find((t) => t.id === currentMainTaskId);
+    currentSubtaskId =
+      currentTask?.subtasks.find((s) => s.status !== "completed")?.id ||
+      currentTask?.subtasks[0]?.id ||
+      null;
+    modalSelectedParentId = currentMainTaskId;
+  } catch (error) {
+    console.error("IndexedDB 初始化失敗：", error);
+    showToast("本地資料載入失敗，以暫存模式運作", true);
+  } finally {
+    renderAll();
+  }
+}
+
+// 啟動應用程式
+initApp();
+
+// ==========================================
+// TaskTimer - CSV 資料匯出功能
+// ==========================================
+
+function escapeCSVField(str) {
+  if (typeof str !== "string") return str;
+  if (str.includes(",") || str.includes('"') || str.includes("\n")) {
+    return `"${str.replace(/"/g, '""')}"`;
+  }
+  return str;
+}
+
+function exportToCSV() {
+  if (!tasks || tasks.length === 0) {
+    showToast("目前尚無任務資料可供匯出！", true);
+    return;
+  }
+
+  const headers = [
+    "主任務名稱",
+    "子任務名稱",
+    "子任務狀態",
+    "計時時間區間",
+    "統計時間(分鐘)",
+    "備註",
+  ];
+  const csvRows = [headers.join(",")];
+
+  tasks.forEach((task) => {
+    if (!task.subtasks || task.subtasks.length === 0) {
+      csvRows.push(
+        [escapeCSVField(task.title), "無子任務", "未開始", "-", 0, ""].join(
+          ",",
+        ),
+      );
+      return;
+    }
+
+    task.subtasks.forEach((sub) => {
+      const subStatusLabel =
+        STATUS_MAP[sub.status || "not_started"]?.label || "未開始";
+
+      if (!sub.records || sub.records.length === 0) {
+        csvRows.push(
+          [
+            escapeCSVField(task.title),
+            escapeCSVField(sub.title),
+            escapeCSVField(subStatusLabel),
+            "-",
+            0,
+            "",
+          ].join(","),
+        );
+        return;
+      }
+
+      sub.records.forEach((rec) => {
+        csvRows.push(
+          [
+            escapeCSVField(task.title),
+            escapeCSVField(sub.title),
+            escapeCSVField(subStatusLabel),
+            escapeCSVField(rec.timeRange || "-"),
+            rec.durationMinutes || 0,
+            escapeCSVField(rec.note || ""),
+          ].join(","),
+        );
+      });
+    });
+  });
+
+  const csvString = "\uFEFF" + csvRows.join("\n");
+  const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+
+  const today = new Date().toISOString().split("T")[0];
+  const downloadLink = document.createElement("a");
+
+  downloadLink.href = url;
+  downloadLink.setAttribute("download", `TaskTimer_Backup_${today}.csv`);
+  document.body.appendChild(downloadLink);
+
+  downloadLink.click();
+  document.body.removeChild(downloadLink);
+  URL.revokeObjectURL(url);
+
+  showToast("CSV 備份檔案下載成功！");
+}
+
+const btnExportCSV = document.querySelector("#btn-export-csv");
+if (btnExportCSV) {
+  btnExportCSV.addEventListener("click", exportToCSV);
+}
+
+// ==========================================
+// JSON 資料匯入與匯出 (Backup & Restore)
+// ==========================================
+
+function exportDataToJSON() {
+  if (!tasks || tasks.length === 0) {
+    showToast("目前尚無任何任務資料可供備份！", true);
+    return;
+  }
+
+  try {
+    const backupData = {
+      version: "1.0.0",
+      exportedAt: new Date().toISOString(),
+      data: tasks,
+    };
+
+    const jsonString = JSON.stringify(backupData, null, 2);
+    const blob = new Blob([jsonString], { type: "application/json" });
+    const downloadUrl = URL.createObjectURL(blob);
+
+    const today = new Date().toISOString().split("T")[0];
+    const downloadLink = document.createElement("a");
+    downloadLink.href = downloadUrl;
+    downloadLink.setAttribute("download", `TaskTimer_Backup_${today}.json`);
+
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+
+    document.body.removeChild(downloadLink);
+    URL.revokeObjectURL(downloadUrl);
+
+    showToast("JSON 備份檔案已成功下載！");
+  } catch (error) {
+    console.error("JSON 匯出失敗：", error);
+    showToast("匯出失敗，請重試", true);
+  }
+}
+
+function validateImportData(jsonData) {
+  if (!jsonData || typeof jsonData !== "object") return false;
+
+  const targetTasks = Array.isArray(jsonData) ? jsonData : jsonData.data;
+
+  if (!Array.isArray(targetTasks)) return false;
+
+  const isValidStructure = targetTasks.every(
+    (task) => typeof task.id === "string" && typeof task.title === "string",
+  );
+
+  return isValidStructure ? targetTasks : null;
+}
+
+function importDataFromJSON(file) {
+  if (!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = async (event) => {
+    try {
+      const parsedData = JSON.parse(event.target.result);
+      const validatedTasks = validateImportData(parsedData);
+
+      if (!validatedTasks) {
+        showToast("無效的備份檔案格式，請確認是否為正確的 JSON 檔！", true);
+        return;
+      }
+
+      const confirmImport = confirm(
+        `確定要還原 ${validatedTasks.length} 筆主任務資料嗎？\n⚠️ 注意：這將會覆蓋您目前的系統資料！`,
+      );
+
+      if (!confirmImport) return;
+
+      tasks = validatedTasks;
+      selectedMainTaskId = tasks.length > 0 ? tasks[0].id : null;
+      selectedSubtaskId =
+        tasks.length > 0 && tasks[0].subtasks?.length > 0
+          ? tasks[0].subtasks[0].id
+          : null;
+
+      if (typeof saveAllTasksToDB === "function") {
+        await saveAllTasksToDB(tasks);
+      }
+      renderAll();
+      showToast("資料已成功還原！");
+    } catch (error) {
+      console.error("JSON 解析失敗：", error);
+      showToast("無法解析此檔案，請確認檔案格式是否正確！", true);
+    }
+  };
+
+  reader.readAsText(file);
+}
+
+// ==========================================
+// 事件監聽綁定 (Event Listeners)
+// ==========================================
+document.addEventListener("DOMContentLoaded", () => {
+  const btnExportJSON = document.querySelector("#btn-export-json");
+  const btnImportJSON = document.querySelector("#btn-import-json");
+  const inputImportFile = document.querySelector("#input-import-file");
+
+  if (btnExportJSON) {
+    btnExportJSON.addEventListener("click", exportDataToJSON);
+  }
+
+  if (btnImportJSON && inputImportFile) {
+    btnImportJSON.addEventListener("click", () => {
+      inputImportFile.value = "";
+      inputImportFile.click();
+    });
+
+    inputImportFile.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        importDataFromJSON(file);
+      }
+    });
+  }
+});

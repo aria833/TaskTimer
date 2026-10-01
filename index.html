@@ -1,0 +1,1358 @@
+<!doctype html>
+<html lang="zh-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TaskTimer</title>
+
+    <!--SEO相關-->
+    <meta
+      name="description"
+      content="一款陪你學習成長的任務計時小夥伴！不用註冊帳號、打開就能用，所有資料都安心留在你的裝置裡。"
+    />
+    <meta
+      name="keywords"
+      content="TaskTimer, 任務計時器, 時間追蹤, 學習工具, Local-First, IndexedDB, 鐵人賽"
+    />
+    <meta name="author" content="Aria Carrot" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph (OG) 社群分享卡片 (Facebook, Line, Discord 等) -->
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:title"
+      content="TaskTimer 任務計時器 | 高效專注的在地優先計時工具"
+    />
+    <meta
+      property="og:description"
+      content="免註冊，專為學習打造的計時工具夥伴！TaskTimer 幫你紀錄學習歷程，資料 100% 自己掌握更放心。"
+    />
+    <meta property="og:site_name" content="TaskTimer" />
+    <meta property="og:locale" content="zh_TW" />
+    <!-- TODO:替換實際部署 URL 與預覽圖連結 -->
+    <!-- <meta property="og:url" content="https://your-username.github.io/task-timer/" /> -->
+    <!-- <meta property="og:image" content="https://your-username.github.io/task-timer/assets/og-cover.png" /> -->
+
+    <!-- Twitter (X) Card 社群卡片 -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="TaskTimer" />
+    <meta
+      name="twitter:description"
+      content="免註冊、在地資料儲存的任務計時與管理工具。"
+    />
+
+    <!-- 載入樣式 -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./stylesheets/all.css" />
+    <!-- 主題控制檔 theme.js -->
+    <script src="./theme.js"></script>
+  </head>
+  <body
+    class="text-bg-light d-flex flex-column min-vh-100 text-body bg-body-tertiary"
+  >
+    <header>
+      <nav class="navbar navbar-expand-md bg-body">
+        <div class="container">
+          <span class="navbar-brand mb-0 h1" data-i18n="appName"
+            >TaskTimer</span
+          >
+
+          <!-- 漢堡選單按鈕（手機版顯示，md 以上隱藏） -->
+          <button
+            class="navbar-toggler border-0 shadow-none px-1"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNav"
+            aria-controls="navbarNav"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+
+          <!-- 折疊選單內容 -->
+          <div
+            class="collapse navbar-collapse justify-content-end mt-3 mt-md-0"
+            id="navbarNav"
+          >
+            <div
+              class="d-flex justify-content-between flex-md-row align-items-start align-items-md-center gap-3 gap-md-0"
+            >
+              <!-- 語系切換選單 -->
+              <select
+                id="languageSelect"
+                class="form-select form-select-sm border-secondary-subtle rounded-pill me-0 me-md-3"
+                style="width: auto; cursor: pointer"
+                onchange="changeLanguage(this.value)"
+              >
+                <option value="zh-TW">繁體中文</option>
+                <option value="en">English</option>
+                <option value="ja">日本語</option>
+              </select>
+
+              <!-- 深色模式 Switch 切換開關 -->
+              <div
+                class="form-check form-switch mb-0 d-flex align-items-center gap-2"
+              >
+                <input
+                  class="form-check-input mt-0 switch-lg"
+                  type="checkbox"
+                  role="switch"
+                  id="darkModeToggle"
+                  style="cursor: pointer"
+                  onchange="toggleDarkMode(this.checked)"
+                />
+                <label
+                  class="form-check-label user-select-none mb-0 fs-sm text-body"
+                  for="darkModeToggle"
+                  style="cursor: pointer"
+                >
+                  <span id="themeIcon" data-i18n="darkModeLabel">深色模式</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="flex-grow-1">
+      <div class="container">
+        <div class="row py-5">
+          <!--選單按鈕-->
+          <div class="col-md-3">
+            <div
+              class="list-group d-flex flex-row flex-md-column shadow-sm mb-3 mb-md-0 text-center text-md-start"
+              id="list-tab"
+              role="tablist"
+            >
+              <button
+                type="button"
+                class="list-group-item list-group-item-action active text-nowrap"
+                id="list-timer-list"
+                data-bs-toggle="list"
+                data-bs-target="#list-timer"
+                role="tab"
+                aria-controls="list-timer"
+                aria-selected="true"
+              >
+                <i class="bi bi-stopwatch me-1"></i>
+                <span class="d-none d-md-inline" data-i18n="navTimer"
+                  >計時器</span
+                >
+              </button>
+              <button
+                type="button"
+                class="list-group-item list-group-item-action text-nowrap"
+                id="list-tasks-list"
+                data-bs-toggle="list"
+                data-bs-target="#list-tasks"
+                role="tab"
+                aria-controls="list-tasks"
+                aria-selected="false"
+              >
+                <i class="bi bi-folder2 me-1"></i>
+                <span class="d-none d-md-inline" data-i18n="navTask"
+                  >任務列表</span
+                >
+              </button>
+              <button
+                type="button"
+                class="list-group-item list-group-item-action text-nowrap"
+                id="list-qa-list"
+                data-bs-toggle="list"
+                data-bs-target="#list-qa"
+                role="tab"
+                aria-controls="list-qa"
+                aria-selected="false"
+              >
+                <i class="bi bi-question-circle me-1"></i>
+                <span class="d-none d-md-inline" data-i18n="navQA">常見QA</span>
+              </button>
+              <button
+                type="button"
+                class="list-group-item list-group-item-action text-nowrap"
+                id="list-qa-list"
+                data-bs-toggle="list"
+                data-bs-target="#list-data"
+                role="tab"
+                aria-controls="list-data"
+                aria-selected="false"
+              >
+                <i class="bi bi-database-fill-gear me-1"></i>
+                <span class="d-none d-md-inline" data-i18n="navData"
+                  >系統資料</span
+                >
+              </button>
+            </div>
+          </div>
+          <!--內容切換-->
+          <div class="col-md-9">
+            <div class="tab-content" id="nav-tabContent">
+              <!-- 1. 計時器內容 -->
+              <div
+                class="tab-pane fade show active"
+                id="list-timer"
+                role="tabpanel"
+                aria-labelledby="list-timer-list"
+              >
+                <!--選擇主/子任務-->
+                <div class="bg-body p-4 rounded border shadow-sm mb-3">
+                  <div class="row">
+                    <div class="col-lg-6">
+                      <!--主任務-->
+                      <div
+                        class="d-flex justify-content-between mb-1 px-1 fs-sm"
+                      >
+                        <p class="fw-bold mb-0" data-i18n="mainTask">主任務</p>
+                        <button
+                          type="button"
+                          class="bg-transparent border-0 text-primary"
+                          data-bs-toggle="modal"
+                          data-bs-target="#manageTask"
+                        >
+                          <i class="bi bi-gear-fill me-1"></i
+                          ><span data-i18n="manageBtn">管理</span>
+                        </button>
+                      </div>
+
+                      <!--管理主任務Modal-->
+                      <div
+                        class="modal fade"
+                        id="manageTask"
+                        tabindex="-1"
+                        aria-labelledby="manageTaskLabel"
+                        aria-hidden="true"
+                      >
+                        <div class="modal-dialog">
+                          <div class="modal-content">
+                            <!-- 視窗標題 -->
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="manageTaskLabel">
+                                <i
+                                  class="bi bi-gear-fill text-primary me-2"
+                                  data-i18n="manageMainTaskModalTitle"
+                                ></i
+                                >管理主任務
+                              </h5>
+                              <button
+                                type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                              ></button>
+                            </div>
+
+                            <!-- 視窗內容 -->
+                            <div class="modal-body">
+                              <div>
+                                <p
+                                  class="mb-1 fw-bold fs-sm"
+                                  data-i18n="addMainTaskTitle"
+                                >
+                                  新增主任務
+                                </p>
+                                <div
+                                  class="input-group mb-3 border-bottom pb-3"
+                                >
+                                  <!-- 加 id="input-new-main-task" -->
+                                  <input
+                                    type="text"
+                                    id="input-new-main-task"
+                                    class="form-control"
+                                    placeholder="主任務名稱（例如：切版練習）"
+                                    data-i18n-placeholder="mainTaskPlaceholder"
+                                    aria-label="taskname"
+                                  />
+                                  <!-- 加 id="btn-add-main-task" -->
+                                  <button
+                                    class="btn btn-primary"
+                                    type="button"
+                                    id="btn-add-main-task"
+                                    data-i18n="addNewTask"
+                                  >
+                                    新增
+                                  </button>
+                                </div>
+                              </div>
+
+                              <div>
+                                <p
+                                  class="mb-1 fw-bold fs-sm"
+                                  data-i18n="currentMainTask"
+                                >
+                                  現有主任務列表
+                                </p>
+                                <!-- 加 id="manage-main-task-list" -->
+                                <ul
+                                  id="manage-main-task-list"
+                                  class="border list-unstyled rounded mb-0"
+                                >
+                                  <!-- 動態渲染項目 -->
+                                </ul>
+                              </div>
+                            </div>
+
+                            <!-- Footer -->
+                            <div class="modal-footer">
+                              <button
+                                type="button"
+                                class="btn btn-outline-primary"
+                                data-bs-dismiss="modal"
+                                data-i18n="closeBtn"
+                              >
+                                關閉
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- 主畫面的主任務 Dropdown -->
+                      <div class="dropdown w-100">
+                        <!-- 加 id="dropdown-main-task-btn" -->
+                        <button
+                          id="dropdown-main-task-btn"
+                          class="btn bg-body border text-secondary w-100 d-flex justify-content-between align-items-center"
+                          type="button"
+                          data-bs-toggle="dropdown"
+                          aria-expanded="false"
+                          data-i18n="remindAddNewMainTask"
+                        >
+                          請新增主任務
+                          <i class="bi bi-chevron-down"></i>
+                        </button>
+                        <!-- 加 id="dropdown-main-task-menu" -->
+                        <ul
+                          id="dropdown-main-task-menu"
+                          class="dropdown-menu w-100"
+                        >
+                          <!-- 動態渲染項目 -->
+                        </ul>
+                      </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                      <!--子任務-->
+                      <div
+                        class="d-flex justify-content-between mb-1 px-1 fs-sm"
+                      >
+                        <p class="fw-bold mb-0" data-i18n="subTask">子任務</p>
+                        <button
+                          type="button"
+                          class="bg-transparent border-0 text-primary"
+                          data-bs-toggle="modal"
+                          data-bs-target="#addSubTask"
+                        >
+                          <i class="bi bi-plus-circle-fill me-1"></i
+                          ><span data-i18n="addBtn">新增</span>
+                        </button>
+                      </div>
+
+                      <!--新增子任務Modal-->
+                      <div
+                        class="modal fade"
+                        id="addSubTask"
+                        tabindex="-1"
+                        aria-labelledby="addSubTaskLabel"
+                        aria-hidden="true"
+                      >
+                        <div class="modal-dialog">
+                          <div class="modal-content">
+                            <!-- 視窗標題 -->
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="addSubTaskLabel">
+                                <i
+                                  class="bi bi-plus-square text-primary me-2"
+                                  data-i18n="addSubTaskModalTitle"
+                                ></i
+                                >新增子任務
+                              </h5>
+                              <button
+                                type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                              ></button>
+                            </div>
+
+                            <!-- 視窗內容 -->
+                            <div class="modal-body">
+                              <div class="mb-3">
+                                <p
+                                  class="mb-1 fw-bold fs-sm"
+                                  data-i18n="belongTo"
+                                >
+                                  歸屬主任務
+                                </p>
+                                <div class="dropdown w-100">
+                                  <button
+                                    id="modal-subtask-parent-btn"
+                                    class="btn bg-body border text-secondary w-100 d-flex justify-content-between align-items-center"
+                                    type="button"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false"
+                                    data-i18n="modalSubtaskParentBtn"
+                                  >
+                                    請新增主任務
+                                    <i class="bi bi-chevron-down"></i>
+                                  </button>
+                                  <ul
+                                    id="modal-subtask-parent-menu"
+                                    class="dropdown-menu w-100"
+                                  >
+                                    <!-- 動態渲染項目 -->
+                                  </ul>
+                                </div>
+                              </div>
+                              <div>
+                                <p
+                                  class="mb-1 fw-bold fs-sm"
+                                  data-i18n="subTaskName"
+                                >
+                                  子任務名稱
+                                </p>
+                                <div class="input-group">
+                                  <input
+                                    type="text"
+                                    id="input-new-subtask-name"
+                                    class="form-control"
+                                    placeholder="例如：修改程式碼"
+                                    data-i18n-placeholder="subTaskPlaceholder"
+                                    aria-label="subtask"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+
+                            <!-- Footer -->
+                            <div class="modal-footer">
+                              <button
+                                type="button"
+                                class="btn btn-light"
+                                data-bs-dismiss="modal"
+                                data-i18n="cancel"
+                              >
+                                取消
+                              </button>
+                              <button
+                                type="button"
+                                id="btn-confirm-add-subtask"
+                                class="btn btn-primary"
+                              >
+                                建立子任務
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- 主畫面的子任務 Dropdown -->
+                      <div class="dropdown w-100">
+                        <button
+                          id="dropdown-subtask-btn"
+                          class="btn bg-body border text-secondary w-100 d-flex justify-content-between align-items-center"
+                          type="button"
+                          data-bs-toggle="dropdown"
+                          aria-expanded="false"
+                          data-i18n="dropdownSubtaskBtn"
+                        >
+                          請先新增子任務
+                          <i class="bi bi-chevron-down"></i>
+                        </button>
+                        <!-- 加 id="dropdown-subtask-menu" -->
+                        <ul
+                          id="dropdown-subtask-menu"
+                          class="dropdown-menu w-100"
+                        >
+                          <!-- 動態渲染項目 -->
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!--計時器區塊-->
+                <div
+                  class="bg-body px-4 pt-4 pb-3 rounded border shadow-sm text-center mb-3"
+                >
+                  <div class="d-flex justify-content-center text-body-tertiary">
+                    <p data-i18n="currentTask">當前任務：</p>
+                    <p
+                      id="current-main-task-name"
+                      data-i18n="currentMainTaskName"
+                    >
+                      未選取主任務
+                    </p>
+                    <i class="bi bi-chevron-right mx-1"></i>
+                    <p id="current-subtask-name" data-i18n="currentSubtaskName">
+                      未選取子任務
+                    </p>
+                  </div>
+                  <div>
+                    <p
+                      id="timer-display"
+                      class="fw-bold display-1 py-4 font-monospace"
+                    >
+                      00:00:00
+                    </p>
+                  </div>
+                  <!-- 計時控制按鈕區塊 -->
+                  <div id="timer-controls" class="mb-3">
+                    <!-- 狀態 A：未計時（預設顯示） -->
+                    <button
+                      id="btn-start"
+                      type="button"
+                      class="btn btn-primary btn-lg px-4"
+                    >
+                      <i class="bi bi-play-fill me-1"></i
+                      ><span data-i18n="startTimer">開始計時</span>
+                    </button>
+
+                    <!-- 狀態 B：計時中（預設隱藏） -->
+                    <div id="btn-group-active" class="d-none">
+                      <button
+                        id="btn-pause"
+                        type="button"
+                        class="btn btn-warning btn-lg me-2"
+                      >
+                        <i class="bi bi-pause-fill me-1"></i
+                        ><span data-i18n="pauseTimer">暫停</span>
+                      </button>
+                      <button
+                        id="btn-stop"
+                        type="button"
+                        class="btn btn-danger btn-lg"
+                      >
+                        <i class="bi bi-stop-fill me-1"></i
+                        ><span data-i18n="stopTimer">結束</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="input-group flex-nowrap mb-1">
+                    <span
+                      class="input-group-text text-secondary"
+                      id="addon-wrapping"
+                      data-i18n="note"
+                      >備註</span
+                    >
+                    <input
+                      type="text"
+                      class="form-control"
+                      placeholder="請填寫備註或心得筆記"
+                      aria-label="note"
+                      aria-describedby="addon-wrapping"
+                      data-i18n-placeholder="noteSample"
+                      id="task-note"
+                    />
+                  </div>
+                  <p
+                    class="fs-sm text-secondary text-start ps-1 mb-5"
+                    data-i18n="noteInfo"
+                  >
+                    當結束計時，此備註會與計時紀錄同步保存於任務列表。
+                  </p>
+
+                  <!-- 控制與設定區塊 -->
+                  <div
+                    class="border-top pt-3 mb-4 d-flex justify-content-between"
+                  >
+                    <!-- 1. 閒置時間設定 (下拉選單) -->
+                    <div class="d-flex align-items-center justify-content-end">
+                      <label
+                        for="select-idle-time"
+                        class="form-label text-secondary small fw-medium me-2 mb-0 text-nowrap"
+                        data-i18n="idleTimer"
+                      >
+                        閒置提醒:
+                      </label>
+                      <select
+                        id="select-idle-time"
+                        class="form-select form-select-sm"
+                        style="width: auto"
+                      >
+                        <option value="15" data-i18n="idle15">15 分鐘</option>
+                        <option value="30" data-i18n="idle30">30 分鐘</option>
+                        <option value="45" selected data-i18n="idle45">
+                          45 分鐘
+                        </option>
+                        <option value="60" data-i18n="idle60">60 分鐘</option>
+                      </select>
+                    </div>
+                    <!-- 2. 是否顯示秒數 (Switch 開關) -->
+                    <div class="d-flex align-items-center">
+                      <div class="form-check form-switch mb-0">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          id="switch-show-seconds"
+                          checked
+                        />
+                        <label
+                          class="form-check-label text-secondary small fw-medium"
+                          for="switch-show-seconds"
+                          data-i18n="showSeconds"
+                        >
+                          顯示秒數
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 備份提醒-->
+                <div class="text-muted small pt-1">
+                  <p class="mb-1">
+                    <i class="bi bi-info-circle me-1"></i>
+                    <span data-i18n="backupReminder"
+                      >資料僅儲存於您的瀏覽器中。為避免清空快取導致資料遺失，請務必定期前往系統資料下載備份。</span
+                    >
+                  </p>
+                </div>
+              </div>
+
+              <!-- Toast 容器 (定位於底部中央) -->
+              <div
+                class="toast-container position-fixed bottom-0 start-50 translate-middle-x p-3"
+                style="z-index: 1100"
+              >
+                <div
+                  id="actionToast"
+                  class="toast align-items-center text-white bg-dark border-0 slide-up-toast"
+                  role="alert"
+                  aria-live="assertive"
+                  aria-atomic="true"
+                >
+                  <div class="d-flex">
+                    <div class="toast-body" id="toast-message">
+                      <!-- 提示訊息 -->
+                    </div>
+                    <button
+                      type="button"
+                      class="btn-close btn-close-white me-2 m-auto"
+                      data-bs-dismiss="toast"
+                      aria-label="Close"
+                    ></button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 計時結束紀錄 Modal -->
+              <div
+                class="modal fade"
+                id="saveTimerModal"
+                data-bs-backdrop="static"
+                data-bs-keyboard="false"
+                tabindex="-1"
+                aria-labelledby="saveTimerModalLabel"
+                aria-hidden="true"
+              >
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5
+                        class="modal-title font-weight-bold"
+                        id="saveTimerModalLabel"
+                      >
+                        <i class="bi bi-check-circle-fill text-success me-2"></i
+                        ><span data-i18n="completeTimer">完成計時！</span>
+                      </h5>
+                    </div>
+                    <div class="modal-body">
+                      <!-- 顯示當次專注累積時間 -->
+                      <div class="text-center bg-light p-3 rounded mb-3">
+                        <span
+                          class="text-muted d-block small mb-1"
+                          data-i18n="sessionDuration"
+                          >本次計時時長</span
+                        >
+                        <h3
+                          class="mb-0 text-primary font-monospace"
+                          id="modal-focus-time"
+                        >
+                          00:00:00
+                        </h3>
+                      </div>
+
+                      <!-- 輸入欄位 -->
+                      <form id="record-form">
+                        <div class="mb-3">
+                          <label
+                            for="modal-note"
+                            class="form-label"
+                            data-i18n="noteTitle"
+                            >備註（選填）</label
+                          >
+                          <textarea
+                            class="form-control"
+                            id="modal-note"
+                            rows="3"
+                            placeholder="記錄一下完成項目或是個人想法吧..."
+                            data-i18n-placeholder="noteArea"
+                          ></textarea>
+                        </div>
+                        <div class="form-check">
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="modal-is-completed"
+                          />
+                          <label
+                            class="form-check-label"
+                            for="modal-is-completed"
+                            data-i18n="isCompleted"
+                          >
+                            將此任務標記為已完成
+                          </label>
+                        </div>
+                      </form>
+                    </div>
+                    <div class="modal-footer d-flex justify-content-between">
+                      <!-- 左側：捨棄按鈕 -->
+                      <button
+                        type="button"
+                        class="btn btn-outline-danger"
+                        id="btn-discard-session"
+                      >
+                        <i class="bi bi-trash me-1"></i
+                        ><span data-i18n="discardRecord">捨棄此次計時</span>
+                      </button>
+                      <!-- 右側：儲存按鈕 -->
+                      <button
+                        type="button"
+                        class="btn btn-primary"
+                        id="btn-save-session"
+                      >
+                        <i class="bi bi-save me-1"></i
+                        ><span data-i18n="saveRecord">儲存紀錄</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 2. 任務列表內容 -->
+              <div
+                class="tab-pane fade"
+                id="list-tasks"
+                role="tabpanel"
+                aria-labelledby="list-tasks-list"
+              >
+                <!--管理任務、下載CSV-->
+                <div
+                  class="bg-body p-4 rounded border shadow-sm mb-2 d-flex justify-content-between"
+                >
+                  <div class="d-flex">
+                    <!-- 管理主任務按鈕 -->
+                    <button
+                      type="button"
+                      class="btn btn-primary me-2"
+                      data-bs-toggle="modal"
+                      data-bs-target="#listManageTask"
+                    >
+                      <i class="bi bi-folder2 me-0 me-md-1"></i>
+                      <span
+                        class="d-none d-md-inline"
+                        data-i18n="manageMainTaskModalTitle"
+                        >管理主任務</span
+                      >
+                    </button>
+
+                    <!-- 管理主任務 Modal -->
+                    <div
+                      class="modal fade"
+                      id="listManageTask"
+                      tabindex="-1"
+                      aria-labelledby="listManageTaskLabel"
+                      aria-hidden="true"
+                    >
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <!-- 視窗標題 -->
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="listManageTaskLabel">
+                              <i class="bi bi-gear-fill text-primary me-2"></i
+                              ><span data-i18n="manageMainTaskModalTitle"
+                                >管理主任務</span
+                              >
+                            </h5>
+                            <button
+                              type="button"
+                              class="btn-close"
+                              data-bs-dismiss="modal"
+                              aria-label="Close"
+                            ></button>
+                          </div>
+
+                          <!-- 視窗內容 -->
+                          <div class="modal-body">
+                            <div>
+                              <p
+                                class="mb-1 fw-bold fs-sm"
+                                data-i18n="addMainTaskTitle"
+                              >
+                                新增主任務
+                              </p>
+                              <div class="input-group mb-3 border-bottom pb-3">
+                                <input
+                                  type="text"
+                                  id="list-input-new-main-task"
+                                  class="form-control"
+                                  placeholder="主任務名稱（例如：切版練習）"
+                                  aria-label="taskname"
+                                  data-i18n-placeholder="mainTaskPlaceholder"
+                                />
+                                <button
+                                  class="btn btn-primary"
+                                  type="button"
+                                  id="list-btn-add-main-task"
+                                  data-i18n="addBtn"
+                                >
+                                  新增
+                                </button>
+                              </div>
+                            </div>
+
+                            <div>
+                              <p
+                                class="mb-1 fw-bold fs-sm"
+                                data-i18n="currentMainTask"
+                              >
+                                現有主任務列表
+                              </p>
+                              <ul
+                                id="list-manage-main-task-list"
+                                class="border list-unstyled rounded mb-0"
+                              >
+                                <!-- 動態渲染主任務列表 -->
+                              </ul>
+                            </div>
+                          </div>
+
+                          <!-- Footer -->
+                          <div class="modal-footer">
+                            <button
+                              type="button"
+                              class="btn btn-outline-primary"
+                              data-bs-dismiss="modal"
+                              data-i18n="closeBtn"
+                            >
+                              關閉
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- 新增子任務按鈕 -->
+                    <button
+                      type="button"
+                      class="btn btn-outline-primary"
+                      data-bs-toggle="modal"
+                      data-bs-target="#listAddSubTask"
+                    >
+                      <i class="bi bi-plus-lg me-0 me-md-1"></i>
+                      <span
+                        class="d-none d-md-inline"
+                        data-i18n="addSubTaskModalTitle"
+                        >新增子任務</span
+                      >
+                    </button>
+
+                    <!-- 新增子任務 Modal -->
+                    <div
+                      class="modal fade"
+                      id="listAddSubTask"
+                      tabindex="-1"
+                      aria-labelledby="listAddSubTaskLabel"
+                      aria-hidden="true"
+                    >
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <!-- 視窗標題 -->
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="listAddSubTaskLabel">
+                              <i class="bi bi-plus-square text-primary me-2"></i
+                              ><span data-i18n="addSubTaskModalTitle"
+                                >新增子任務</span
+                              >
+                            </h5>
+                            <button
+                              type="button"
+                              class="btn-close"
+                              data-bs-dismiss="modal"
+                              aria-label="Close"
+                            ></button>
+                          </div>
+
+                          <!-- 視窗內容 -->
+                          <div class="modal-body">
+                            <div class="mb-3">
+                              <p
+                                class="mb-1 fw-bold fs-sm"
+                                data-i18n="belongTo"
+                              >
+                                歸屬主任務
+                              </p>
+                              <div class="dropdown w-100">
+                                <button
+                                  id="list-modal-subtask-parent-btn"
+                                  class="btn bg-body-tertiary border text-secondary w-100 d-flex justify-content-between align-items-center"
+                                  type="button"
+                                  data-bs-toggle="dropdown"
+                                  aria-expanded="false"
+                                >
+                                  選擇主任務
+                                  <i class="bi bi-chevron-down"></i>
+                                </button>
+                                <ul
+                                  id="list-modal-subtask-parent-menu"
+                                  class="dropdown-menu w-100"
+                                >
+                                  <!-- 動態渲染主任務選單 -->
+                                </ul>
+                              </div>
+                            </div>
+                            <div>
+                              <p
+                                class="mb-1 fw-bold fs-sm"
+                                data-i18n="subTaskName"
+                              >
+                                子任務名稱
+                              </p>
+                              <div class="input-group">
+                                <input
+                                  type="text"
+                                  id="list-input-new-subtask-name"
+                                  class="form-control"
+                                  placeholder="例如：修改程式碼"
+                                  aria-label="subtask"
+                                  data-i18n-placeholder="subTaskPlaceholder"
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          <!-- Footer -->
+                          <div class="modal-footer">
+                            <button
+                              type="button"
+                              class="btn btn-light"
+                              data-bs-dismiss="modal"
+                              data-i18n="cancel"
+                            >
+                              取消
+                            </button>
+
+                            <button
+                              type="button"
+                              id="list-btn-confirm-add-subtask"
+                              class="btn btn-primary"
+                              data-i18n="addNewSubTask"
+                            >
+                              建立子任務
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    id="btn-export-csv"
+                  >
+                    <i class="bi bi-filetype-csv me-0 me-md-1"></i>
+                    <span class="d-none d-md-inline" data-i18n="downloadCSV"
+                      >下載CSV檔案</span
+                    >
+                  </button>
+                </div>
+                <!-- 備份提醒-->
+                <div class="text-muted small mb-4 ms-1">
+                  <p class="mb-1">
+                    <i class="bi bi-info-circle me-1"></i>
+                    <span data-i18n="backupReminder"
+                      >資料僅儲存於您的瀏覽器中。為避免清空快取導致資料遺失，請務必定期前往系統資料下載備份。</span
+                    >
+                  </p>
+                </div>
+
+                <!--任務清單列表(動態渲染容器)-->
+                <div
+                  class="accordion shadow-sm border-0 rounded"
+                  id="task-accordionExample"
+                >
+                  <!-- 裡面的內容由 all.js 中的 renderTaskAccordion() 自動注入畫面 -->
+                </div>
+              </div>
+
+              <!-- 3. 常見 QA 內容 -->
+              <div
+                class="tab-pane fade"
+                id="list-qa"
+                role="tabpanel"
+                aria-labelledby="list-qa-list"
+              >
+                <div class="accordion shadow-sm" id="qa-accordionExample">
+                  <!-- QA1 -->
+                  <div class="accordion-item">
+                    <h2 class="accordion-header" id="qa-headingOne">
+                      <button
+                        class="accordion-button collapsed fw-bold"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#qa-collapseOne"
+                        aria-expanded="false"
+                        aria-controls="qa-collapseOne"
+                        data-i18n="qaTitle1"
+                      >
+                        TaskTimer 任務計時器的主要特色是什麼？
+                      </button>
+                    </h2>
+                    <div
+                      id="qa-collapseOne"
+                      class="accordion-collapse collapse"
+                      aria-labelledby="qa-headingOne"
+                      data-bs-parent="#qa-accordionExample"
+                    >
+                      <div class="accordion-body">
+                        <p data-i18n="qaBody1">
+                          TaskTimer
+                          是一款主打「極簡、專注、在地優先（Local-First）」的任務計時工具。結合了任務清單與時間統計，無須註冊帳號即可隨開即用。
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- QA2 -->
+                  <div class="accordion-item">
+                    <h2 class="accordion-header" id="qa-headingTwo">
+                      <button
+                        class="accordion-button collapsed fw-bold"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#qa-collapseTwo"
+                        aria-expanded="false"
+                        aria-controls="qa-collapseTwo"
+                        data-i18n="qaTitle2"
+                      >
+                        如果計時到一半不小心按到「停止」，資料會遺失嗎？
+                      </button>
+                    </h2>
+                    <div
+                      id="qa-collapseTwo"
+                      class="accordion-collapse collapse"
+                      aria-labelledby="qa-headingTwo"
+                      data-bs-parent="#qa-accordionExample"
+                    >
+                      <div class="accordion-body">
+                        <p data-i18n="qaBody2">
+                          不用擔心！按下停止時，系統會自動彈出確認視窗，提供「儲存紀錄」與「捨棄計時」兩種選擇。且視窗具備防誤觸機制，不會因為點擊背景或按
+                          Esc 鍵而意外關閉。
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- QA3 -->
+                  <div class="accordion-item">
+                    <h2 class="accordion-header" id="qa-headingThree">
+                      <button
+                        class="accordion-button collapsed fw-bold"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#qa-collapseThree"
+                        aria-expanded="false"
+                        aria-controls="qa-collapseThree"
+                        data-i18n="qaTitle3"
+                      >
+                        未滿 1 秒的計時也會被紀錄嗎？
+                      </button>
+                    </h2>
+                    <div
+                      id="qa-collapseThree"
+                      class="accordion-collapse collapse"
+                      aria-labelledby="qa-headingThree"
+                      data-bs-parent="#qa-accordionExample"
+                    >
+                      <div class="accordion-body">
+                        <p data-i18n="qaBody3">
+                          為了避免誤觸產生無效的垃圾資料，系統設定「計時未滿 1
+                          秒」按下停止時會自動重置，不會跳出儲存視窗。
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- QA4 -->
+                  <div class="accordion-item">
+                    <h2 class="accordion-header" id="qa-headingFour">
+                      <button
+                        class="accordion-button collapsed fw-bold"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#qa-collapseFour"
+                        aria-expanded="false"
+                        aria-controls="qa-collapseFour"
+                        data-i18n="qaTitle4"
+                      >
+                        備註欄位是必填的嗎？
+                      </button>
+                    </h2>
+                    <div
+                      id="qa-collapseFour"
+                      class="accordion-collapse collapse"
+                      aria-labelledby="qa-headingFour"
+                      data-bs-parent="#qa-accordionExample"
+                    >
+                      <div class="accordion-body">
+                        <p data-i18n="qaBody4">
+                          備註欄位為選填。你可以記錄當次專注的心得或具體進度；如果未填寫，系統依然會完整紀錄用時。
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- QA5 -->
+                  <div class="accordion-item">
+                    <h2 class="accordion-header" id="qa-headingFive">
+                      <button
+                        class="accordion-button collapsed fw-bold"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#qa-collapseFive"
+                        aria-expanded="false"
+                        aria-controls="qa-collapseFive"
+                        data-i18n="qaTitle5"
+                      >
+                        我的任務與計時資料會被上傳到伺服器嗎？
+                      </button>
+                    </h2>
+                    <div
+                      id="qa-collapseFive"
+                      class="accordion-collapse collapse"
+                      aria-labelledby="qa-headingFive"
+                      data-bs-parent="#qa-accordionExample"
+                    >
+                      <div class="accordion-body">
+                        <p data-i18n="qaBody5">
+                          完全不會。TaskTimer 採用「在地優先
+                          (Local-First)」架構，所有任務、備註與時間紀錄皆透過
+                          IndexedDB 100%
+                          安全儲存在你的個人瀏覽器中，我們不會收集任何個人隱私資料。
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- QA6 -->
+                  <div class="accordion-item">
+                    <h2 class="accordion-header" id="qa-headingSix">
+                      <button
+                        class="accordion-button collapsed fw-bold"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#qa-collapseSix"
+                        aria-expanded="false"
+                        aria-controls="qa-collapseSix"
+                        data-i18n="qaTitle6"
+                      >
+                        更換瀏覽器或裝置時，我的資料還會在嗎？
+                      </button>
+                    </h2>
+                    <div
+                      id="qa-collapseSix"
+                      class="accordion-collapse collapse"
+                      aria-labelledby="qa-headingSix"
+                      data-bs-parent="#qa-accordionExample"
+                    >
+                      <div class="accordion-body">
+                        <p data-i18n="qaBody6">
+                          因為資料儲存在單一瀏覽器的本地端，更換裝置或清除瀏覽器快取時資料不會自動同步。建議使用「系統資料」頁面的「JSON
+                          備份匯出」功能進行跨裝置轉移。
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- QA7 -->
+                  <div class="accordion-item">
+                    <h2 class="accordion-header" id="qa-headingSeven">
+                      <button
+                        class="accordion-button collapsed fw-bold"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#qa-collapseSeven"
+                        aria-expanded="false"
+                        aria-controls="qa-collapseSeven"
+                        data-i18n="qaTitle7"
+                      >
+                        如何備份與還原我的資料？
+                      </button>
+                    </h2>
+                    <div
+                      id="qa-collapseSeven"
+                      class="accordion-collapse collapse"
+                      aria-labelledby="qa-headingSeven"
+                      data-bs-parent="#qa-accordionExample"
+                    >
+                      <div class="accordion-body">
+                        <p data-i18n="qaBody71">點擊「系統資料」頁籤：</p>
+                        <p data-i18n="qaBody72">
+                          匯出：點擊「下載 JSON
+                          備份」，系統會自動產生帶有日期與版本號的備份檔。
+                        </p>
+                        <p data-i18n="qaBody73">
+                          還原：點擊「選擇備份檔」，上傳先前匯出的 JSON
+                          檔案即可完成還原（還原前請留意會覆蓋現有資料）。
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- QA8 -->
+                  <div class="accordion-item">
+                    <h2 class="accordion-header" id="qa-headingEight">
+                      <button
+                        class="accordion-button collapsed fw-bold"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#qa-collapseEight"
+                        aria-expanded="false"
+                        aria-controls="qa-collapseEight"
+                        data-i18n="qaTitle8"
+                      >
+                        清理瀏覽器歷史紀錄會導致資料消失嗎？
+                      </button>
+                    </h2>
+                    <div
+                      id="qa-collapseEight"
+                      class="accordion-collapse collapse"
+                      aria-labelledby="qa-headingEight"
+                      data-bs-parent="#qa-accordionExample"
+                    >
+                      <div class="accordion-body">
+                        <p data-i18n="qaBody8">
+                          如果清理瀏覽器時勾選了「網站資料與
+                          Cookie」或「簡化網站儲存空間」，本地 IndexedDB
+                          資料可能會被清除。強烈建議定期匯出 JSON 備份以保安全。
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- QA9 -->
+                  <div class="accordion-item">
+                    <h2 class="accordion-header" id="qa-headingNine">
+                      <button
+                        class="accordion-button collapsed fw-bold"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#qa-collapseNine"
+                        aria-expanded="false"
+                        aria-controls="qa-collapseNine"
+                        data-i18n="qaTitle9"
+                      >
+                        TaskTimer 支援哪些語系與主題？
+                      </button>
+                    </h2>
+                    <div
+                      id="qa-collapseNine"
+                      class="accordion-collapse collapse"
+                      aria-labelledby="qa-headingNine"
+                      data-bs-parent="#qa-accordionExample"
+                    >
+                      <div class="accordion-body">
+                        <p data-i18n="qaBody9">
+                          目前支援繁體中文、英文、日文。主題有淺色模式和深色模式，可以自行切換。
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 4. 系統資料 -->
+              <div
+                class="tab-pane fade"
+                id="list-data"
+                role="tabpanel"
+                aria-labelledby="list-data-list"
+              >
+                <div
+                  class="bg-body-tertiary p-4 rounded border shadow-sm mb-3 d-flex flex-column"
+                >
+                  <!-- 1. 隱私與備份提醒 Alert -->
+                  <div
+                    class="alert alert-warning d-flex align-items-start mb-3"
+                    role="alert"
+                  >
+                    <div class="small" data-i18n-html="privacyAlertNotice">
+                      <strong>隱私與資料安全提醒：</strong><br />
+                      本工具採用本地儲存技術，<strong>不會上傳或收集您的任何個人資料</strong>。資料均存放於您的瀏覽器中，若您清除瀏覽器快取、使用無痕模式或更換裝置，資料將會歸零。請務必<strong
+                        >不定期手動下載 JSON 備份檔</strong
+                      >以確保資料安全。
+                    </div>
+                  </div>
+                  <div class="d-flex gap-2">
+                    <!-- 匯出按鈕 -->
+                    <button
+                      type="button"
+                      id="btn-export-json"
+                      class="btn btn-outline-primary"
+                    >
+                      <i class="bi bi-download me-1"></i
+                      ><span data-i18n="backupData">備份資料 (JSON)</span>
+                    </button>
+
+                    <!-- 匯入按鈕 -->
+                    <button
+                      type="button"
+                      id="btn-import-json"
+                      class="btn btn-outline-secondary"
+                    >
+                      <i class="bi bi-upload me-1"></i
+                      ><span data-i18n="resumeData">還原資料 (JSON)</span>
+                    </button>
+
+                    <!-- 隱藏的 File Input，用於觸發檔案選擇器 -->
+                    <input
+                      type="file"
+                      id="input-import-file"
+                      accept=".json,application/json"
+                      class="d-none"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="bg-body-tertiary text-body-tertiary text-center py-3">
+      <div class="container">
+        <p>Copyright ©2026 TaskTimer All Rights Reserved.</p>
+      </div>
+    </footer>
+
+    <!--載入Bootstrap JS-->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+      crossorigin="anonymous"
+    ></script>
+
+    <!-- 載入資料庫模組 db.js -->
+    <script src="./db.js"></script>
+
+    <!-- 載入語系檔 -->
+    <script src="./i18n.js"></script>
+
+    <!--載入 all.js -->
+    <script type="module" src="./all.js"></script>
+  </body>
+</html>
