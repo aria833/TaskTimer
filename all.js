@@ -189,17 +189,20 @@ function getMainTaskTotalMinutes(task) {
   );
 }
 
-function formatMinutesToReadableText(totalMinutes) {
-  if (totalMinutes === 0) return "0 分鐘";
+function formatMinutesToReadableText(totalMinutes, lang = currentLang) {
+  // 取得當前語系的字典（若找不到則預設 fallback 到繁體中文）
+  const t = translations[lang] || translations["zh-TW"];
+
+  if (totalMinutes === 0) return `0 ${t.unitMinute}`;
 
   const days = Math.floor(totalMinutes / (24 * 60));
   const hours = Math.floor((totalMinutes % (24 * 60)) / 60);
   const mins = totalMinutes % 60;
 
   let result = "";
-  if (days > 0) result += `${days} 天 `;
-  if (hours > 0) result += `${hours} 小時 `;
-  if (mins > 0 || result === "") result += `${mins} 分鐘`;
+  if (days > 0) result += `${days} ${t.unitDay} `;
+  if (hours > 0) result += `${hours} ${t.unitHour} `;
+  if (mins > 0 || result === "") result += `${mins} ${t.unitMinute}`;
 
   return result.trim();
 }
@@ -949,9 +952,16 @@ function renderTaskAccordion() {
       const collapseId = `task-collapse-${task.id}`;
       const headingId = `task-heading-${task.id}`;
 
+      // 1. 取得多國語系字典檔（移至頂部，確保後續邏輯皆可安全使用）
+      const langDict =
+        typeof translations !== "undefined" &&
+        typeof currentLang !== "undefined"
+          ? translations[currentLang] || translations["zh-TW"]
+          : null;
+
       const subtasksHTML =
         task.subtasks.length === 0
-          ? `<li class="list-group-item text-muted text-center py-3">尚無子任務，請點擊「新增子任務」</li>`
+          ? `<li class="list-group-item text-muted text-center py-3">${langDict?.noSubtasks || "尚無子任務，請點擊「新增子任務」"}</li>`
           : task.subtasks
               .map((sub) => {
                 const subStatus = sub.status || "not_started";
@@ -961,36 +971,35 @@ function renderTaskAccordion() {
                   formatMinutesToReadableText(subTotalMinutes);
                 const recordCollapseId = `subTaskRecord-${task.id}-${sub.id}`;
 
-                const recordsHTML =
-                  !sub.records || sub.records.length === 0
-                    ? `<p class="text-muted fs-sm mb-0 p-2">尚無計時紀錄</p>`
-                    : sub.records
-                        .map(
-                          (rec, recIdx) => `
-                          <div class="${recIdx < sub.records.length - 1 ? "mb-2 border-bottom pb-2" : ""}">
-                            <div class="d-flex justify-content-between mb-1 align-items-center">
-                              <p class="fw-bold mb-0 fs-sm">${recIdx + 1}. ${rec.timeRange}</p>
-                              <div class="d-flex align-items-center">
-                                <span class="badge rounded-pill text-bg-light me-1">${rec.durationMinutes}分鐘</span>
-                                <button type="button" class="btn btn-sm p-0 text-secondary me-2" title="編輯備註" onclick="editRecordNote('${task.id}', '${sub.id}', '${rec.id}')">
-                                  <i class="bi bi-pencil"></i>
-                                </button>
-                                <button type="button" class="btn btn-sm p-0 text-danger" title="刪除紀錄" onclick="deleteRecord('${task.id}', '${sub.id}', '${rec.id}')">
-                                  <i class="bi bi-trash"></i>
-                                </button>
-                              </div>
-                            </div>
-                            <p class="ps-3 mb-0 fs-sm text-secondary">${rec.note ? `備註：${rec.note}` : "無備註"}</p>
+                let recordsHTML = "";
+                if (!sub.records || sub.records.length === 0) {
+                  const noRecText = langDict?.noRecords || "尚無計時紀錄";
+                  recordsHTML = `<p class="text-muted fs-sm mb-0 p-2">${noRecText}</p>`;
+                } else {
+                  recordsHTML = sub.records
+                    .map(
+                      (rec, recIdx) => `
+                      <div class="${recIdx < sub.records.length - 1 ? "mb-2 border-bottom pb-2" : ""}">
+                        <div class="d-flex justify-content-between mb-1 align-items-center">
+                          <p class="fw-bold mb-0 fs-sm">${recIdx + 1}. ${rec.timeRange}</p>
+                          <div class="d-flex align-items-center">
+                            <span class="badge rounded-pill text-bg-light me-1">${rec.durationMinutes}${langDict?.unitMinute || "分鐘"}</span>
+                            <button type="button" class="btn btn-sm p-0 text-secondary me-2" title="${langDict?.editNoteTitle || "編輯備註"}" onclick="editRecordNote('${task.id}', '${sub.id}', '${rec.id}')">
+                              <i class="bi bi-pencil"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm p-0 text-danger" title="${langDict?.deleteRecordTitle || "刪除紀錄"}" onclick="deleteRecord('${task.id}', '${sub.id}', '${rec.id}')">
+                              <i class="bi bi-trash"></i>
+                            </button>
                           </div>
-                        `,
-                        )
-                        .join("");
-
-                const langDict =
-                  typeof translations !== "undefined" &&
-                  typeof currentLang !== "undefined"
-                    ? translations[currentLang] || translations["zh-TW"]
-                    : null;
+                        </div>
+                        <p class="ps-3 mb-0 fs-sm text-secondary">
+                          ${rec.note ? `${langDict?.labelNote || "備註"}：${rec.note}` : langDict?.noNote || "無備註"}
+                        </p>
+                      </div>
+                    `,
+                    )
+                    .join("");
+                }
 
                 const statusBadgeHTML = `
   <select 
@@ -1020,7 +1029,7 @@ function renderTaskAccordion() {
                         </div>
 
                         <div class="d-flex align-items-center mb-1">
-                          <p class="me-2 mb-0 fs-sm text-secondary">總計： ${subReadableTime}</p>
+                          <p class="me-2 mb-0 fs-sm text-secondary">${langDict?.labelTotal || "總計"}： ${subReadableTime}</p>
                           <button
                             class="btn btn-noborder p-0 fs-sm text-primary"
                             type="button"
@@ -1028,16 +1037,27 @@ function renderTaskAccordion() {
                             data-bs-target="#${recordCollapseId}"
                             aria-expanded="false"
                             aria-controls="${recordCollapseId}"
+                            data-i18n="viewRecords"
                           >
-                            檢視計時與備註紀錄
+                            ${langDict?.viewRecords || "檢視計時與備註紀錄"}
                           </button>
                         </div>
                         
                         <div class="collapse me-3 my-2" id="${recordCollapseId}">
                           <div class="card card-body bg-body">
                             <div class="d-flex justify-content-between border-bottom pb-1 mb-2">
-                              <p class="fw-bold mb-0 fs-sm">計時與備註紀錄</p>
-                              <p class="mb-0 fs-sm text-muted">共 ${sub.records ? sub.records.length : 0} 筆紀錄</p>
+                              <p class="fw-bold mb-0 fs-sm" data-i18n="viewRecords">
+                                ${langDict?.viewRecords || "檢視計時與備註紀錄"}
+                              </p>
+                              <p class="mb-0 fs-sm text-muted">
+                                ${(
+                                  langDict?.recordCountText ||
+                                  "共 {count} 筆紀錄"
+                                ).replace(
+                                  "{count}",
+                                  sub.records ? sub.records.length : 0,
+                                )}
+                              </p>
                             </div>
                             ${recordsHTML}
                           </div>
@@ -1048,7 +1068,7 @@ function renderTaskAccordion() {
                         <button
                           type="button"
                           class="btn btn-outline-secondary me-2 btn-sm"
-                          title="編輯子任務名稱"
+                          title="${langDict?.editSubtaskTitle || "編輯子任務名稱"}"
                           onclick="updateSubtask('${task.id}', '${sub.id}')"
                         >
                           <i class="bi bi-pencil"></i>
@@ -1056,7 +1076,7 @@ function renderTaskAccordion() {
                         <button
                           type="button"
                           class="btn btn-outline-danger btn-sm"
-                          title="刪除子任務"
+                          title="${langDict?.deleteSubtaskTitle || "刪除子任務"}"
                           onclick="deleteSubtask('${task.id}', '${sub.id}')"
                         >
                           <i class="bi bi-trash"></i>
@@ -1084,7 +1104,7 @@ function renderTaskAccordion() {
                   <div class="d-flex justify-content-between align-items-center">
                     <p class="text-truncate me-3 mb-2 mb-md-0 fw-bold fs-6">${task.title}</p>
                     <p class="text-nowrap d-md-none d-flex fs-sm text-muted mb-0">
-                      總計：${readableTotalTime}
+                      ${langDict?.labelTotal || "總計"}：${readableTotalTime}
                     </p>
                   </div>
                 </div>
@@ -1103,7 +1123,7 @@ function renderTaskAccordion() {
                       </div>
                     </div>
                     <p class="text-nowrap d-none d-md-flex fs-sm text-secondary mb-0">
-                      總計：${readableTotalTime}
+                      ${langDict?.labelTotal || "總計"}：${readableTotalTime}
                     </p>
                   </div>
                 </div>

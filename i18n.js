@@ -88,6 +88,15 @@ const translations = {
     unitDay: "天",
     unitHour: "小時",
     unitMinute: "分鐘",
+    viewRecords: "檢視計時與備註紀錄",
+    labelTotal: "總計",
+    recordCountText: "共 {count} 筆紀錄",
+    labelNote: "備註",
+    noNote: "無備註",
+    noRecords: "尚無計時紀錄",
+    editNoteTitle: "編輯備註",
+    deleteRecordTitle: "刪除紀錄",
+    noSubtasks: "尚無子任務，請點擊「新增子任務」",
 
     //QA
     qaTitle1: "TaskTimer 任務計時器的主要特色是什麼？",
@@ -224,6 +233,14 @@ const translations = {
     unitDay: "d",
     unitHour: "h",
     unitMinute: "m",
+    viewRecords: "View Timer & Note Records",
+    labelTotal: "Total",
+    recordCountText: "{count} records",
+    labelNote: "Note",
+    noNote: "No notes",
+    noRecords: "No records yet",
+    editNoteTitle: "Edit note",
+    deleteRecordTitle: "Delete record",
 
     //QA
     qaTitle1: "What are the main features of TaskTimer?",
@@ -362,6 +379,14 @@ const translations = {
     unitDay: "日",
     unitHour: "時間",
     unitMinute: "分",
+    viewRecords: "計時とメモの記録を確認",
+    labelTotal: "合計",
+    recordCountText: "全 {count} 件の記録",
+    labelNote: "メモ",
+    noNote: "メモなし",
+    noRecords: "計測履歴はありません",
+    editNoteTitle: "メモを編集",
+    deleteRecordTitle: "履歴を削除",
 
     //QA
     qaTitle1: "TaskTimer の主な特徴は何ですか？",
@@ -403,12 +428,12 @@ const translations = {
     qaTitle9: "TaskTimer はどの言語とテーマに対応していますか？",
     qaBody9:
       "現在、繁体字中国語、英語、日本語に対応しています。テーマはライトモードとダークモードに対応しており、自由に切り替えることができます。",
-  },
-  //データ
-  backupData: "データをバックアップ（JSON）",
-  resumeData: "データを復元（JSON）",
-  privacyAlertNotice: `<strong>プライバシーとデータセキュリティに関するご注意：</strong><br />
+    //データ
+    backupData: "データをバックアップ（JSON）",
+    resumeData: "データを復元（JSON）",
+    privacyAlertNotice: `<strong>プライバシーとデータセキュリティに関するご注意：</strong><br/>
       本ツールはローカルストレージ技術を使用しており、<strong>個人データをアップロードまたは収集することはありません</strong>。データはすべてブラウザ内に保存されるため、キャッシュ消去、シークレットモードの使用、端末変更を行うとデータがリセットされます。データの安全を確保するため、定期的に<strong>JSONバックアップを手動でダウンロード</strong>してください。`,
+  },
 };
 
 // ==========================================

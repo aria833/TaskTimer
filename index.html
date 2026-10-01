@@ -206,7 +206,7 @@
                 <!--選擇主/子任務-->
                 <div class="bg-body p-4 rounded border shadow-sm mb-3">
                   <div class="row">
-                    <div class="col-lg-6">
+                    <div class="col-lg-6 mb-2">
                       <!--主任務-->
                       <div
                         class="d-flex justify-content-between mb-1 px-1 fs-sm"
@@ -236,11 +236,10 @@
                             <!-- 視窗標題 -->
                             <div class="modal-header">
                               <h5 class="modal-title" id="manageTaskLabel">
-                                <i
-                                  class="bi bi-gear-fill text-primary me-2"
-                                  data-i18n="manageMainTaskModalTitle"
-                                ></i
-                                >管理主任務
+                                <i class="bi bi-gear-fill text-primary me-2"></i
+                                ><span data-i18n="manageMainTaskModalTitle"
+                                  >管理主任務</span
+                                >
                               </h5>
                               <button
                                 type="button"
@@ -276,7 +275,7 @@
                                     class="btn btn-primary"
                                     type="button"
                                     id="btn-add-main-task"
-                                    data-i18n="addNewTask"
+                                    data-i18n="addBtn"
                                   >
                                     新增
                                   </button>
@@ -371,9 +370,10 @@
                               <h5 class="modal-title" id="addSubTaskLabel">
                                 <i
                                   class="bi bi-plus-square text-primary me-2"
-                                  data-i18n="addSubTaskModalTitle"
                                 ></i
-                                >新增子任務
+                                ><span data-i18n="addSubTaskModalTitle"
+                                  >新增子任務</span
+                                >
                               </h5>
                               <button
                                 type="button"
@@ -446,6 +446,7 @@
                                 type="button"
                                 id="btn-confirm-add-subtask"
                                 class="btn btn-primary"
+                                data-i18n="addNewSubTask"
                               >
                                 建立子任務
                               </button>
