@@ -1,11 +1,13 @@
+// 載入語系字典檔
 import { translations } from "./locales/index.js";
 
-// ==========================================
 // 預設語系（優先讀取 localStorage，若無則預設 zh-TW）
-// ==========================================
 let currentLang = localStorage.getItem("app_lang") || "zh-TW";
+window.currentLang = currentLang;
 
+// ==========================================
 // 更新 <head> 中的 SEO 與 Meta 標籤
+// ==========================================
 function updateMetaTags(lang) {
   const seo = translations[lang]?.seo;
   if (!seo) return;
@@ -29,12 +31,12 @@ function updateMetaTags(lang) {
   setMetaContent('meta[name="twitter:title"]', seo.ogTitle);
   setMetaContent('meta[name="twitter:description"]', seo.twitterDescription);
 
-  // 5. 同步更新 <html> 的 lang 屬性
+  // 5. 更新 <html> 的 lang 屬性
   document.documentElement.lang = lang;
 }
 
 // ==========================================
-// 輔助函式：設定 Meta Tag 的 content 屬性
+// 設定 Meta Tag 的 content 屬性
 // ==========================================
 function setMetaContent(selector, value) {
   const element = document.querySelector(selector);
@@ -57,7 +59,7 @@ export function changeLanguage(lang, onLangChangeCallback) {
   if (!translations[lang]) return;
 
   currentLang = lang;
-  window.currentLang = lang; // 同步至全域 window 供非模組腳本 (all.js) 使用
+  window.currentLang = lang;
   localStorage.setItem("app_lang", lang);
 
   const dict = translations[lang];
@@ -101,14 +103,11 @@ export function changeLanguage(lang, onLangChangeCallback) {
   }
 }
 
-// ==========================================
-// 將核心函式掛載至全域 window (關鍵修正 1)
-// ==========================================
 window.changeLanguage = changeLanguage;
 window.getLangDict = getLangDict;
 
 // ==========================================
-// 初始化監聽與執行 (關鍵修正 2)
+// 初始化監聽與執行
 // ==========================================
 document.addEventListener("DOMContentLoaded", () => {
   // 1. 幫 Dropdown 自動綁定 change 事件監聽器

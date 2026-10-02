@@ -11,7 +11,7 @@ let dbInstance = null; // 暫存開啟後的資料庫連線，避免重複開啟
 // ==========================================
 // 1. 開啟資料庫 (Open Database)
 // ==========================================
-function openDB() {
+export function openDB() {
   return new Promise((resolve, reject) => {
     // 如果已經連線過，直接回傳連線，不用重複開啟
     if (dbInstance) {
@@ -47,7 +47,7 @@ function openDB() {
 // ==========================================
 // 2. 讀取所有任務資料 (Read)
 // ==========================================
-async function getAllTasksFromDB() {
+export async function getAllTasksFromDB() {
   const db = await openDB();
   return new Promise((resolve, reject) => {
     const transaction = db.transaction(STORE_NAME, "readonly");
@@ -63,7 +63,7 @@ async function getAllTasksFromDB() {
 // 3. 儲存/更新所有任務資料 (Save / Update)
 // 當畫面的 tasks 陣列有變動時，呼叫此函式將最新資料寫入瀏覽器
 // ==========================================
-async function saveAllTasksToDB(tasksArray) {
+export async function saveAllTasksToDB(tasksArray) {
   const db = await openDB();
   return new Promise((resolve, reject) => {
     const transaction = db.transaction(STORE_NAME, "readwrite");

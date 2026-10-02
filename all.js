@@ -2,16 +2,14 @@
 // 1. 全域 State 與 DOM 元素選取
 // ==========================================
 
-// all.js 頂部或資料宣告處
 let tasks = [];
 
-// 關鍵修復：將 tasks 物件的存取權交給 window
 window.tasks = tasks;
 
 let selectedMainTaskId = null; // 當前選擇的主任務 ID
 let selectedSubtaskId = null; // 當前選擇的子任務 ID
 
-//任務狀態
+// 任務狀態標籤
 const STATUS_MAP = {
   not_started: {
     key: "statusNotStarted",
@@ -30,6 +28,7 @@ const STATUS_MAP = {
   },
 };
 
+// 在選擇任務計時時的下拉選單時的任務排序
 const STATUS_ORDER = {
   in_progress: 1,
   not_started: 2,
@@ -46,7 +45,7 @@ let elapsedTime = 0;
 let isRunning = false;
 let currentSessionSeconds = 0;
 
-// --- 設定項與閒置機制 State ---
+// --- 閒置提醒 & 是否顯示秒數 ---
 let showSeconds = localStorage.getItem("setting_show_seconds") !== "false"; // 預設 true
 let idleMinutes = parseInt(
   localStorage.getItem("setting_idle_minutes") || "45",
