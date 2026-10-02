@@ -2,7 +2,12 @@
 // 1. 全域 State 與 DOM 元素選取
 // ==========================================
 
-let tasks = []; // 存放所有主任務與子任務資料
+// all.js 頂部或資料宣告處
+let tasks = [];
+
+// 關鍵修復：將 tasks 物件的存取權交給 window
+window.tasks = tasks;
+
 let selectedMainTaskId = null; // 當前選擇的主任務 ID
 let selectedSubtaskId = null; // 當前選擇的子任務 ID
 
@@ -11,14 +16,17 @@ const STATUS_MAP = {
   not_started: {
     key: "statusNotStarted",
     class: "bg-secondary-subtle text-secondary",
+    defaultText: "未開始",
   },
   in_progress: {
     key: "statusInProgress",
     class: "bg-primary-subtle text-primary",
+    defaultText: "進行中",
   },
   completed: {
     key: "statusCompleted",
     class: "bg-success-subtle text-success",
+    defaultText: "已完成",
   },
 };
 
@@ -189,22 +197,35 @@ function getMainTaskTotalMinutes(task) {
   );
 }
 
-function formatMinutesToReadableText(totalMinutes, lang = currentLang) {
-  // 取得當前語系的字典（若找不到則預設 fallback 到繁體中文）
-  const t = translations[lang] || translations["zh-TW"];
+function formatMinutesToReadableText(totalMinutes) {
+  // 1. 優先從 localStorage 或 window 讀取最新語系設定
+  const lang =
+    window.currentLang || localStorage.getItem("app_lang") || "zh-TW";
 
-  if (totalMinutes === 0) return `0 ${t.unitMinute}`;
+  // 2. 也可以嘗試從字典檔反推（若 getLangDict 有回傳）
+  const langDict =
+    typeof window.getLangDict === "function" ? window.getLangDict() : null;
 
-  const days = Math.floor(totalMinutes / (24 * 60));
-  const hours = Math.floor((totalMinutes % (24 * 60)) / 60);
-  const mins = totalMinutes % 60;
+  const minutes = Math.max(0, parseInt(totalMinutes, 10) || 0);
 
-  let result = "";
-  if (days > 0) result += `${days} ${t.unitDay} `;
-  if (hours > 0) result += `${hours} ${t.unitHour} `;
-  if (mins > 0 || result === "") result += `${mins} ${t.unitMinute}`;
+  if (minutes === 0) {
+    if (lang === "en") return "0m";
+    if (lang === "ja") return "0分";
+    return "0 分鐘";
+  }
 
-  return result.trim();
+  const hours = Math.floor(minutes / 60);
+  const remainMins = minutes % 60;
+
+  if (hours > 0) {
+    if (lang === "en") return `${hours}h ${remainMins}m`;
+    if (lang === "ja") return `${hours}時間 ${remainMins}分`;
+    return `${hours} 小時 ${remainMins} 分鐘`;
+  }
+
+  if (lang === "en") return `${remainMins}m`;
+  if (lang === "ja") return `${remainMins}分`;
+  return `${remainMins} 分鐘`;
 }
 
 function calculateTaskProgress(task) {
@@ -454,13 +475,14 @@ async function addMainTask(title) {
   const cleanTitle = title.trim();
   if (!cleanTitle) return false;
 
-  // 1. 取得多國語系字典檔
+  // 1. 修正：透過 window.getLangDict() 取得當前語言字典
   const langDict =
-    typeof translations !== "undefined" && typeof currentLang !== "undefined"
-      ? translations[currentLang] || translations["zh-TW"]
-      : null;
+    typeof window.getLangDict === "function" ? window.getLangDict() : null;
+  // 確保存取全域最新的 tasks
+  const currentTasks =
+    window.tasks || (typeof tasks !== "undefined" ? tasks : []);
 
-  const isDuplicate = tasks.some((t) => t.title === cleanTitle);
+  const isDuplicate = currentTasks.some((t) => t.title === cleanTitle);
   if (isDuplicate) {
     const dupPrefix =
       langDict?.toastDuplicateTaskPrefix || "新增失敗：已存在名為「";
@@ -470,7 +492,7 @@ async function addMainTask(title) {
   }
 
   const newId = `task-${Date.now()}`;
-  tasks.push({
+  currentTasks.push({
     id: newId,
     title: cleanTitle,
     subtasks: [],
@@ -484,26 +506,31 @@ async function addMainTask(title) {
 
   // 同步寫入 IndexedDB
   if (typeof saveAllTasksToDB === "function") {
-    await saveAllTasksToDB(tasks);
+    await saveAllTasksToDB(currentTasks);
   }
 
   const addSuccessPrefix =
     langDict?.toastAddMainTaskSuccessPrefix || "已成功新增主任務「";
   const addSuccessSuffix = langDict?.toastAddMainTaskSuccessSuffix || "」";
   showToast(`${addSuccessPrefix}${cleanTitle}${addSuccessSuffix}`);
-  renderAll();
+
+  if (typeof window.renderAll === "function") {
+    window.renderAll();
+  } else if (typeof renderAll === "function") {
+    renderAll();
+  }
   return true;
 }
 
 async function updateMainTask(taskId) {
-  const task = tasks.find((t) => t.id === taskId);
+  const currentTasks =
+    window.tasks || (typeof tasks !== "undefined" ? tasks : []);
+  const task = currentTasks.find((t) => t.id === taskId);
   if (!task) return;
 
-  // 1. 取得多國語系字典檔
+  // 1. 修正：透過 window.getLangDict() 取得當前語言字典
   const langDict =
-    typeof translations !== "undefined" && typeof currentLang !== "undefined"
-      ? translations[currentLang] || translations["zh-TW"]
-      : null;
+    typeof window.getLangDict === "function" ? window.getLangDict() : null;
 
   const promptTitle = langDict?.promptEditMainTask || "修改主任務名稱：";
   const newTitle = prompt(promptTitle, task.title);
@@ -512,7 +539,7 @@ async function updateMainTask(taskId) {
   const cleanTitle = newTitle.trim();
   if (!cleanTitle || cleanTitle === task.title) return;
 
-  const isDuplicate = tasks.some(
+  const isDuplicate = currentTasks.some(
     (t) => t.id !== taskId && t.title === cleanTitle,
   );
   if (isDuplicate) {
@@ -527,24 +554,30 @@ async function updateMainTask(taskId) {
 
   // 同步寫入 IndexedDB
   if (typeof saveAllTasksToDB === "function") {
-    await saveAllTasksToDB(tasks);
+    await saveAllTasksToDB(currentTasks);
   }
 
   showToast(langDict?.toastUpdateMainTaskSuccess || "主任務名稱修改成功！");
-  renderAll();
+
+  if (typeof window.renderAll === "function") {
+    window.renderAll();
+  } else if (typeof renderAll === "function") {
+    renderAll();
+  }
 }
 
 async function deleteMainTask(taskId) {
-  const task = tasks.find((t) => t.id === taskId);
+  // 1. 確保存取全域最新的 tasks
+  const currentTasks =
+    window.tasks || (typeof tasks !== "undefined" ? tasks : []);
+  const task = currentTasks.find((t) => t.id === taskId);
   const taskTitle = task ? task.title : "";
 
-  // 1. 取得多國語系字典檔
+  // 2. 修正：透過 window.getLangDict() 取得當前語言字典
   const langDict =
-    typeof translations !== "undefined" && typeof currentLang !== "undefined"
-      ? translations[currentLang] || translations["zh-TW"]
-      : null;
+    typeof window.getLangDict === "function" ? window.getLangDict() : null;
 
-  // 2. 組合 confirm 訊息
+  // 3. 組合 confirm 訊息
   const confirmPrefix =
     langDict?.confirmDeleteMainTaskPrefix || "確定要刪除主任務「";
   const confirmSuffix =
@@ -555,40 +588,48 @@ async function deleteMainTask(taskId) {
   const isConfirmed = confirm(confirmMessage);
   if (!isConfirmed) return;
 
-  tasks = tasks.filter((t) => t.id !== taskId);
+  // 4. 更新任務清單（同步至 window.tasks 與本地變數）
+  const updatedTasks = currentTasks.filter((t) => t.id !== taskId);
+  window.tasks = updatedTasks;
+  if (typeof tasks !== "undefined") tasks = updatedTasks;
 
   if (currentMainTaskId === taskId) {
-    currentMainTaskId = tasks[0]?.id || null;
+    currentMainTaskId = updatedTasks[0]?.id || null;
     currentSubtaskId =
-      tasks[0]?.subtasks.find((s) => s.status !== "completed")?.id ||
-      tasks[0]?.subtasks[0]?.id ||
+      updatedTasks[0]?.subtasks.find((s) => s.status !== "completed")?.id ||
+      updatedTasks[0]?.subtasks[0]?.id ||
       null;
     modalSelectedParentId = currentMainTaskId;
   }
 
   // 同步寫入 IndexedDB
   if (typeof saveAllTasksToDB === "function") {
-    await saveAllTasksToDB(tasks);
+    await saveAllTasksToDB(updatedTasks);
   }
 
   const deleteToastPrefix =
     langDict?.toastDeleteMainTaskPrefix || "已刪除主任務「";
   const deleteToastSuffix = langDict?.toastDeleteMainTaskSuffix || "」";
   showToast(`${deleteToastPrefix}${taskTitle}${deleteToastSuffix}`, true);
-  renderAll();
+
+  if (typeof window.renderAll === "function") {
+    window.renderAll();
+  } else if (typeof renderAll === "function") {
+    renderAll();
+  }
 }
 
 async function addSubtask(parentTaskId, title) {
   const cleanTitle = title.trim();
   if (!cleanTitle) return false;
 
-  // 1. 取得多國語系字典檔
+  // 1. 修正：透過 window.getLangDict() 取得當前語言字典
   const langDict =
-    typeof translations !== "undefined" && typeof currentLang !== "undefined"
-      ? translations[currentLang] || translations["zh-TW"]
-      : null;
+    typeof window.getLangDict === "function" ? window.getLangDict() : null;
+  const currentTasks =
+    window.tasks || (typeof tasks !== "undefined" ? tasks : []);
 
-  const parentTask = tasks.find((t) => t.id === parentTaskId);
+  const parentTask = currentTasks.find((t) => t.id === parentTaskId);
   if (!parentTask) return false;
 
   const isDuplicate = parentTask.subtasks.some((s) => s.title === cleanTitle);
@@ -614,29 +655,36 @@ async function addSubtask(parentTaskId, title) {
 
   // 同步寫入 IndexedDB
   if (typeof saveAllTasksToDB === "function") {
-    await saveAllTasksToDB(tasks);
+    await saveAllTasksToDB(currentTasks);
   }
 
   const addSuccessPrefix =
     langDict?.toastAddSubtaskSuccessPrefix || "已新增子任務「";
   const addSuccessSuffix = langDict?.toastAddSubtaskSuccessSuffix || "」";
   showToast(`${addSuccessPrefix}${cleanTitle}${addSuccessSuffix}`);
-  renderAll();
+
+  if (typeof window.renderAll === "function") {
+    window.renderAll();
+  } else if (typeof renderAll === "function") {
+    renderAll();
+  }
   return true;
 }
 
 async function updateSubtask(parentTaskId, subtaskId) {
-  const parentTask = tasks.find((t) => t.id === parentTaskId);
+  // 1. 確保存取全域最新的 tasks
+  const currentTasks =
+    window.tasks || (typeof tasks !== "undefined" ? tasks : []);
+
+  const parentTask = currentTasks.find((t) => t.id === parentTaskId);
   if (!parentTask) return;
 
   const subtask = parentTask.subtasks.find((s) => s.id === subtaskId);
   if (!subtask) return;
 
-  // 1. 取得多國語系字典檔
+  // 2. 修正：透過 window.getLangDict() 取得當前語言字典
   const langDict =
-    typeof translations !== "undefined" && typeof currentLang !== "undefined"
-      ? translations[currentLang] || translations["zh-TW"]
-      : null;
+    typeof window.getLangDict === "function" ? window.getLangDict() : null;
 
   const promptTitle = langDict?.promptEditSubtask || "修改子任務名稱：";
   const newTitle = prompt(promptTitle, subtask.title);
@@ -664,11 +712,16 @@ async function updateSubtask(parentTaskId, subtaskId) {
 
   // 同步寫入 IndexedDB
   if (typeof saveAllTasksToDB === "function") {
-    await saveAllTasksToDB(tasks);
+    await saveAllTasksToDB(currentTasks);
   }
 
   showToast(langDict?.toastUpdateSubtaskSuccess || "子任務名稱修改成功！");
-  renderAll();
+
+  if (typeof window.renderAll === "function") {
+    window.renderAll();
+  } else if (typeof renderAll === "function") {
+    renderAll();
+  }
 }
 
 async function changeSubtaskStatus(parentTaskId, subtaskId, newStatus) {
@@ -715,17 +768,19 @@ async function changeSubtaskStatus(parentTaskId, subtaskId, newStatus) {
 }
 
 async function deleteSubtask(parentTaskId, subtaskId) {
-  const parentTask = tasks.find((t) => t.id === parentTaskId);
+  // 1. 確保存取全域最新的 tasks
+  const currentTasks =
+    window.tasks || (typeof tasks !== "undefined" ? tasks : []);
+
+  const parentTask = currentTasks.find((t) => t.id === parentTaskId);
   if (!parentTask) return;
 
   const subtask = parentTask.subtasks.find((s) => s.id === subtaskId);
   const subTitle = subtask ? subtask.title : "";
 
-  // 1. 取得多國語系字典檔
+  // 2. 修正：透過 window.getLangDict() 取得當前語言字典
   const langDict =
-    typeof translations !== "undefined" && typeof currentLang !== "undefined"
-      ? translations[currentLang] || translations["zh-TW"]
-      : null;
+    typeof window.getLangDict === "function" ? window.getLangDict() : null;
 
   const confirmPrefix =
     langDict?.confirmDeleteSubtaskPrefix || "確定要刪除子任務「";
@@ -737,34 +792,44 @@ async function deleteSubtask(parentTaskId, subtaskId) {
 
   parentTask.subtasks = parentTask.subtasks.filter((s) => s.id !== subtaskId);
 
-  if (currentSubtaskId === subtaskId) {
+  if (
+    typeof currentSubtaskId !== "undefined" &&
+    currentSubtaskId === subtaskId
+  ) {
     const nextSub = parentTask.subtasks.find((s) => s.status !== "completed");
     currentSubtaskId = nextSub ? nextSub.id : null;
   }
 
   // 同步寫入 IndexedDB
   if (typeof saveAllTasksToDB === "function") {
-    await saveAllTasksToDB(tasks);
+    await saveAllTasksToDB(currentTasks);
   }
 
   const deletePrefix = langDict?.toastDeleteSubtaskPrefix || "已刪除子任務「";
   const deleteSuffix = langDict?.toastDeleteSubtaskSuffix || "」";
   showToast(`${deletePrefix}${subTitle}${deleteSuffix}`, true);
-  renderAll();
+
+  if (typeof window.renderAll === "function") {
+    window.renderAll();
+  } else if (typeof renderAll === "function") {
+    renderAll();
+  }
 }
 
 async function editRecordNote(taskId, subtaskId, recordId) {
-  const task = tasks.find((t) => t.id === taskId);
+  // 1. 確保存取全域最新的 tasks
+  const currentTasks =
+    window.tasks || (typeof tasks !== "undefined" ? tasks : []);
+
+  const task = currentTasks.find((t) => t.id === taskId);
   const sub = task?.subtasks.find((s) => s.id === subtaskId);
   const record = sub?.records.find((r) => r.id === recordId);
 
   if (!record) return;
 
-  // 1. 取得多國語系字典檔
+  // 2. 修正：透過 window.getLangDict() 取得當前語言字典
   const langDict =
-    typeof translations !== "undefined" && typeof currentLang !== "undefined"
-      ? translations[currentLang] || translations["zh-TW"]
-      : null;
+    typeof window.getLangDict === "function" ? window.getLangDict() : null;
 
   const promptTitle = langDict?.promptEditNote || "修改備註內容：";
   const newNote = prompt(promptTitle, record.note || "");
@@ -774,24 +839,31 @@ async function editRecordNote(taskId, subtaskId, recordId) {
 
   // 同步寫入 IndexedDB
   if (typeof saveAllTasksToDB === "function") {
-    await saveAllTasksToDB(tasks);
+    await saveAllTasksToDB(currentTasks);
   }
 
   showToast(langDict?.toastUpdateNoteSuccess || "備註修改成功！");
-  renderAll();
+
+  if (typeof window.renderAll === "function") {
+    window.renderAll();
+  } else if (typeof renderAll === "function") {
+    renderAll();
+  }
 }
 
 async function deleteRecord(taskId, subtaskId, recordId) {
-  const task = tasks.find((t) => t.id === taskId);
+  // 1. 確保存取全域最新的 tasks
+  const currentTasks =
+    window.tasks || (typeof tasks !== "undefined" ? tasks : []);
+
+  const task = currentTasks.find((t) => t.id === taskId);
   const sub = task?.subtasks.find((s) => s.id === subtaskId);
 
   if (!sub || !sub.records) return;
 
-  // 1. 取得多國語系字典檔
+  // 2. 修正：透過 window.getLangDict() 取得當前語言字典
   const langDict =
-    typeof translations !== "undefined" && typeof currentLang !== "undefined"
-      ? translations[currentLang] || translations["zh-TW"]
-      : null;
+    typeof window.getLangDict === "function" ? window.getLangDict() : null;
 
   const confirmMsg =
     langDict?.confirmDeleteRecord ||
@@ -803,11 +875,16 @@ async function deleteRecord(taskId, subtaskId, recordId) {
 
   // 同步寫入 IndexedDB
   if (typeof saveAllTasksToDB === "function") {
-    await saveAllTasksToDB(tasks);
+    await saveAllTasksToDB(currentTasks);
   }
 
   showToast(langDict?.toastDeleteRecordSuccess || "已刪除計時紀錄", true);
-  renderAll();
+
+  if (typeof window.renderAll === "function") {
+    window.renderAll();
+  } else if (typeof renderAll === "function") {
+    renderAll();
+  }
 }
 
 // ==========================================
@@ -869,13 +946,15 @@ function renderCurrentTaskDisplay() {
 }
 
 function renderManageMainTaskList() {
-  // 1. 取得多國語系字典檔
+  // 1. 修正：透過 window.getLangDict() 取得當前語言字典
   const langDict =
-    typeof translations !== "undefined" && typeof currentLang !== "undefined"
-      ? translations[currentLang] || translations["zh-TW"]
-      : null;
+    typeof window.getLangDict === "function" ? window.getLangDict() : null;
 
-  const sortedTasks = tasks.slice().sort((a, b) => {
+  // 確保 tasks 也是抓取全域最新的資料
+  const currentTasks =
+    window.tasks || (typeof tasks !== "undefined" ? tasks : []);
+
+  const sortedTasks = currentTasks.slice().sort((a, b) => {
     const orderA = STATUS_ORDER[getMainTaskStatus(a)] || 2;
     const orderB = STATUS_ORDER[getMainTaskStatus(b)] || 2;
     return orderA - orderB;
@@ -889,22 +968,26 @@ function renderManageMainTaskList() {
       : sortedTasks
           .map((task) => {
             const statusKey = getMainTaskStatus(task);
-            const statusBadge = STATUS_MAP[statusKey] || {};
+            const statusConfig =
+              STATUS_MAP[statusKey] || STATUS_MAP.not_started || {};
 
-            // 狀態 Label 多國語系轉換
-            let statusLabel = langDict?.statusNotStarted || "未開始";
-            if (statusKey === "in_progress") {
-              statusLabel = langDict?.statusInProgress || "進行中";
-            } else if (statusKey === "completed") {
-              statusLabel = langDict?.statusCompleted || "已完成";
-            }
+            // 2. 修正：活用 STATUS_MAP 中的 key 直接向 langDict 查表
+            // 如果 STATUS_MAP 中有設定 key (如 "statusInProgress")，就直接向 langDict 取值
+            const statusLabel =
+              statusConfig.key && langDict?.[statusConfig.key]
+                ? langDict[statusConfig.key]
+                : statusKey === "in_progress"
+                  ? langDict?.statusInProgress || "進行中"
+                  : statusKey === "completed"
+                    ? langDict?.statusCompleted || "已完成"
+                    : langDict?.statusNotStarted || "未開始";
 
             return `
           <li class="p-2 border-bottom">
             <div class="d-flex justify-content-between align-items-center">
               <div>
                 <span class="fw-bold me-2">${task.title}</span>
-                <span class="badge ${statusBadge.class}">${statusLabel}</span>
+                <span class="badge ${statusConfig.class || "bg-secondary"}">${statusLabel}</span>
               </div>
               <div class="d-flex">
                 <button type="button" class="btn btn-outline-secondary rounded-circle me-2 btn-sm" onclick="updateMainTask('${task.id}')">
@@ -1114,22 +1197,26 @@ function renderTaskAccordion() {
   const accordionContainer = document.querySelector("#task-accordionExample");
   if (!accordionContainer) return;
 
-  if (tasks.length === 0) {
-    const langDict =
-      typeof translations !== "undefined" && typeof currentLang !== "undefined"
-        ? translations[currentLang] || translations["zh-TW"]
+  // 1. 統一取得多國語系字典檔 (優先使用全域/模組導出的 getLangDict 函式)
+  const langDict =
+    typeof getLangDict === "function"
+      ? getLangDict()
+      : window.getLangDict
+        ? window.getLangDict()
         : null;
 
+  // 當無主任務時的空狀態渲染
+  if (tasks.length === 0) {
     const emptyText =
       langDict?.noMainTaskAccordionEmpty ||
       "目前尚無主任務，點擊「管理主任務」開始新增吧！";
 
     accordionContainer.innerHTML = `
-    <div class="text-center p-5 text-muted bg-body rounded border">
-      <i class="bi bi-inbox fs-1 d-block mb-2"></i>
-      ${emptyText}
-    </div>
-  `;
+      <div class="text-center p-5 text-muted bg-body rounded border">
+        <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+        ${emptyText}
+      </div>
+    `;
     return;
   }
 
@@ -1140,13 +1227,6 @@ function renderTaskAccordion() {
       const readableTotalTime = formatMinutesToReadableText(totalTaskMinutes);
       const collapseId = `task-collapse-${task.id}`;
       const headingId = `task-heading-${task.id}`;
-
-      // 1. 取得多國語系字典檔（移至頂部，確保後續邏輯皆可安全使用）
-      const langDict =
-        typeof translations !== "undefined" &&
-        typeof currentLang !== "undefined"
-          ? translations[currentLang] || translations["zh-TW"]
-          : null;
 
       const subtasksHTML =
         task.subtasks.length === 0
@@ -1192,7 +1272,7 @@ function renderTaskAccordion() {
 
                 const statusBadgeHTML = `
   <select 
-    class="form-select form-select-sm border-0 ${subBadge.class} rounded-pill me-2 py-0 ps-2 pe-3 fw-bold" 
+    class="form-select form-select-sm border-0 ${subBadge ? subBadge.class : "bg-secondary"} rounded-pill me-2 py-0 ps-2 pe-3 fw-bold" 
     style="width: auto; display: inline-block; cursor: pointer; font-size: 0.75rem; background-size: 8px 8px; background-position: right 0.4rem center;"
     onchange="changeSubtaskStatus('${task.id}', '${sub.id}', this.value)"
   >
@@ -1226,7 +1306,6 @@ function renderTaskAccordion() {
                             data-bs-target="#${recordCollapseId}"
                             aria-expanded="false"
                             aria-controls="${recordCollapseId}"
-                            data-i18n="viewRecords"
                           >
                             ${langDict?.viewRecords || "檢視計時與備註紀錄"}
                           </button>
@@ -1235,7 +1314,7 @@ function renderTaskAccordion() {
                         <div class="collapse me-3 my-2" id="${recordCollapseId}">
                           <div class="card card-body bg-body">
                             <div class="d-flex justify-content-between border-bottom pb-1 mb-2">
-                              <p class="fw-bold mb-0 fs-sm" data-i18n="viewRecords">
+                              <p class="fw-bold mb-0 fs-sm">
                                 ${langDict?.viewRecords || "檢視計時與備註紀錄"}
                               </p>
                               <p class="mb-0 fs-sm text-muted">
@@ -1338,6 +1417,9 @@ function renderTaskAccordion() {
 
   accordionContainer.innerHTML = accordionHTML;
 }
+
+// 關鍵修復：將渲染函式掛載到 window，供 i18n 模組呼叫
+window.renderTaskAccordion = renderTaskAccordion;
 
 function selectMainTask(taskId) {
   currentMainTaskId = taskId;
@@ -1468,6 +1550,9 @@ async function initApp() {
       }
     }
 
+    // 關鍵修復 1：確保同步更新 window 上的 tasks 參照，供 i18n 模組隨時讀取
+    window.tasks = tasks;
+
     currentMainTaskId = tasks[0]?.id || null;
     const currentTask = tasks.find((t) => t.id === currentMainTaskId);
     currentSubtaskId =
@@ -1478,20 +1563,27 @@ async function initApp() {
   } catch (error) {
     console.error("IndexedDB 初始化失敗：", error);
 
-    // 取得多國語系字典檔
+    // 關鍵修復 2：改用全域的 getLangDict() 取得字典檔
     const langDict =
-      typeof translations !== "undefined" && typeof currentLang !== "undefined"
-        ? translations[currentLang] || translations["zh-TW"]
-        : null;
+      typeof getLangDict === "function"
+        ? getLangDict()
+        : window.getLangDict
+          ? window.getLangDict()
+          : null;
 
     showToast(
       langDict?.toastInitDBFailed || "本地資料載入失敗，以暫存模式運作",
       true,
     );
   } finally {
+    // 關鍵修復 3：確保 renderAll 執行時畫面能取得最新 tasks 繪製
     renderAll();
   }
 }
+
+// 暴露 initApp 與 tasks 到全域
+window.tasks = tasks;
+window.initApp = initApp;
 
 // 啟動應用程式
 initApp();
@@ -1509,13 +1601,13 @@ function escapeCSVField(str) {
 }
 
 function exportToCSV() {
-  // 1. 取得多國語系字典檔
+  // 1. 修正：透過 window.getLangDict() 取得當前語言字典
   const langDict =
-    typeof translations !== "undefined" && typeof currentLang !== "undefined"
-      ? translations[currentLang] || translations["zh-TW"]
-      : null;
+    typeof window.getLangDict === "function" ? window.getLangDict() : null;
+  const currentTasks =
+    window.tasks || (typeof tasks !== "undefined" ? tasks : []);
 
-  if (!tasks || tasks.length === 0) {
+  if (!currentTasks || currentTasks.length === 0) {
     showToast(
       langDict?.toastNoDataToExport || "目前尚無任務資料可供匯出！",
       true,
@@ -1534,7 +1626,7 @@ function exportToCSV() {
   ];
   const csvRows = [headers.join(",")];
 
-  tasks.forEach((task) => {
+  currentTasks.forEach((task) => {
     if (!task.subtasks || task.subtasks.length === 0) {
       csvRows.push(
         [
@@ -1620,13 +1712,13 @@ if (btnExportCSV) {
 // ==========================================
 
 function exportDataToJSON() {
-  // 1. 取得多國語系字典檔
+  // 1. 修正：透過 window.getLangDict() 取得當前語言字典
   const langDict =
-    typeof translations !== "undefined" && typeof currentLang !== "undefined"
-      ? translations[currentLang] || translations["zh-TW"]
-      : null;
+    typeof window.getLangDict === "function" ? window.getLangDict() : null;
+  const currentTasks =
+    window.tasks || (typeof tasks !== "undefined" ? tasks : []);
 
-  if (!tasks || tasks.length === 0) {
+  if (!currentTasks || currentTasks.length === 0) {
     showToast(
       langDict?.toastNoDataToBackup || "目前尚無任何任務資料可供備份！",
       true,
@@ -1638,7 +1730,7 @@ function exportDataToJSON() {
     const backupData = {
       version: "1.0.0",
       exportedAt: new Date().toISOString(),
-      data: tasks,
+      data: currentTasks,
     };
 
     const jsonString = JSON.stringify(backupData, null, 2);
@@ -1683,11 +1775,9 @@ function validateImportData(jsonData) {
 function importDataFromJSON(file) {
   if (!file) return;
 
-  // 1. 取得多國語系字典檔
+  // 1. 修正：透過 window.getLangDict() 取得當前語言字典
   const langDict =
-    typeof translations !== "undefined" && typeof currentLang !== "undefined"
-      ? translations[currentLang] || translations["zh-TW"]
-      : null;
+    typeof window.getLangDict === "function" ? window.getLangDict() : null;
 
   const reader = new FileReader();
 
@@ -1716,17 +1806,27 @@ function importDataFromJSON(file) {
 
       if (!confirmImport) return;
 
-      tasks = validatedTasks;
-      selectedMainTaskId = tasks.length > 0 ? tasks[0].id : null;
+      // 3. 更新全域任務資料
+      window.tasks = validatedTasks;
+      if (typeof tasks !== "undefined") tasks = validatedTasks;
+
+      selectedMainTaskId =
+        validatedTasks.length > 0 ? validatedTasks[0].id : null;
       selectedSubtaskId =
-        tasks.length > 0 && tasks[0].subtasks?.length > 0
-          ? tasks[0].subtasks[0].id
+        validatedTasks.length > 0 && validatedTasks[0].subtasks?.length > 0
+          ? validatedTasks[0].subtasks[0].id
           : null;
 
       if (typeof saveAllTasksToDB === "function") {
-        await saveAllTasksToDB(tasks);
+        await saveAllTasksToDB(validatedTasks);
       }
-      renderAll();
+
+      if (typeof window.renderAll === "function") {
+        window.renderAll();
+      } else if (typeof renderAll === "function") {
+        renderAll();
+      }
+
       showToast(langDict?.toastRestoreSuccess || "資料已成功還原！");
     } catch (error) {
       console.error("JSON 解析失敗：", error);
