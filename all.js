@@ -454,9 +454,18 @@ async function addMainTask(title) {
   const cleanTitle = title.trim();
   if (!cleanTitle) return false;
 
+  // 1. 取得多國語系字典檔
+  const langDict =
+    typeof translations !== "undefined" && typeof currentLang !== "undefined"
+      ? translations[currentLang] || translations["zh-TW"]
+      : null;
+
   const isDuplicate = tasks.some((t) => t.title === cleanTitle);
   if (isDuplicate) {
-    showToast(`新增失敗：已存在名為「${cleanTitle}」的主任務`, true);
+    const dupPrefix =
+      langDict?.toastDuplicateTaskPrefix || "新增失敗：已存在名為「";
+    const dupSuffix = langDict?.toastDuplicateTaskSuffix || "」的主任務";
+    showToast(`${dupPrefix}${cleanTitle}${dupSuffix}`, true);
     return false;
   }
 
@@ -478,7 +487,10 @@ async function addMainTask(title) {
     await saveAllTasksToDB(tasks);
   }
 
-  showToast(`已成功新增主任務「${cleanTitle}」`);
+  const addSuccessPrefix =
+    langDict?.toastAddMainTaskSuccessPrefix || "已成功新增主任務「";
+  const addSuccessSuffix = langDict?.toastAddMainTaskSuccessSuffix || "」";
+  showToast(`${addSuccessPrefix}${cleanTitle}${addSuccessSuffix}`);
   renderAll();
   return true;
 }
@@ -487,7 +499,14 @@ async function updateMainTask(taskId) {
   const task = tasks.find((t) => t.id === taskId);
   if (!task) return;
 
-  const newTitle = prompt("修改主任務名稱：", task.title);
+  // 1. 取得多國語系字典檔
+  const langDict =
+    typeof translations !== "undefined" && typeof currentLang !== "undefined"
+      ? translations[currentLang] || translations["zh-TW"]
+      : null;
+
+  const promptTitle = langDict?.promptEditMainTask || "修改主任務名稱：";
+  const newTitle = prompt(promptTitle, task.title);
   if (!newTitle) return;
 
   const cleanTitle = newTitle.trim();
@@ -497,7 +516,10 @@ async function updateMainTask(taskId) {
     (t) => t.id !== taskId && t.title === cleanTitle,
   );
   if (isDuplicate) {
-    showToast(`修改失敗：已存在名為「${cleanTitle}」的主任務`, true);
+    const dupPrefix =
+      langDict?.toastDuplicateTaskPrefix || "修改失敗：已存在名為「";
+    const dupSuffix = langDict?.toastDuplicateTaskSuffix || "」的主任務";
+    showToast(`${dupPrefix}${cleanTitle}${dupSuffix}`, true);
     return;
   }
 
@@ -508,7 +530,7 @@ async function updateMainTask(taskId) {
     await saveAllTasksToDB(tasks);
   }
 
-  showToast("主任務名稱修改成功！");
+  showToast(langDict?.toastUpdateMainTaskSuccess || "主任務名稱修改成功！");
   renderAll();
 }
 
@@ -516,9 +538,21 @@ async function deleteMainTask(taskId) {
   const task = tasks.find((t) => t.id === taskId);
   const taskTitle = task ? task.title : "";
 
-  const isConfirmed = confirm(
-    `確定要刪除主任務「${taskTitle}」嗎？\n（包含其中的所有子任務與計時紀錄，此動作無法復原）`,
-  );
+  // 1. 取得多國語系字典檔
+  const langDict =
+    typeof translations !== "undefined" && typeof currentLang !== "undefined"
+      ? translations[currentLang] || translations["zh-TW"]
+      : null;
+
+  // 2. 組合 confirm 訊息
+  const confirmPrefix =
+    langDict?.confirmDeleteMainTaskPrefix || "確定要刪除主任務「";
+  const confirmSuffix =
+    langDict?.confirmDeleteMainTaskSuffix ||
+    "」嗎？\n（包含其中的所有子任務與計時紀錄，此動作無法復原）";
+  const confirmMessage = `${confirmPrefix}${taskTitle}${confirmSuffix}`;
+
+  const isConfirmed = confirm(confirmMessage);
   if (!isConfirmed) return;
 
   tasks = tasks.filter((t) => t.id !== taskId);
@@ -537,7 +571,10 @@ async function deleteMainTask(taskId) {
     await saveAllTasksToDB(tasks);
   }
 
-  showToast(`已刪除主任務「${taskTitle}」`, true);
+  const deleteToastPrefix =
+    langDict?.toastDeleteMainTaskPrefix || "已刪除主任務「";
+  const deleteToastSuffix = langDict?.toastDeleteMainTaskSuffix || "」";
+  showToast(`${deleteToastPrefix}${taskTitle}${deleteToastSuffix}`, true);
   renderAll();
 }
 
@@ -545,15 +582,21 @@ async function addSubtask(parentTaskId, title) {
   const cleanTitle = title.trim();
   if (!cleanTitle) return false;
 
+  // 1. 取得多國語系字典檔
+  const langDict =
+    typeof translations !== "undefined" && typeof currentLang !== "undefined"
+      ? translations[currentLang] || translations["zh-TW"]
+      : null;
+
   const parentTask = tasks.find((t) => t.id === parentTaskId);
   if (!parentTask) return false;
 
   const isDuplicate = parentTask.subtasks.some((s) => s.title === cleanTitle);
   if (isDuplicate) {
-    showToast(
-      `新增失敗：在「${parentTask.title}」下已有重複的子任務名稱`,
-      true,
-    );
+    const dupPrefix = langDict?.toastDuplicateSubtaskPrefix || "新增失敗：在「";
+    const dupSuffix =
+      langDict?.toastDuplicateSubtaskSuffix || "」下已有重複的子任務名稱";
+    showToast(`${dupPrefix}${parentTask.title}${dupSuffix}`, true);
     return false;
   }
 
@@ -574,7 +617,10 @@ async function addSubtask(parentTaskId, title) {
     await saveAllTasksToDB(tasks);
   }
 
-  showToast(`已新增子任務「${cleanTitle}」`);
+  const addSuccessPrefix =
+    langDict?.toastAddSubtaskSuccessPrefix || "已新增子任務「";
+  const addSuccessSuffix = langDict?.toastAddSubtaskSuccessSuffix || "」";
+  showToast(`${addSuccessPrefix}${cleanTitle}${addSuccessSuffix}`);
   renderAll();
   return true;
 }
@@ -586,12 +632,19 @@ async function updateSubtask(parentTaskId, subtaskId) {
   const subtask = parentTask.subtasks.find((s) => s.id === subtaskId);
   if (!subtask) return;
 
-  const newTitle = prompt("修改子任務名稱：", subtask.title);
+  // 1. 取得多國語系字典檔
+  const langDict =
+    typeof translations !== "undefined" && typeof currentLang !== "undefined"
+      ? translations[currentLang] || translations["zh-TW"]
+      : null;
+
+  const promptTitle = langDict?.promptEditSubtask || "修改子任務名稱：";
+  const newTitle = prompt(promptTitle, subtask.title);
   if (!newTitle) return;
 
   const cleanTitle = newTitle.trim();
   if (!cleanTitle) {
-    showToast("子任務名稱不能為空！", true);
+    showToast(langDict?.toastSubtaskTitleEmpty || "子任務名稱不能為空！", true);
     return;
   }
 
@@ -599,7 +652,11 @@ async function updateSubtask(parentTaskId, subtaskId) {
     (s) => s.id !== subtaskId && s.title === cleanTitle,
   );
   if (isDuplicate) {
-    showToast(`修改失敗：已有相同的子任務「${cleanTitle}」`, true);
+    const dupEditPrefix =
+      langDict?.toastDuplicateSubtaskEditPrefix ||
+      "修改失敗：已有相同的子任務「";
+    const dupEditSuffix = langDict?.toastDuplicateSubtaskEditSuffix || "」";
+    showToast(`${dupEditPrefix}${cleanTitle}${dupEditSuffix}`, true);
     return;
   }
 
@@ -610,7 +667,7 @@ async function updateSubtask(parentTaskId, subtaskId) {
     await saveAllTasksToDB(tasks);
   }
 
-  showToast("子任務名稱修改成功！");
+  showToast(langDict?.toastUpdateSubtaskSuccess || "子任務名稱修改成功！");
   renderAll();
 }
 
@@ -635,8 +692,25 @@ async function changeSubtaskStatus(parentTaskId, subtaskId, newStatus) {
     await saveAllTasksToDB(tasks);
   }
 
-  const statusLabel = STATUS_MAP[sub.status]?.label || sub.status;
-  showToast(`「${sub.title}」狀態已更新為：${statusLabel}`);
+  // 1. 取得多國語系字典檔
+  const langDict =
+    typeof translations !== "undefined" && typeof currentLang !== "undefined"
+      ? translations[currentLang] || translations["zh-TW"]
+      : null;
+
+  // 狀態 Label 轉換
+  let statusLabel = sub.status;
+  if (sub.status === "not_started") {
+    statusLabel = langDict?.statusNotStarted || "未開始";
+  } else if (sub.status === "in_progress") {
+    statusLabel = langDict?.statusInProgress || "進行中";
+  } else if (sub.status === "completed") {
+    statusLabel = langDict?.statusCompleted || "已完成";
+  }
+
+  const toastPrefix = langDict?.toastSubtaskStatusUpdatedPrefix || "「";
+  const toastMid = langDict?.toastSubtaskStatusUpdatedMid || "」狀態已更新為：";
+  showToast(`${toastPrefix}${sub.title}${toastMid}${statusLabel}`);
   renderAll();
 }
 
@@ -647,9 +721,18 @@ async function deleteSubtask(parentTaskId, subtaskId) {
   const subtask = parentTask.subtasks.find((s) => s.id === subtaskId);
   const subTitle = subtask ? subtask.title : "";
 
-  const isConfirmed = confirm(
-    `確定要刪除子任務「${subTitle}」嗎？\n（包含其所有計時紀錄，此動作無法復原）`,
-  );
+  // 1. 取得多國語系字典檔
+  const langDict =
+    typeof translations !== "undefined" && typeof currentLang !== "undefined"
+      ? translations[currentLang] || translations["zh-TW"]
+      : null;
+
+  const confirmPrefix =
+    langDict?.confirmDeleteSubtaskPrefix || "確定要刪除子任務「";
+  const confirmSuffix =
+    langDict?.confirmDeleteSubtaskSuffix ||
+    "」嗎？\n（包含其所有計時紀錄，此動作無法復原）";
+  const isConfirmed = confirm(`${confirmPrefix}${subTitle}${confirmSuffix}`);
   if (!isConfirmed) return;
 
   parentTask.subtasks = parentTask.subtasks.filter((s) => s.id !== subtaskId);
@@ -664,7 +747,9 @@ async function deleteSubtask(parentTaskId, subtaskId) {
     await saveAllTasksToDB(tasks);
   }
 
-  showToast(`已刪除子任務「${subTitle}」`, true);
+  const deletePrefix = langDict?.toastDeleteSubtaskPrefix || "已刪除子任務「";
+  const deleteSuffix = langDict?.toastDeleteSubtaskSuffix || "」";
+  showToast(`${deletePrefix}${subTitle}${deleteSuffix}`, true);
   renderAll();
 }
 
@@ -675,7 +760,14 @@ async function editRecordNote(taskId, subtaskId, recordId) {
 
   if (!record) return;
 
-  const newNote = prompt("修改備註內容：", record.note || "");
+  // 1. 取得多國語系字典檔
+  const langDict =
+    typeof translations !== "undefined" && typeof currentLang !== "undefined"
+      ? translations[currentLang] || translations["zh-TW"]
+      : null;
+
+  const promptTitle = langDict?.promptEditNote || "修改備註內容：";
+  const newNote = prompt(promptTitle, record.note || "");
   if (newNote === null) return;
 
   record.note = newNote.trim();
@@ -685,7 +777,7 @@ async function editRecordNote(taskId, subtaskId, recordId) {
     await saveAllTasksToDB(tasks);
   }
 
-  showToast("備註修改成功！");
+  showToast(langDict?.toastUpdateNoteSuccess || "備註修改成功！");
   renderAll();
 }
 
@@ -695,7 +787,16 @@ async function deleteRecord(taskId, subtaskId, recordId) {
 
   if (!sub || !sub.records) return;
 
-  const isConfirmed = confirm("確定要刪除這筆計時紀錄嗎？\n（此動作無法復原）");
+  // 1. 取得多國語系字典檔
+  const langDict =
+    typeof translations !== "undefined" && typeof currentLang !== "undefined"
+      ? translations[currentLang] || translations["zh-TW"]
+      : null;
+
+  const confirmMsg =
+    langDict?.confirmDeleteRecord ||
+    "確定要刪除這筆計時紀錄嗎？\n（此動作無法復原）";
+  const isConfirmed = confirm(confirmMsg);
   if (!isConfirmed) return;
 
   sub.records = sub.records.filter((r) => r.id !== recordId);
@@ -705,7 +806,7 @@ async function deleteRecord(taskId, subtaskId, recordId) {
     await saveAllTasksToDB(tasks);
   }
 
-  showToast("已刪除計時紀錄", true);
+  showToast(langDict?.toastDeleteRecordSuccess || "已刪除計時紀錄", true);
   renderAll();
 }
 
@@ -738,6 +839,12 @@ function renderAll() {
 }
 
 function renderCurrentTaskDisplay() {
+  // 1. 取得多國語系字典檔
+  const langDict =
+    typeof translations !== "undefined" && typeof currentLang !== "undefined"
+      ? translations[currentLang] || translations["zh-TW"]
+      : null;
+
   const currentTask = tasks.find((t) => t.id === currentMainTaskId);
   const currentSub = currentTask?.subtasks.find(
     (s) => s.id === currentSubtaskId,
@@ -746,13 +853,13 @@ function renderCurrentTaskDisplay() {
   if (currentMainTaskNameEl) {
     currentMainTaskNameEl.textContent = currentTask
       ? currentTask.title
-      : "未選擇主任務";
+      : langDict?.noMainTaskSelected || "未選擇主任務";
   }
 
   if (currentSubtaskNameEl) {
     currentSubtaskNameEl.textContent = currentSub
       ? currentSub.title
-      : "未選擇子任務";
+      : langDict?.noSubtaskSelected || "未選擇子任務";
   }
 
   // 確保畫面即時顯示對應格式的時間
@@ -762,24 +869,42 @@ function renderCurrentTaskDisplay() {
 }
 
 function renderManageMainTaskList() {
+  // 1. 取得多國語系字典檔
+  const langDict =
+    typeof translations !== "undefined" && typeof currentLang !== "undefined"
+      ? translations[currentLang] || translations["zh-TW"]
+      : null;
+
   const sortedTasks = tasks.slice().sort((a, b) => {
     const orderA = STATUS_ORDER[getMainTaskStatus(a)] || 2;
     const orderB = STATUS_ORDER[getMainTaskStatus(b)] || 2;
     return orderA - orderB;
   });
 
+  const emptyText = langDict?.noMainTasksAvailable || "目前尚無主任務";
+
   const listHTML =
     sortedTasks.length === 0
-      ? `<li class="p-3 text-center text-muted fs-sm">目前尚無主任務</li>`
+      ? `<li class="p-3 text-center text-muted fs-sm">${emptyText}</li>`
       : sortedTasks
           .map((task) => {
-            const statusBadge = STATUS_MAP[getMainTaskStatus(task)];
+            const statusKey = getMainTaskStatus(task);
+            const statusBadge = STATUS_MAP[statusKey] || {};
+
+            // 狀態 Label 多國語系轉換
+            let statusLabel = langDict?.statusNotStarted || "未開始";
+            if (statusKey === "in_progress") {
+              statusLabel = langDict?.statusInProgress || "進行中";
+            } else if (statusKey === "completed") {
+              statusLabel = langDict?.statusCompleted || "已完成";
+            }
+
             return `
           <li class="p-2 border-bottom">
             <div class="d-flex justify-content-between align-items-center">
               <div>
                 <span class="fw-bold me-2">${task.title}</span>
-                <span class="badge ${statusBadge.class}">${statusBadge.label || "未開始"}</span>
+                <span class="badge ${statusBadge.class}">${statusLabel}</span>
               </div>
               <div class="d-flex">
                 <button type="button" class="btn btn-outline-secondary rounded-circle me-2 btn-sm" onclick="updateMainTask('${task.id}')">
@@ -802,18 +927,30 @@ function renderManageMainTaskList() {
 function renderMainTaskDropdown() {
   if (!dropdownMainTaskBtn || !dropdownMainTaskMenu) return;
 
+  // 1. 取得多國語系字典檔
+  const langDict =
+    typeof translations !== "undefined" && typeof currentLang !== "undefined"
+      ? translations[currentLang] || translations["zh-TW"]
+      : null;
+
   if (tasks.length === 0) {
     dropdownMainTaskBtn.disabled = true;
-    dropdownMainTaskBtn.innerHTML = `請新增主任務 <i class="bi bi-chevron-down ms-1"></i>`;
-    dropdownMainTaskMenu.innerHTML = `<li><span class="dropdown-item text-muted disabled">尚無主任務</span></li>`;
+    const pleaseAddTaskText = langDict?.pleaseAddMainTask || "請新增主任務";
+    const noMainTaskText = langDict?.noMainTasksAvailable || "尚無主任務";
+
+    dropdownMainTaskBtn.innerHTML = `${pleaseAddTaskText} <i class="bi bi-chevron-down ms-1"></i>`;
+    dropdownMainTaskMenu.innerHTML = `<li><span class="dropdown-item text-muted disabled">${noMainTaskText}</span></li>`;
     return;
   }
 
   dropdownMainTaskBtn.disabled = false;
 
   const currentTask = tasks.find((t) => t.id === currentMainTaskId);
+  const pleaseSelectText = langDict?.pleaseSelectMainTask || "請選擇主任務";
+  const displayTitle = currentTask ? currentTask.title : pleaseSelectText;
+
   dropdownMainTaskBtn.innerHTML = `
-    ${currentTask ? currentTask.title : "請選擇主任務"}
+    ${displayTitle}
     <i class="bi bi-chevron-down ms-1"></i>
   `;
 
@@ -826,8 +963,16 @@ function renderMainTaskDropdown() {
   dropdownMainTaskMenu.innerHTML = sortedTasks
     .map((task) => {
       const taskStatus = getMainTaskStatus(task);
-      const statusBadge = STATUS_MAP[taskStatus];
+      const statusBadge = STATUS_MAP[taskStatus] || {};
       const isCompleted = taskStatus === "completed";
+
+      // 狀態 Label 多國語系轉換
+      let statusLabel = langDict?.statusNotStarted || "未開始";
+      if (taskStatus === "in_progress") {
+        statusLabel = langDict?.statusInProgress || "進行中";
+      } else if (taskStatus === "completed") {
+        statusLabel = langDict?.statusCompleted || "已完成";
+      }
 
       return `
       <li>
@@ -837,7 +982,7 @@ function renderMainTaskDropdown() {
           ${isCompleted ? 'tabindex="-1" aria-disabled="true"' : `onclick="selectMainTask('${task.id}')"`}
         >
           <span>${task.title}</span>
-          <span class="badge ${statusBadge.class} ms-2">${statusBadge.label || "未開始"}</span>
+          <span class="badge ${statusBadge.class} ms-2">${statusLabel}</span>
         </a>
       </li>
     `;
@@ -848,28 +993,44 @@ function renderMainTaskDropdown() {
 function renderSubtaskDropdown() {
   if (!dropdownSubtaskBtn || !dropdownSubtaskMenu) return;
 
+  // 1. 取得多國語系字典檔
+  const langDict =
+    typeof translations !== "undefined" && typeof currentLang !== "undefined"
+      ? translations[currentLang] || translations["zh-TW"]
+      : null;
+
   const currentTask = tasks.find((t) => t.id === currentMainTaskId);
   const subtasks = currentTask ? currentTask.subtasks : [];
 
   if (!currentTask) {
     dropdownSubtaskBtn.disabled = true;
-    dropdownSubtaskBtn.innerHTML = `請先選擇主任務 <i class="bi bi-chevron-down ms-1"></i>`;
-    dropdownSubtaskMenu.innerHTML = `<li><span class="dropdown-item text-muted disabled">請先選擇主任務</span></li>`;
+    const selectMainFirstText =
+      langDict?.pleaseSelectMainTaskFirst || "請先選擇主任務";
+
+    dropdownSubtaskBtn.innerHTML = `${selectMainFirstText} <i class="bi bi-chevron-down ms-1"></i>`;
+    dropdownSubtaskMenu.innerHTML = `<li><span class="dropdown-item text-muted disabled">${selectMainFirstText}</span></li>`;
     return;
   }
 
   if (subtasks.length === 0) {
     dropdownSubtaskBtn.disabled = true;
-    dropdownSubtaskBtn.innerHTML = `請新增子任務 <i class="bi bi-chevron-down ms-1"></i>`;
-    dropdownSubtaskMenu.innerHTML = `<li><span class="dropdown-item text-muted disabled">此主任務尚無子任務</span></li>`;
+    const pleaseAddSubText = langDict?.pleaseAddSubtask || "請新增子任務";
+    const noSubtaskText =
+      langDict?.noSubtasksInMainTask || "此主任務尚無子任務";
+
+    dropdownSubtaskBtn.innerHTML = `${pleaseAddSubText} <i class="bi bi-chevron-down ms-1"></i>`;
+    dropdownSubtaskMenu.innerHTML = `<li><span class="dropdown-item text-muted disabled">${noSubtaskText}</span></li>`;
     return;
   }
 
   dropdownSubtaskBtn.disabled = false;
 
   const currentSub = subtasks.find((s) => s.id === currentSubtaskId);
+  const pleaseSelectSubText = langDict?.pleaseSelectSubtask || "請選擇子任務";
+  const displayTitle = currentSub ? currentSub.title : pleaseSelectSubText;
+
   dropdownSubtaskBtn.innerHTML = `
-    ${currentSub ? currentSub.title : "請選擇子任務"}
+    ${displayTitle}
     <i class="bi bi-chevron-down ms-1"></i>
   `;
 
@@ -881,8 +1042,17 @@ function renderSubtaskDropdown() {
 
   dropdownSubtaskMenu.innerHTML = sortedSubtasks
     .map((sub) => {
-      const badge = STATUS_MAP[sub.status || "not_started"];
-      const isCompleted = sub.status === "completed";
+      const subStatus = sub.status || "not_started";
+      const badge = STATUS_MAP[subStatus] || {};
+      const isCompleted = subStatus === "completed";
+
+      // 狀態 Label 多國語系轉換
+      let statusLabel = langDict?.statusNotStarted || "未開始";
+      if (subStatus === "in_progress") {
+        statusLabel = langDict?.statusInProgress || "進行中";
+      } else if (subStatus === "completed") {
+        statusLabel = langDict?.statusCompleted || "已完成";
+      }
 
       return `
       <li>
@@ -892,7 +1062,7 @@ function renderSubtaskDropdown() {
           ${isCompleted ? 'tabindex="-1" aria-disabled="true"' : `onclick="selectSubtask('${sub.id}')"`}
         >
           <span>${sub.title}</span>
-          <span class="badge ${badge.class} ms-2">${badge.label || "未開始"}</span>
+          <span class="badge ${badge.class} ms-2">${statusLabel}</span>
         </a>
       </li>
     `;
@@ -901,12 +1071,23 @@ function renderSubtaskDropdown() {
 }
 
 function renderModalParentDropdown() {
+  // 1. 取得多國語系字典檔
+  const langDict =
+    typeof translations !== "undefined" && typeof currentLang !== "undefined"
+      ? translations[currentLang] || translations["zh-TW"]
+      : null;
+
   const selectedParent =
     tasks.find((t) => t.id === modalSelectedParentId) || tasks[0];
   if (selectedParent) modalSelectedParentId = selectedParent.id;
 
+  const selectMainTaskText = langDict?.selectMainTask || "選擇主任務";
+  const displayTitle = selectedParent
+    ? selectedParent.title
+    : selectMainTaskText;
+
   const btnText = `
-    ${selectedParent ? selectedParent.title : "選擇主任務"}
+    ${displayTitle}
     <i class="bi bi-chevron-down ms-1"></i>
   `;
 
@@ -929,18 +1110,26 @@ function renderModalParentDropdown() {
   if (listModalSubtaskParentMenu)
     listModalSubtaskParentMenu.innerHTML = menuHTML;
 }
-
 function renderTaskAccordion() {
   const accordionContainer = document.querySelector("#task-accordionExample");
   if (!accordionContainer) return;
 
   if (tasks.length === 0) {
+    const langDict =
+      typeof translations !== "undefined" && typeof currentLang !== "undefined"
+        ? translations[currentLang] || translations["zh-TW"]
+        : null;
+
+    const emptyText =
+      langDict?.noMainTaskAccordionEmpty ||
+      "目前尚無主任務，點擊「管理主任務」開始新增吧！";
+
     accordionContainer.innerHTML = `
-      <div class="text-center p-5 text-muted bg-body rounded border">
-        <i class="bi bi-inbox fs-1 d-block mb-2"></i>
-        目前尚無主任務，點擊「管理主任務」開始新增吧！
-      </div>
-    `;
+    <div class="text-center p-5 text-muted bg-body rounded border">
+      <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+      ${emptyText}
+    </div>
+  `;
     return;
   }
 
@@ -1288,7 +1477,17 @@ async function initApp() {
     modalSelectedParentId = currentMainTaskId;
   } catch (error) {
     console.error("IndexedDB 初始化失敗：", error);
-    showToast("本地資料載入失敗，以暫存模式運作", true);
+
+    // 取得多國語系字典檔
+    const langDict =
+      typeof translations !== "undefined" && typeof currentLang !== "undefined"
+        ? translations[currentLang] || translations["zh-TW"]
+        : null;
+
+    showToast(
+      langDict?.toastInitDBFailed || "本地資料載入失敗，以暫存模式運作",
+      true,
+    );
   } finally {
     renderAll();
   }
@@ -1310,34 +1509,56 @@ function escapeCSVField(str) {
 }
 
 function exportToCSV() {
+  // 1. 取得多國語系字典檔
+  const langDict =
+    typeof translations !== "undefined" && typeof currentLang !== "undefined"
+      ? translations[currentLang] || translations["zh-TW"]
+      : null;
+
   if (!tasks || tasks.length === 0) {
-    showToast("目前尚無任務資料可供匯出！", true);
+    showToast(
+      langDict?.toastNoDataToExport || "目前尚無任務資料可供匯出！",
+      true,
+    );
     return;
   }
 
+  // 2. 表頭多國語系化
   const headers = [
-    "主任務名稱",
-    "子任務名稱",
-    "子任務狀態",
-    "計時時間區間",
-    "統計時間(分鐘)",
-    "備註",
+    langDict?.csvHeaderMainTask || "主任務名稱",
+    langDict?.csvHeaderSubtask || "子任務名稱",
+    langDict?.csvHeaderStatus || "子任務狀態",
+    langDict?.csvHeaderTimeRange || "計時時間區間",
+    langDict?.csvHeaderDuration || "統計時間(分鐘)",
+    langDict?.csvHeaderNote || "備註",
   ];
   const csvRows = [headers.join(",")];
 
   tasks.forEach((task) => {
     if (!task.subtasks || task.subtasks.length === 0) {
       csvRows.push(
-        [escapeCSVField(task.title), "無子任務", "未開始", "-", 0, ""].join(
-          ",",
-        ),
+        [
+          escapeCSVField(task.title),
+          escapeCSVField(langDict?.noSubtaskText || "無子任務"),
+          escapeCSVField(langDict?.statusNotStarted || "未開始"),
+          "-",
+          0,
+          "",
+        ].join(","),
       );
       return;
     }
 
     task.subtasks.forEach((sub) => {
-      const subStatusLabel =
-        STATUS_MAP[sub.status || "not_started"]?.label || "未開始";
+      // 根據狀態 Key 取得相對應的多國語系文字
+      const subStatusKey = sub.status || "not_started";
+      let subStatusLabel = langDict?.statusNotStarted || "未開始";
+
+      if (subStatusKey === "in_progress") {
+        subStatusLabel = langDict?.statusInProgress || "進行中";
+      } else if (subStatusKey === "completed") {
+        subStatusLabel = langDict?.statusCompleted || "已完成";
+      }
 
       if (!sub.records || sub.records.length === 0) {
         csvRows.push(
@@ -1375,15 +1596,18 @@ function exportToCSV() {
   const today = new Date().toISOString().split("T")[0];
   const downloadLink = document.createElement("a");
 
+  const fileNamePrefix =
+    langDict?.csvExportFileNamePrefix || "TaskTimer_Backup";
+
   downloadLink.href = url;
-  downloadLink.setAttribute("download", `TaskTimer_Backup_${today}.csv`);
+  downloadLink.setAttribute("download", `${fileNamePrefix}_${today}.csv`);
   document.body.appendChild(downloadLink);
 
   downloadLink.click();
   document.body.removeChild(downloadLink);
   URL.revokeObjectURL(url);
 
-  showToast("CSV 備份檔案下載成功！");
+  showToast(langDict?.toastExportCSVSuccess || "CSV 備份檔案下載成功！");
 }
 
 const btnExportCSV = document.querySelector("#btn-export-csv");
@@ -1396,8 +1620,17 @@ if (btnExportCSV) {
 // ==========================================
 
 function exportDataToJSON() {
+  // 1. 取得多國語系字典檔
+  const langDict =
+    typeof translations !== "undefined" && typeof currentLang !== "undefined"
+      ? translations[currentLang] || translations["zh-TW"]
+      : null;
+
   if (!tasks || tasks.length === 0) {
-    showToast("目前尚無任何任務資料可供備份！", true);
+    showToast(
+      langDict?.toastNoDataToBackup || "目前尚無任何任務資料可供備份！",
+      true,
+    );
     return;
   }
 
@@ -1415,7 +1648,10 @@ function exportDataToJSON() {
     const today = new Date().toISOString().split("T")[0];
     const downloadLink = document.createElement("a");
     downloadLink.href = downloadUrl;
-    downloadLink.setAttribute("download", `TaskTimer_Backup_${today}.json`);
+
+    const fileNamePrefix =
+      langDict?.jsonExportFileNamePrefix || "TaskTimer_Backup";
+    downloadLink.setAttribute("download", `${fileNamePrefix}_${today}.json`);
 
     document.body.appendChild(downloadLink);
     downloadLink.click();
@@ -1423,10 +1659,10 @@ function exportDataToJSON() {
     document.body.removeChild(downloadLink);
     URL.revokeObjectURL(downloadUrl);
 
-    showToast("JSON 備份檔案已成功下載！");
+    showToast(langDict?.toastExportJSONSuccess || "JSON 備份檔案已成功下載！");
   } catch (error) {
     console.error("JSON 匯出失敗：", error);
-    showToast("匯出失敗，請重試", true);
+    showToast(langDict?.toastExportFailed || "匯出失敗，請重試", true);
   }
 }
 
@@ -1447,6 +1683,12 @@ function validateImportData(jsonData) {
 function importDataFromJSON(file) {
   if (!file) return;
 
+  // 1. 取得多國語系字典檔
+  const langDict =
+    typeof translations !== "undefined" && typeof currentLang !== "undefined"
+      ? translations[currentLang] || translations["zh-TW"]
+      : null;
+
   const reader = new FileReader();
 
   reader.onload = async (event) => {
@@ -1455,13 +1697,22 @@ function importDataFromJSON(file) {
       const validatedTasks = validateImportData(parsedData);
 
       if (!validatedTasks) {
-        showToast("無效的備份檔案格式，請確認是否為正確的 JSON 檔！", true);
+        showToast(
+          langDict?.toastInvalidBackupFormat ||
+            "無效的備份檔案格式，請確認是否為正確的 JSON 檔！",
+          true,
+        );
         return;
       }
 
-      const confirmImport = confirm(
-        `確定要還原 ${validatedTasks.length} 筆主任務資料嗎？\n⚠️ 注意：這將會覆蓋您目前的系統資料！`,
-      );
+      // 2. 組合 confirm 訊息（動態帶入 validatedTasks.length）
+      const confirmPrefix = langDict?.confirmImportPrefix || "確定要還原";
+      const confirmSuffix =
+        langDict?.confirmImportSuffix ||
+        "筆主任務資料嗎？\n⚠️ 注意：這將會覆蓋您目前的系統資料！";
+      const confirmMessage = `${confirmPrefix} ${validatedTasks.length} ${confirmSuffix}`;
+
+      const confirmImport = confirm(confirmMessage);
 
       if (!confirmImport) return;
 
@@ -1476,10 +1727,14 @@ function importDataFromJSON(file) {
         await saveAllTasksToDB(tasks);
       }
       renderAll();
-      showToast("資料已成功還原！");
+      showToast(langDict?.toastRestoreSuccess || "資料已成功還原！");
     } catch (error) {
       console.error("JSON 解析失敗：", error);
-      showToast("無法解析此檔案，請確認檔案格式是否正確！", true);
+      showToast(
+        langDict?.toastParseJSONFailed ||
+          "無法解析此檔案，請確認檔案格式是否正確！",
+        true,
+      );
     }
   };
 
