@@ -94,6 +94,7 @@ export default {
 
   startTimer: "開始計時",
   pauseTimer: "暫停",
+  continueTimer: "繼續",
   stopTimer: "結束",
 
   note: "備註",
@@ -119,6 +120,7 @@ export default {
 
   discardRecord: "捨棄此次計時",
   saveRecord: "儲存紀錄",
+  toastSaveSessionSuccess: "已成功儲存本次計時！",
 
   //任務列表
   downloadCSV: "下載CSV檔案",

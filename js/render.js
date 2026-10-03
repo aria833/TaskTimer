@@ -7,7 +7,9 @@ import {
   getMainTaskStatus,
   getSubtaskTotalMinutes,
   getMainTaskTotalMinutes,
+  formatMinutesToReadableText,
   calculateTaskProgress,
+  updateTimerButtonState,
 } from "./utils.js";
 
 export function renderAll() {
@@ -22,8 +24,7 @@ export function renderAll() {
 
 export function renderCurrentTaskDisplay() {
   // 1. 取得多國語系字典檔
-  const langDict =
-    getLangDict();
+  const langDict = getLangDict();
 
   const currentTask = state.tasks.find((t) => t.id === state.currentMainTaskId);
   const currentSub = currentTask?.subtasks.find(
@@ -50,8 +51,7 @@ export function renderCurrentTaskDisplay() {
 
 export function renderManageMainTaskList() {
   // 1. 修正：透過 window.getLangDict() 取得當前語言字典
-  const langDict =
-    getLangDict();
+  const langDict = getLangDict();
 
   // 確保 state.tasks 也是抓取全域最新的資料
   const currentTasks =
@@ -115,8 +115,7 @@ export function renderMainTaskDropdown() {
   if (!dom.dropdownMainTaskBtn || !dom.dropdownMainTaskMenu) return;
 
   // 1. 取得多國語系字典檔
-  const langDict =
-    getLangDict();
+  const langDict = getLangDict();
 
   if (state.tasks.length === 0) {
     dom.dropdownMainTaskBtn.disabled = true;
@@ -179,8 +178,7 @@ export function renderSubtaskDropdown() {
   if (!dom.dropdownSubtaskBtn || !dom.dropdownSubtaskMenu) return;
 
   // 1. 取得多國語系字典檔
-  const langDict =
-    getLangDict();
+  const langDict = getLangDict();
 
   const currentTask = state.tasks.find((t) => t.id === state.currentMainTaskId);
   const subtasks = currentTask ? currentTask.subtasks : [];
@@ -255,8 +253,7 @@ export function renderSubtaskDropdown() {
 
 export function renderModalParentDropdown() {
   // 1. 取得多國語系字典檔
-  const langDict =
-    getLangDict();
+  const langDict = getLangDict();
 
   const selectedParent =
     state.tasks.find((t) => t.id === state.modalSelectedParentId) ||
@@ -299,8 +296,7 @@ export function renderTaskAccordion() {
   if (!accordionContainer) return;
 
   // 1. 統一取得多國語系字典檔 (優先使用全域/模組導出的 getLangDict 函式)
-  const langDict =
-    getLangDict();
+  const langDict = getLangDict();
 
   // 當無主任務時的空狀態渲染
   if (state.tasks.length === 0) {

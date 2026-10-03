@@ -98,6 +98,7 @@ export default {
 
   startTimer: "Start Timer",
   pauseTimer: "Pause",
+  continueTimer: "Resume",
   stopTimer: "End",
 
   note: "Note",
@@ -124,6 +125,7 @@ export default {
 
   discardRecord: "Discard This Session",
   saveRecord: "Save Record",
+  toastSaveSessionSuccess: "The timer record was saved successfully!",
 
   //Task List
   downloadCSV: "Download CSV File",

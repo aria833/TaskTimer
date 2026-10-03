@@ -3,6 +3,7 @@ import { dom } from "./dom.js";
 import { formatTime, getCalculatedSeconds, showToast } from "./utils.js";
 import { renderAll } from "./render.js";
 import { saveAllTasksToDB } from "./db.js";
+import { getLangDict } from "./config/i18n.js";
 
 // 3. 閒置偵測與離線狀態控制
 // ==========================================
@@ -30,17 +31,18 @@ export function initIdleDetector() {
 }
 
 export function onUserIdle() {
-  // 自動暫停計時器，避免彈窗期間時間持續跳動
   if (state.isRunning) togglePauseTimer();
 
+  const langDict = getLangDict();
+
   const confirmStop = confirm(
-    `⏰ 您已經閒置超過 ${state.idleMinutes} 分鐘囉，要幫您結束並儲存當前這筆任務計時嗎？`,
+    langDict?.confirmIdle ||
+      `⏰ 您已經閒置超過 ${state.idleMinutes} 分鐘囉，要幫您結束並儲存當前這筆任務計時嗎？`,
   );
 
   if (confirmStop) {
     stopTimer();
   } else {
-    // 選擇繼續則恢復計時並重新設定倒數
     togglePauseTimer();
     resetIdleTimer();
   }
@@ -94,35 +96,54 @@ export function startTimer() {
   resetIdleTimer();
 }
 
+function updatePauseButton() {
+  if (!dom.btnPause) return;
+
+  const langDict = getLangDict();
+
+  if (state.isRunning) {
+    dom.btnPause.innerHTML = `
+      <i class="bi bi-pause-fill me-1"></i>
+      ${langDict.pauseTimer || "暫停"}
+    `;
+
+    dom.btnPause.classList.remove("btn-primary");
+    dom.btnPause.classList.add("btn-warning");
+  } else {
+    dom.btnPause.innerHTML = `
+      <i class="bi bi-play-fill me-1"></i>
+      ${langDict.continueTimer || "繼續"}
+    `;
+
+    dom.btnPause.classList.remove("btn-warning");
+    dom.btnPause.classList.add("btn-primary");
+  }
+}
+
 export function togglePauseTimer() {
   if (state.isRunning) {
     state.elapsedTime += Date.now() - state.startTime;
-    clearInterval(state.timerInterval);
-    clearTimeout(state.idleTimer); // 暫停時清除閒置倒數
-    state.isRunning = false;
 
-    if (dom.btnPause) {
-      dom.btnPause.innerHTML = '<i class="bi bi-play-fill me-1"></i>繼續';
-      dom.btnPause.classList.replace("btn-warning", "btn-primary");
-    }
+    clearInterval(state.timerInterval);
+    clearTimeout(state.idleTimer);
+
+    state.isRunning = false;
   } else {
     state.isRunning = true;
     state.startTime = Date.now();
 
-    if (dom.btnPause) {
-      dom.btnPause.innerHTML = '<i class="bi bi-pause-fill me-1"></i>暫停';
-      dom.btnPause.classList.replace("btn-primary", "btn-warning");
-    }
-
     state.timerInterval = setInterval(() => {
       const totalSeconds = getCalculatedSeconds();
-      if (dom.timerDisplay)
+
+      if (dom.timerDisplay) {
         dom.timerDisplay.textContent = formatTime(totalSeconds);
+      }
     }, 200);
 
-    // 恢復計時重置閒置倒數
     resetIdleTimer();
   }
+
+  updatePauseButton();
 }
 
 export function stopTimer() {
@@ -198,8 +219,13 @@ export async function saveSession() {
   }
 
   if (dom.saveTimerModal) dom.saveTimerModal.hide();
+
   resetTimerUI();
-  showToast("已成功儲存本次計時！");
+
+  const langDict = getLangDict();
+
+  showToast(langDict.toastSaveSessionSuccess || "已成功儲存本次計時！");
+
   renderAll();
 }
 
@@ -219,8 +245,15 @@ export function resetTimerUI() {
   if (dom.modalNote) dom.modalNote.value = "";
 
   if (dom.btnPause) {
-    dom.btnPause.innerHTML = '<i class="bi bi-pause-fill me-1"></i>暫停';
-    dom.btnPause.classList.replace("btn-primary", "btn-warning");
+    const langDict = getLangDict();
+
+    dom.btnPause.innerHTML = `
+    <i class="bi bi-pause-fill me-1"></i>
+    ${langDict.pauseTimer || "暫停"}
+  `;
+
+    dom.btnPause.classList.remove("btn-primary");
+    dom.btnPause.classList.add("btn-warning");
   }
 }
 

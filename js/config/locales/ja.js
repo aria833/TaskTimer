@@ -99,6 +99,7 @@ export default {
 
   startTimer: "タイマー開始",
   pauseTimer: "一時停止",
+  continueTimer: "再開",
   stopTimer: "終了",
 
   note: "メモ",
@@ -125,6 +126,7 @@ export default {
 
   discardRecord: "今回の記録を破棄",
   saveRecord: "記録を保存",
+  toastSaveSessionSuccess: "タイマー記録を保存しました！",
 
   //タスクリスト
   downloadCSV: "CSVファイルをダウンロード",

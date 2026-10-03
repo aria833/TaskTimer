@@ -69,6 +69,10 @@ export function changeLanguage(lang, onLangChangeCallback) {
 
   // 2. 更新 DOM 靜態文字 (data-i18n 家族)
   document.querySelectorAll("[data-i18n]").forEach((element) => {
+    // languageSelect 自己不能套用 textContent，
+    // 否則會把裡面的 <option> 全部清掉
+    if (element.id === "languageSelect") return;
+
     const key = element.getAttribute("data-i18n");
     if (dict[key]) element.textContent = dict[key];
   });
@@ -98,8 +102,18 @@ export function changeLanguage(lang, onLangChangeCallback) {
 
   // 4. 同步 Dropdown 下拉選單的值
   const langSelect = document.getElementById("languageSelect");
-  if (langSelect && langSelect.value !== lang) {
+
+  if (langSelect) {
     langSelect.value = lang;
+
+    // 更新語系選項文字，但不要破壞 <option>
+    langSelect.querySelectorAll("option[data-i18n]").forEach((option) => {
+      const key = option.getAttribute("data-i18n");
+
+      if (dict[key]) {
+        option.textContent = dict[key];
+      }
+    });
   }
 }
 
