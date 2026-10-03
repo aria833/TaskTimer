@@ -126,6 +126,12 @@ export default {
   discardRecord: "Discard This Session",
   saveRecord: "Save Record",
   toastSaveSessionSuccess: "The timer record was saved successfully!",
+  confirmIdle: (minutes) =>
+    `⏰ You've been idle for more than ${minutes} minutes. Would you like to end and save the current timer session?`,
+  toastOffline:
+    "⚠️ You are currently offline. Your data will be safely stored in local IndexedDB.",
+  toastOnline: "🟢 Internet connection restored",
+  toastDiscardSession: "The current timer session was discarded.",
 
   //Task List
   downloadCSV: "Download CSV File",

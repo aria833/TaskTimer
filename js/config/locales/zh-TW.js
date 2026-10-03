@@ -121,6 +121,11 @@ export default {
   discardRecord: "捨棄此次計時",
   saveRecord: "儲存紀錄",
   toastSaveSessionSuccess: "已成功儲存本次計時！",
+  confirmIdle: (minutes) =>
+    `⏰ 您已經閒置超過 ${minutes} 分鐘囉，要幫您結束並儲存當前這筆任務計時嗎？`,
+  toastOffline: "⚠️ 目前處於離線狀態，資料將會安全存於本地 IndexedDB",
+  toastOnline: "🟢 已恢復網路連線",
+  toastDiscardSession: "已捨棄本次計時",
 
   //任務列表
   downloadCSV: "下載CSV檔案",

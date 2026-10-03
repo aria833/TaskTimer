@@ -127,6 +127,12 @@ export default {
   discardRecord: "今回の記録を破棄",
   saveRecord: "記録を保存",
   toastSaveSessionSuccess: "タイマー記録を保存しました！",
+  confirmIdle: (minutes) =>
+    `⏰ ${minutes}分以上操作がありません。現在のタイマー記録を終了して保存しますか？`,
+  toastOffline:
+    "⚠️ 現在オフラインです。データはローカルの IndexedDB に安全に保存されます。",
+  toastOnline: "🟢 インターネット接続が復旧しました",
+  toastDiscardSession: "今回のタイマー記録を破棄しました。",
 
   //タスクリスト
   downloadCSV: "CSVファイルをダウンロード",

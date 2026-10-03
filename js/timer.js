@@ -36,8 +36,9 @@ export function onUserIdle() {
   const langDict = getLangDict();
 
   const confirmStop = confirm(
-    langDict?.confirmIdle ||
-      `⏰ 您已經閒置超過 ${state.idleMinutes} 分鐘囉，要幫您結束並儲存當前這筆任務計時嗎？`,
+    langDict.confirmIdle
+      ? langDict.confirmIdle(state.idleMinutes)
+      : `⏰ 您已經閒置超過 ${state.idleMinutes} 分鐘囉，要幫您結束並儲存當前這筆任務計時嗎？`,
   );
 
   if (confirmStop) {
@@ -57,11 +58,20 @@ export function initNetworkStatusListener() {
 
 export function updateNetworkStatus(isOnline) {
   if (!isOnline) {
-    showToast("⚠️ 目前處於離線狀態，資料將會安全存於本地 IndexedDB", true);
-    if (dom.offlineBadge) dom.offlineBadge.classList.remove("d-none");
+    showToast(
+      langDict.toastOffline ||
+        "⚠️ 目前處於離線狀態，資料將會安全存於本地 IndexedDB",
+
+      true,
+    );
+
+    if (dom.offlineBadge) {
+      dom.offlineBadge.classList.remove("d-none");
+    }
   } else {
     if (dom.offlineBadge && !dom.offlineBadge.classList.contains("d-none")) {
-      showToast("🟢 已恢復網路連線");
+      showToast(langDict.toastOnline || "🟢 已恢復網路連線");
+
       dom.offlineBadge.classList.add("d-none");
     }
   }
@@ -173,8 +183,16 @@ export function stopTimer() {
 
 export function discardSession() {
   if (dom.saveTimerModal) dom.saveTimerModal.hide();
+
   resetTimerUI();
-  showToast("已捨棄本次計時", true);
+
+  const langDict = getLangDict();
+
+  showToast(
+    langDict.toastDiscardSession || "已捨棄本次計時",
+
+    true,
+  );
 }
 
 export async function saveSession() {
@@ -258,3 +276,8 @@ export function resetTimerUI() {
 }
 
 // ==========================================
+// 測試閒置時用的函式
+// window.testIdleTimer = () => {
+// state.idleMinutes = 0.1; // 6 秒
+// resetIdleTimer();
+//};
