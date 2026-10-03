@@ -57,8 +57,8 @@
   <body
     class="text-bg-light d-flex flex-column min-vh-100 text-body bg-body-tertiary"
   >
-    <header>
-      <nav class="navbar navbar-expand-md bg-body">
+    <header class="sticky-top">
+      <nav class="navbar navbar-expand-md bg-body border-bottom shadow-sm">
         <div class="container">
           <span class="navbar-brand mb-0 h1" data-i18n="appName"
             >TaskTimer</span
@@ -194,8 +194,8 @@
             </div>
           </div>
           <!--內容切換-->
-          <div class="col-md-9">
-            <div class="tab-content" id="nav-tabContent">
+          <div class="col-md-9 d-flex flex-column min-vh-100 p-0">
+            <div class="tab-content flex-grow-1" id="nav-tabContent">
               <!-- 1. 計時器內容 -->
               <div
                 class="tab-pane fade show active"
@@ -1329,14 +1329,71 @@
                 </div>
               </div>
             </div>
+            <footer
+              class="bg-body-tertiary text-body-tertiary text-center py-3 d-none d-md-block mt-auto"
+            >
+              <div
+                class="container d-flex flex-column align-items-center gap-2"
+              >
+                <!-- 上層：開發者標示與意見回饋按鈕 -->
+                <div class="d-flex align-items-center gap-3 small">
+                  <span class="d-inline-flex align-items-center gap-1">
+                    Created by <strong>Aria_Carrot</strong>🥕
+                  </span>
+                  <span>•</span>
+                  <button
+                    type="button"
+                    class="btn btn-link btn-sm text-reset p-0 text-decoration-none"
+                    data-bs-toggle="modal"
+                    data-bs-target="#feedbackModal"
+                  >
+                    💬 意見回饋
+                  </button>
+                  <span>•</span>
+                  <a href="/privacy.html">隱私權政策</a>
+                </div>
+
+                <!-- 下層：版權宣告與版本號（置於正中間） -->
+                <p class="mb-0 small">
+                  Copyright © 2026 <strong>TaskTimer</strong>
+                  <span class="badge text-bg-secondary ms-1">v1.0.0</span>
+                  <span class="ms-1">All Rights Reserved.</span>
+                </p>
+              </div>
+            </footer>
           </div>
         </div>
       </div>
     </main>
 
-    <footer class="bg-body-tertiary text-body-tertiary text-center py-3">
-      <div class="container">
-        <p>Copyright ©2026 TaskTimer All Rights Reserved.</p>
+    <footer
+      class="bg-body-tertiary text-body-tertiary text-center py-3 d-md-none"
+    >
+      <div class="container d-flex flex-column align-items-center gap-2">
+        <!-- 上層：開發者標示與意見回饋按鈕 -->
+        <div class="d-flex align-items-center gap-3 small">
+          <span class="d-inline-flex align-items-center gap-1">
+            Created by <strong>Aria_Carrot</strong>🥕
+          </span>
+          <span>•</span>
+          <button
+            type="button"
+            class="btn btn-link btn-sm text-reset p-0 text-decoration-none"
+            data-bs-toggle="modal"
+            data-bs-target="#feedbackModal"
+          >
+            💬 意見回饋
+          </button>
+          <span>•</span>
+          <a href="/privacy.html">隱私權政策</a>
+        </div>
+
+        <!-- 下層：版權宣告與版本號（置於正中間） -->
+        <p class="mb-0 small">
+          Copyright © 2026 <strong>TaskTimer</strong>
+          <span class="badge text-bg-secondary ms-1">v1.0.0</span>
+          <span class="ms-1">All Rights Reserved.</span>
+        </p>
       </div>
     </footer>
 
