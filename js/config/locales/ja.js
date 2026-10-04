@@ -220,11 +220,11 @@ export default {
     "ファイルを解析できませんでした。形式が正しいか確認してください！",
 
   // footer
-  footerFeedbackBtn: "💬 フィードバック",
-  footerPrivacyBtn: "🔒 プライバシーポリシー",
+  footerFeedbackBtn: "フィードバック",
+  footerPrivacyBtn: "プライバシーポリシー",
 
   // Privacy
-  privacyTitle: "🔒 プライバシーポリシー",
+  privacyTitle: "プライバシーポリシー",
   privacyLastUpdated: "最終更新日：2026年10月3日",
 
   privacySec1Title: "1. ローカルデータストレージ（LocalStorage & IndexedDB）",

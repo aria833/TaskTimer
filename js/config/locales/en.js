@@ -134,7 +134,7 @@ export default {
   toastDiscardSession: "The current timer session was discarded.",
 
   //Task List
-  downloadCSV: "Download CSV File",
+  downloadCSV: "Download CSV",
   statusNotStarted: "Not Started",
   statusInProgress: "In Progress",
   statusCompleted: "Completed",
@@ -220,11 +220,11 @@ export default {
     "Failed to parse file. Please check if the file format is correct!",
 
   // footer
-  footerFeedbackBtn: "💬 Feedback",
-  footerPrivacyBtn: "🔒 Privacy Policy",
+  footerFeedbackBtn: "Feedback",
+  footerPrivacyBtn: "Privacy Policy",
 
   // Privacy
-  privacyTitle: "🔒 Privacy Policy",
+  privacyTitle: "Privacy Policy",
   privacyLastUpdated: "Last Updated: October 3, 2026",
 
   privacySec1Title: "1. Local Data Storage (Local Storage & IndexedDB)",

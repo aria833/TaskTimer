@@ -125,7 +125,7 @@
 
     <main class="flex-grow-1">
       <div class="container">
-        <div class="row py-5">
+        <div class="row py-3 py-md-5">
           <!--選單按鈕-->
           <div class="col-md-3">
             <div
@@ -610,7 +610,7 @@
                 </div>
 
                 <!-- 備份提醒-->
-                <div class="text-muted small pt-1">
+                <div class="text-muted small px-4">
                   <p class="mb-1">
                     <i class="bi bi-info-circle me-1"></i>
                     <span data-i18n="backupReminder"
@@ -751,11 +751,11 @@
                 <div
                   class="bg-body p-4 rounded border shadow-sm mb-2 d-flex justify-content-between"
                 >
-                  <div class="d-flex">
+                  <div class="d-flex me-2 w-100">
                     <!-- 管理主任務按鈕 -->
                     <button
                       type="button"
-                      class="btn btn-primary me-2"
+                      class="btn btn-primary me-2 flex-fill"
                       data-bs-toggle="modal"
                       data-bs-target="#listManageTask"
                     >
@@ -856,7 +856,7 @@
                     <!-- 新增子任務按鈕 -->
                     <button
                       type="button"
-                      class="btn btn-outline-primary"
+                      class="btn btn-outline-primary flex-fill"
                       data-bs-toggle="modal"
                       data-bs-target="#listAddSubTask"
                     >
@@ -1348,7 +1348,7 @@
                     data-bs-target="#feedbackModal"
                     data-i18n="footerFeedbackBtn"
                   >
-                    💬 意見回饋
+                    意見回饋
                   </button>
                   <span>•</span>
                   <a
@@ -1356,6 +1356,7 @@
                     target="_blank"
                     id="privacyLink"
                     data-i18n="footerPrivacyBtn"
+                    class="text-decoration-none"
                     >隱私權政策</a
                   >
                 </div>
@@ -1390,10 +1391,14 @@
             data-bs-target="#feedbackModal"
             data-i18n="footerFeedbackBtn"
           >
-            💬 意見回饋
+            意見回饋
           </button>
           <span>•</span>
-          <a href="/privacy.html" target="_blank" data-i18n="footerPrivacyBtn"
+          <a
+            href="/privacy.html"
+            target="_blank"
+            data-i18n="footerPrivacyBtn"
+            class="text-decoration-none"
             >隱私權政策</a
           >
         </div>

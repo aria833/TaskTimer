@@ -211,12 +211,12 @@ export default {
   toastParseJSONFailed: "無法解析此檔案，請確認檔案格式是否正確！",
 
   // footer
-  footerFeedbackBtn: "💬 意見回饋",
-  footerPrivacyBtn: "🔒 隱私權政策",
+  footerFeedbackBtn: "意見回饋",
+  footerPrivacyBtn: "隱私權政策",
 
   // privacy
   // Modal 標題與日期
-  privacyTitle: "🔒 隱私權政策 (Privacy Policy)",
+  privacyTitle: "隱私權政策 (Privacy Policy)",
   privacyLastUpdated: "最後更新日期：2026 年 10 月 3 日",
 
   // 章節標題
