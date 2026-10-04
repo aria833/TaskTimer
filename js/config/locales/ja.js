@@ -218,4 +218,34 @@ export default {
   toastRestoreSuccess: "データが正常に復元されました！",
   toastParseJSONFailed:
     "ファイルを解析できませんでした。形式が正しいか確認してください！",
+
+  // footer
+  footerFeedbackBtn: "💬 フィードバック",
+  footerPrivacyBtn: "🔒 プライバシーポリシー",
+
+  // Privacy
+  privacyTitle: "🔒 プライバシーポリシー",
+  privacyLastUpdated: "最終更新日：2026年10月3日",
+
+  privacySec1Title: "1. ローカルデータストレージ（LocalStorage & IndexedDB）",
+  privacySec1Text:
+    "TaskTimerはピュアフロントエンドのツールアプリです。タスク記録、タイマー履歴、カテゴリ設定、ダークモードの好みなどのすべてのデータは、お使いのブラウザのローカル（LocalStorage / IndexedDB）にのみ保存されます。個人データをリモートサーバーに送信・保存することはありません。",
+
+  privacySec2Title: "2. フィードバックと連絡先情報",
+  privacySec2Text:
+    "「フィードバック」機能をご利用の際にご入力いただくお名前、メールアドレス、メッセージ内容は、サードパーティサービスEmailJSを通じて開発者のメールボックスへ安全に送信されます。このデータは問題解決や返信の目的にのみ使用され、マーケティングや第三者への販売には一切使用されません。",
+
+  privacySec3Title: "3. アクセス解析とCookie技術",
+  privacySec3Text:
+    "ユーザー体験の向上およびウェブサイトの最適化のため、当サイトでは第三者の解析ツール（Google Analyticsなど）を使用して、匿名での使用データ（訪問ページ、滞在時間、デバイスの種類など）を収集する場合があります。これらのデータには個人を特定できる情報は含まれません。",
+
+  privacySec4Title: "4. 外部リンクとサードパーティサービス",
+  privacySec4Text:
+    "当サイトには、外部サイト（GitHub、サードパーティCDNなど）へのリンクが含まれる場合があります。これらの外部サイトにおけるプライバシーの取り扱いやコンテンツについて、当サイトは責任を負いません。",
+
+  privacySec5Title: "5. 規約の変更権",
+  privacySec5Text:
+    "開発者は、本プライバシーポリシーをいつでも改定する権利を有します。最新版は常にこのページで公開されます。",
+
+  privacyCloseBtn: "閉じる",
 };

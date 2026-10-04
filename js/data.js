@@ -4,6 +4,7 @@ import { showToast } from "./utils.js";
 import { renderAll } from "./render.js";
 import { saveAllTasksToDB } from "./db.js";
 import { getLangDict } from "./config/i18n.js";
+import { getFileTimestamp } from "./utils.js";
 
 // TaskTimer - CSV 資料匯出功能
 // ==========================================
@@ -17,9 +18,8 @@ export function escapeCSVField(str) {
 }
 
 export function exportToCSV() {
-  // 1. 修正：透過 window.getLangDict() 取得當前語言字典
-  const langDict =
-    getLangDict();
+  // 1. 透過 window.getLangDict() 取得當前語言字典
+  const langDict = getLangDict();
   const currentTasks =
     window.tasks || (typeof state.tasks !== "undefined" ? state.tasks : []);
 
@@ -101,14 +101,15 @@ export function exportToCSV() {
   const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
 
-  const today = new Date().toISOString().split("T")[0];
-  const downloadLink = document.createElement("a");
-
+  // 3. 替換為 utils.js 匯出的 timestamp 函式
+  const timestamp = getFileTimestamp();
   const fileNamePrefix =
     langDict?.csvExportFileNamePrefix || "TaskTimer_Backup";
 
+  const downloadLink = document.createElement("a");
   downloadLink.href = url;
-  downloadLink.setAttribute("download", `${fileNamePrefix}_${today}.csv`);
+  // 產出檔名格式範例：TaskTimer_Backup_2026-10-04_1154.csv
+  downloadLink.setAttribute("download", `${fileNamePrefix}_${timestamp}.csv`);
   document.body.appendChild(downloadLink);
 
   downloadLink.click();
@@ -128,9 +129,8 @@ if (btnExportCSV) {
 // ==========================================
 
 export function exportDataToJSON() {
-  // 1. 修正：透過 window.getLangDict() 取得當前語言字典
-  const langDict =
-    getLangDict();
+  // 1. 透過 window.getLangDict() 取得當前語言字典
+  const langDict = getLangDict();
   const currentTasks =
     window.tasks || (typeof state.tasks !== "undefined" ? state.tasks : []);
 
@@ -153,13 +153,19 @@ export function exportDataToJSON() {
     const blob = new Blob([jsonString], { type: "application/json" });
     const downloadUrl = URL.createObjectURL(blob);
 
-    const today = new Date().toISOString().split("T")[0];
+    // 2. 替換為 utils.js 的時間戳記函式
+    const timestamp = getFileTimestamp();
     const downloadLink = document.createElement("a");
     downloadLink.href = downloadUrl;
 
     const fileNamePrefix =
       langDict?.jsonExportFileNamePrefix || "TaskTimer_Backup";
-    downloadLink.setAttribute("download", `${fileNamePrefix}_${today}.json`);
+
+    // 產出檔名格式範例：TaskTimer_Backup_2026-10-04_1156.json
+    downloadLink.setAttribute(
+      "download",
+      `${fileNamePrefix}_${timestamp}.json`,
+    );
 
     document.body.appendChild(downloadLink);
     downloadLink.click();
@@ -192,8 +198,7 @@ export function importDataFromJSON(file) {
   if (!file) return;
 
   // 1. 修正：透過 window.getLangDict() 取得當前語言字典
-  const langDict =
-    getLangDict();
+  const langDict = getLangDict();
 
   const reader = new FileReader();
 

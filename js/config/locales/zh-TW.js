@@ -209,4 +209,36 @@ export default {
     "筆主任務資料嗎？\n⚠️ 注意：這將會覆蓋您目前的系統資料！",
   toastRestoreSuccess: "資料已成功還原！",
   toastParseJSONFailed: "無法解析此檔案，請確認檔案格式是否正確！",
+
+  // footer
+  footerFeedbackBtn: "💬 意見回饋",
+  footerPrivacyBtn: "🔒 隱私權政策",
+
+  // privacy
+  // Modal 標題與日期
+  privacyTitle: "🔒 隱私權政策 (Privacy Policy)",
+  privacyLastUpdated: "最後更新日期：2026 年 10 月 3 日",
+
+  // 章節標題
+  privacySec1Title: "1. 本地資料儲存（Local Storage & IndexedDB）",
+  privacySec1Text:
+    "TaskTimer 為純前端工具型應用程式。您的所有任務紀錄、計時歷史、分類設定與深色模式偏好，皆僅透過瀏覽器儲存在您的裝置本地端（LocalStorage / IndexedDB）。我們不會將您的個人任務資料傳輸或儲存至任何遠端伺服器。",
+
+  privacySec2Title: "2. 意見回饋與聯絡資料",
+  privacySec2Text:
+    "當您使用網站的「意見回饋」功能時，您所填寫的姓名、電子郵件地址與回饋內容，將透過第三方服務 EmailJS 安全地傳送至開發者信箱。此資料僅用於問題排查與回復您的訊息，絕不作為商業行銷或轉售用途。",
+
+  privacySec3Title: "3. 網站分析與 Cookie 技術",
+  privacySec3Text:
+    "為提升使用者體驗與優化網站功能，本網站可能會使用第三方分析工具（如 Google Analytics）收集匿名使用數據（包括訪問頁面、停留時間、裝置類型等）。這些數據不包含任何可識別個人身分的資訊。",
+
+  privacySec4Title: "4. 外部連結與第三方服務",
+  privacySec4Text:
+    "本網站可能包含第三方網站（如 GitHub、第三方 CDN）的連結。對於這些外部網站的隱私做法或內容，本網站不負相關責任。",
+
+  privacySec5Title: "5. 條款修改權",
+  privacySec5Text:
+    "開發者保留隨時修訂本隱私權政策之權利。最新修訂版本將隨時更新於此頁面。",
+
+  privacyCloseBtn: "關閉",
 };

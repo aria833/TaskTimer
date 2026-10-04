@@ -218,4 +218,34 @@ export default {
   toastRestoreSuccess: "Data restored successfully!",
   toastParseJSONFailed:
     "Failed to parse file. Please check if the file format is correct!",
+
+  // footer
+  footerFeedbackBtn: "💬 Feedback",
+  footerPrivacyBtn: "🔒 Privacy Policy",
+
+  // Privacy
+  privacyTitle: "🔒 Privacy Policy",
+  privacyLastUpdated: "Last Updated: October 3, 2026",
+
+  privacySec1Title: "1. Local Data Storage (Local Storage & IndexedDB)",
+  privacySec1Text:
+    "TaskTimer is a pure client-side web application. All your task records, timer history, category settings, and dark mode preferences are stored locally in your browser (LocalStorage / IndexedDB). We do not transmit or store your personal task data on any remote servers.",
+
+  privacySec2Title: "2. Feedback & Contact Information",
+  privacySec2Text:
+    "When you use the 'Feedback' feature, the name, email address, and message you provide are securely transmitted to the developer's mailbox via EmailJS. This information is strictly used for troubleshooting and replying to your inquiry, and will never be used for marketing or resold.",
+
+  privacySec3Title: "3. Website Analytics & Cookie Technology",
+  privacySec3Text:
+    "To improve user experience, this website may use third-party analytics tools (such as Google Analytics) to collect anonymous usage data (e.g., visited pages, time spent, device type). This data contains no personally identifiable information.",
+
+  privacySec4Title: "4. External Links & Third-Party Services",
+  privacySec4Text:
+    "This website may contain links to third-party sites (e.g., GitHub, external CDNs). We are not responsible for the privacy practices or content of these external sites.",
+
+  privacySec5Title: "5. Right to Modify Terms",
+  privacySec5Text:
+    "The developer reserves the right to amend this Privacy Policy at any time. The latest version will always be posted on this page.",
+
+  privacyCloseBtn: "Close",
 };

@@ -1346,11 +1346,18 @@
                     class="btn btn-link btn-sm text-reset p-0 text-decoration-none"
                     data-bs-toggle="modal"
                     data-bs-target="#feedbackModal"
+                    data-i18n="footerFeedbackBtn"
                   >
                     💬 意見回饋
                   </button>
                   <span>•</span>
-                  <a href="/privacy.html" target="_blank">隱私權政策</a>
+                  <a
+                    href="/privacy.html"
+                    target="_blank"
+                    id="privacyLink"
+                    data-i18n="footerPrivacyBtn"
+                    >隱私權政策</a
+                  >
                 </div>
 
                 <!-- 下層：版權宣告與版本號（置於正中間） -->
@@ -1381,11 +1388,14 @@
             class="btn btn-link btn-sm text-reset p-0 text-decoration-none"
             data-bs-toggle="modal"
             data-bs-target="#feedbackModal"
+            data-i18n="footerFeedbackBtn"
           >
             💬 意見回饋
           </button>
           <span>•</span>
-          <a href="/privacy.html" target="_blank">隱私權政策</a>
+          <a href="/privacy.html" target="_blank" data-i18n="footerPrivacyBtn"
+            >隱私權政策</a
+          >
         </div>
 
         <!-- 下層：版權宣告與版本號（置於正中間） -->
@@ -1403,7 +1413,8 @@
       integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
       crossorigin="anonymous"
     ></script>
-
+    <!-- 引入 privacy.js -->
+    <script type="module" src="./js/privacy.js"></script>
     <!--載入 main.js -->
     <script type="module" src="./js/all.js"></script>
   </body>
