@@ -1,5 +1,5 @@
 // ==========================================
-// ：.js
+// 事件監聽器綁定與指派：events.js
 // ==========================================
 
 import { state } from "./state.js";
@@ -20,9 +20,7 @@ import { renderAll } from "./render.js";
 import { getAllTasksFromDB, saveAllTasksToDB } from "./db.js";
 import { getLangDict } from "./config/i18n.js";
 
-// 7. 事件監聽綁定與非同步初始化 (initApp)
-// ==========================================
-
+// 事件監聽綁定與非同步初始化 (initApp)
 if (dom.btnStart) dom.btnStart.addEventListener("click", startTimer);
 if (dom.btnPause) dom.btnPause.addEventListener("click", togglePauseTimer);
 if (dom.btnStop) dom.btnStop.addEventListener("click", stopTimer);
@@ -135,7 +133,6 @@ export async function initApp() {
       }
     }
 
-    // 關鍵修復 1：確保同步更新 window 上的 state.tasks 參照，供 i18n 模組隨時讀取
     window.tasks = state.tasks;
 
     state.currentMainTaskId = state.tasks[0]?.id || null;
@@ -150,7 +147,6 @@ export async function initApp() {
   } catch (error) {
     console.error("IndexedDB 初始化失敗：", error);
 
-    // 取得目前語系字典
     const langDict = getLangDict();
 
     showToast(
@@ -158,13 +154,9 @@ export async function initApp() {
       true,
     );
   } finally {
-    // 關鍵修復 3：確保 renderAll 執行時畫面能取得最新 state.tasks 繪製
     renderAll();
   }
 }
 
-// 暴露 initApp 與 state.tasks 到全域
 window.tasks = state.tasks;
 window.initApp = initApp;
-
-// ==========================================

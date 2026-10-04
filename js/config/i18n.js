@@ -34,9 +34,8 @@ function updateMetaTags(lang) {
   document.documentElement.lang = lang;
 }
 
-// ==========================================
 // 設定 Meta Tag 的 content 屬性
-// ==========================================
+
 function setMetaContent(selector, value) {
   const element = document.querySelector(selector);
   if (element && value) {
@@ -44,16 +43,12 @@ function setMetaContent(selector, value) {
   }
 }
 
-// ==========================================
 // 取得當前語言字典檔
-// ==========================================
 export function getLangDict() {
   return translations[currentLang] || translations["zh-TW"];
 }
 
-// ==========================================
 // 切換語言主函式
-// ==========================================
 export function changeLanguage(lang, onLangChangeCallback) {
   if (!translations[lang]) return;
 
@@ -68,8 +63,6 @@ export function changeLanguage(lang, onLangChangeCallback) {
 
   // 2. 更新 DOM 靜態文字 (data-i18n 家族)
   document.querySelectorAll("[data-i18n]").forEach((element) => {
-    // languageSelect 自己不能套用 textContent，
-    // 否則會把裡面的 <option> 全部清掉
     if (element.id === "languageSelect") return;
 
     const key = element.getAttribute("data-i18n");
@@ -105,7 +98,7 @@ export function changeLanguage(lang, onLangChangeCallback) {
   if (langSelect) {
     langSelect.value = lang;
 
-    // 更新語系選項文字，但不要破壞 <option>
+    // 更新語系選項文字
     langSelect.querySelectorAll("option[data-i18n]").forEach((option) => {
       const key = option.getAttribute("data-i18n");
 
@@ -119,11 +112,8 @@ export function changeLanguage(lang, onLangChangeCallback) {
 window.changeLanguage = changeLanguage;
 window.getLangDict = getLangDict;
 
-// ==========================================
 // 初始化監聽與執行
-// ==========================================
 document.addEventListener("DOMContentLoaded", () => {
-  // 1. 幫 Dropdown 自動綁定 change 事件監聽器
   const langSelect = document.getElementById("languageSelect");
   if (langSelect) {
     langSelect.addEventListener("change", (e) => {
@@ -131,6 +121,5 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 2. 執行首次載入的語系初始化
   changeLanguage(currentLang);
 });

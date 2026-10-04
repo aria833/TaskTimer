@@ -1,5 +1,5 @@
 // ==========================================
-// ：.js
+// 計時器核心倒數與狀態邏輯：timer.js
 // ==========================================
 
 import { state } from "./state.js";
@@ -9,9 +9,7 @@ import { renderAll } from "./render.js";
 import { saveAllTasksToDB } from "./db.js";
 import { getLangDict } from "./config/i18n.js";
 
-// 3. 閒置偵測與離線狀態控制
-// ==========================================
-
+// 閒置偵測與離線狀態控制
 export function resetIdleTimer() {
   clearTimeout(state.idleTimer);
 
@@ -42,7 +40,7 @@ export function onUserIdle() {
   const confirmStop = confirm(
     langDict.confirmIdle
       ? langDict.confirmIdle(state.idleMinutes)
-      : `⏰ 您已經閒置超過 ${state.idleMinutes} 分鐘囉，要幫您結束並儲存當前這筆任務計時嗎？`,
+      : `您已經閒置超過 ${state.idleMinutes} 分鐘囉，要幫您結束並儲存當前這筆任務計時嗎？`,
   );
 
   if (confirmStop) {
@@ -81,10 +79,7 @@ export function updateNetworkStatus(isOnline) {
   }
 }
 
-// ==========================================
-// 4. 計時器核心邏輯
-// ==========================================
-
+// 計時器核心邏輯
 export function startTimer() {
   if (state.isRunning) return;
 
@@ -106,7 +101,6 @@ export function startTimer() {
       dom.timerDisplay.textContent = formatTime(totalSeconds);
   }, 200);
 
-  // 啟動閒置監聽倒數
   resetIdleTimer();
 }
 
@@ -234,7 +228,6 @@ export async function saveSession() {
       state.currentSubtaskId = nextSub ? nextSub.id : null;
     }
 
-    // 同步儲存至 IndexedDB
     if (saveAllTasksToDB) {
       await saveAllTasksToDB(state.tasks);
     }
@@ -278,10 +271,3 @@ export function resetTimerUI() {
     dom.btnPause.classList.add("btn-warning");
   }
 }
-
-// ==========================================
-// 測試閒置時用的函式
-// window.testIdleTimer = () => {
-// state.idleMinutes = 0.1; // 6 秒
-// resetIdleTimer();
-//};

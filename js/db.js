@@ -1,16 +1,14 @@
 // ==========================================
-// TaskTimer - IndexedDB 封裝模組 (db.js)
+// IndexedDB 操作邏輯：db.js
 // ==========================================
 
 const DB_NAME = "TaskTimerDB";
 const DB_VERSION = 1;
 const STORE_NAME = "tasks";
 
-let dbInstance = null; // 暫存開啟後的資料庫連線，避免重複開啟
+let dbInstance = null;
 
-// ==========================================
 // 1. 開啟資料庫 (Open Database)
-// ==========================================
 export function openDB() {
   return new Promise((resolve, reject) => {
     // 如果已經連線過，直接回傳連線，不用重複開啟
@@ -21,7 +19,6 @@ export function openDB() {
 
     const request = indexedDB.open(DB_NAME, DB_VERSION);
 
-    // 首次建立資料庫或升級版本時觸發（用來建表）
     request.onupgradeneeded = (event) => {
       const db = event.target.result;
       if (!db.objectStoreNames.contains(STORE_NAME)) {
@@ -44,9 +41,7 @@ export function openDB() {
   });
 }
 
-// ==========================================
 // 2. 讀取所有任務資料 (Read)
-// ==========================================
 export async function getAllTasksFromDB() {
   const db = await openDB();
   return new Promise((resolve, reject) => {
@@ -59,10 +54,8 @@ export async function getAllTasksFromDB() {
   });
 }
 
-// ==========================================
-// 3. 儲存/更新所有任務資料 (Save / Update)
-// 當畫面的 tasks 陣列有變動時，呼叫此函式將最新資料寫入瀏覽器
-// ==========================================
+/* 3. 儲存/更新所有任務資料 (Save / Update)
+當畫面的 tasks 陣列有變動時，呼叫此函式將最新資料寫入瀏覽器*/
 export async function saveAllTasksToDB(tasksArray) {
   const db = await openDB();
   return new Promise((resolve, reject) => {

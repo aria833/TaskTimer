@@ -1,8 +1,6 @@
 // ==========================================
-// ：.js
+// 應用程式狀態管理 (State)：state.js
 // ==========================================
-
-// TaskTimer - Global State
 
 export const state = {
   tasks: [],
@@ -48,5 +46,4 @@ export const state = {
   },
 };
 
-// 與原本程式相容：i18n 或其他外部程式仍可從 window 取得 tasks。
 window.tasks = state.tasks;

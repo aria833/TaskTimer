@@ -1,14 +1,11 @@
 // ==========================================
-// ：.js
+// 通用工具函式 (Format, Validation 等)：utils.js
 // ==========================================
 
 import { state } from "./state.js";
 import { dom } from "./dom.js";
-import { getLangDict } from "./config/i18n.js";
 
-// 2. 工具函式與時間計算
-// ==========================================
-
+// 工具函式與時間計算
 export function showToast(message, isDanger = false) {
   if (!dom.actionToast || !dom.toastMessage) return;
   dom.toastMessage.textContent = message;

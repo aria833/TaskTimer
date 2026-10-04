@@ -1,8 +1,6 @@
 // ==========================================
-// ：.js
+// DOM 元素選取與快取管理：dom.js
 // ==========================================
-
-// TaskTimer - DOM Elements
 
 export const dom = {
   timerDisplay: document.querySelector("#timer-display"),

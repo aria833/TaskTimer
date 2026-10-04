@@ -1,14 +1,12 @@
 // ==========================================
-// ：.js
+// 切換隱私權政策的語系：privacy.js
 // ==========================================
 
 import { translations } from "./config/locales/index.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-  // 1. 改為讀取 "app_lang"
   const currentLang = localStorage.getItem("app_lang") || "zh-TW";
 
-  // 2. 套用語言
   applyPrivacyLanguage(currentLang);
 });
 

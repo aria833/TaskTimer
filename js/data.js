@@ -1,18 +1,15 @@
 // ==========================================
-// ：.js
+// 資料結構整理：data.js
 // ==========================================
 
 import { state } from "./state.js";
-import { dom } from "./dom.js";
 import { showToast } from "./utils.js";
 import { renderAll } from "./render.js";
 import { saveAllTasksToDB } from "./db.js";
 import { getLangDict } from "./config/i18n.js";
 import { getFileTimestamp } from "./utils.js";
 
-// TaskTimer - CSV 資料匯出功能
-// ==========================================
-
+// CSV 資料匯出功能
 export function escapeCSVField(str) {
   if (typeof str !== "string") return str;
   if (str.includes(",") || str.includes('"') || str.includes("\n")) {
@@ -22,7 +19,6 @@ export function escapeCSVField(str) {
 }
 
 export function exportToCSV() {
-  // 1. 透過 window.getLangDict() 取得當前語言字典
   const langDict = getLangDict();
   const currentTasks =
     window.tasks || (typeof state.tasks !== "undefined" ? state.tasks : []);
@@ -35,7 +31,6 @@ export function exportToCSV() {
     return;
   }
 
-  // 2. 表頭多國語系化
   const headers = [
     langDict?.csvHeaderMainTask || "主任務名稱",
     langDict?.csvHeaderSubtask || "子任務名稱",
@@ -62,7 +57,6 @@ export function exportToCSV() {
     }
 
     task.subtasks.forEach((sub) => {
-      // 根據狀態 Key 取得相對應的多國語系文字
       const subStatusKey = sub.status || "not_started";
       let subStatusLabel = langDict?.statusNotStarted || "未開始";
 
@@ -105,14 +99,12 @@ export function exportToCSV() {
   const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
 
-  // 3. 替換為 utils.js 匯出的 timestamp 函式
   const timestamp = getFileTimestamp();
   const fileNamePrefix =
     langDict?.csvExportFileNamePrefix || "TaskTimer_Backup";
 
   const downloadLink = document.createElement("a");
   downloadLink.href = url;
-  // 產出檔名格式範例：TaskTimer_Backup_2026-10-04_1154.csv
   downloadLink.setAttribute("download", `${fileNamePrefix}_${timestamp}.csv`);
   document.body.appendChild(downloadLink);
 
@@ -128,12 +120,8 @@ if (btnExportCSV) {
   btnExportCSV.addEventListener("click", exportToCSV);
 }
 
-// ==========================================
 // JSON 資料匯入與匯出 (Backup & Restore)
-// ==========================================
-
 export function exportDataToJSON() {
-  // 1. 透過 window.getLangDict() 取得當前語言字典
   const langDict = getLangDict();
   const currentTasks =
     window.tasks || (typeof state.tasks !== "undefined" ? state.tasks : []);
@@ -157,7 +145,6 @@ export function exportDataToJSON() {
     const blob = new Blob([jsonString], { type: "application/json" });
     const downloadUrl = URL.createObjectURL(blob);
 
-    // 2. 替換為 utils.js 的時間戳記函式
     const timestamp = getFileTimestamp();
     const downloadLink = document.createElement("a");
     downloadLink.href = downloadUrl;
@@ -165,7 +152,6 @@ export function exportDataToJSON() {
     const fileNamePrefix =
       langDict?.jsonExportFileNamePrefix || "TaskTimer_Backup";
 
-    // 產出檔名格式範例：TaskTimer_Backup_2026-10-04_1156.json
     downloadLink.setAttribute(
       "download",
       `${fileNamePrefix}_${timestamp}.json`,
@@ -201,7 +187,6 @@ export function validateImportData(jsonData) {
 export function importDataFromJSON(file) {
   if (!file) return;
 
-  // 1. 修正：透過 window.getLangDict() 取得當前語言字典
   const langDict = getLangDict();
 
   const reader = new FileReader();
@@ -220,7 +205,6 @@ export function importDataFromJSON(file) {
         return;
       }
 
-      // 2. 組合 confirm 訊息（動態帶入 validatedTasks.length）
       const confirmPrefix = langDict?.confirmImportPrefix || "確定要還原";
       const confirmSuffix =
         langDict?.confirmImportSuffix ||
@@ -231,7 +215,6 @@ export function importDataFromJSON(file) {
 
       if (!confirmImport) return;
 
-      // 3. 更新全域任務資料
       window.tasks = validatedTasks;
       if (typeof state.tasks !== "undefined") state.tasks = validatedTasks;
       window.tasks = state.tasks;
@@ -267,9 +250,7 @@ export function importDataFromJSON(file) {
   reader.readAsText(file);
 }
 
-// ==========================================
 // 事件監聽綁定 (Event Listeners)
-// ==========================================
 document.addEventListener("DOMContentLoaded", () => {
   const btnExportJSON = document.querySelector("#btn-export-json");
   const btnImportJSON = document.querySelector("#btn-import-json");

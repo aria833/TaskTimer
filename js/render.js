@@ -1,5 +1,5 @@
 // ==========================================
-// ：.js
+// 畫面渲染與 UI 畫面重繪：render.js
 // ==========================================
 
 import { state } from "./state.js";
@@ -27,7 +27,6 @@ export function renderAll() {
 }
 
 export function renderCurrentTaskDisplay() {
-  // 1. 取得多國語系字典檔
   const langDict = getLangDict();
 
   const currentTask = state.tasks.find((t) => t.id === state.currentMainTaskId);
@@ -47,17 +46,14 @@ export function renderCurrentTaskDisplay() {
       : langDict?.noSubtaskSelected || "未選擇子任務";
   }
 
-  // 確保畫面即時顯示對應格式的時間
   if (dom.timerDisplay) {
     dom.timerDisplay.textContent = formatTime(getCalculatedSeconds());
   }
 }
 
 export function renderManageMainTaskList() {
-  // 1. 修正：透過 window.getLangDict() 取得當前語言字典
   const langDict = getLangDict();
 
-  // 確保 state.tasks 也是抓取全域最新的資料
   const currentTasks =
     window.tasks || (typeof state.tasks !== "undefined" ? state.tasks : []);
 
@@ -78,8 +74,6 @@ export function renderManageMainTaskList() {
             const statusConfig =
               state.STATUS_MAP[statusKey] || state.STATUS_MAP.not_started || {};
 
-            // 2. 修正：活用 state.STATUS_MAP 中的 key 直接向 langDict 查表
-            // 如果 state.STATUS_MAP 中有設定 key (如 "statusInProgress")，就直接向 langDict 取值
             const statusLabel =
               statusConfig.key && langDict?.[statusConfig.key]
                 ? langDict[statusConfig.key]
@@ -118,7 +112,6 @@ export function renderManageMainTaskList() {
 export function renderMainTaskDropdown() {
   if (!dom.dropdownMainTaskBtn || !dom.dropdownMainTaskMenu) return;
 
-  // 1. 取得多國語系字典檔
   const langDict = getLangDict();
 
   if (state.tasks.length === 0) {
@@ -154,7 +147,6 @@ export function renderMainTaskDropdown() {
       const statusBadge = state.STATUS_MAP[taskStatus] || {};
       const isCompleted = taskStatus === "completed";
 
-      // 狀態 Label 多國語系轉換
       let statusLabel = langDict?.statusNotStarted || "未開始";
       if (taskStatus === "in_progress") {
         statusLabel = langDict?.statusInProgress || "進行中";
@@ -181,7 +173,6 @@ export function renderMainTaskDropdown() {
 export function renderSubtaskDropdown() {
   if (!dom.dropdownSubtaskBtn || !dom.dropdownSubtaskMenu) return;
 
-  // 1. 取得多國語系字典檔
   const langDict = getLangDict();
 
   const currentTask = state.tasks.find((t) => t.id === state.currentMainTaskId);
@@ -231,7 +222,6 @@ export function renderSubtaskDropdown() {
       const badge = state.STATUS_MAP[subStatus] || {};
       const isCompleted = subStatus === "completed";
 
-      // 狀態 Label 多國語系轉換
       let statusLabel = langDict?.statusNotStarted || "未開始";
       if (subStatus === "in_progress") {
         statusLabel = langDict?.statusInProgress || "進行中";
@@ -256,7 +246,6 @@ export function renderSubtaskDropdown() {
 }
 
 export function renderModalParentDropdown() {
-  // 1. 取得多國語系字典檔
   const langDict = getLangDict();
 
   const selectedParent =
@@ -299,7 +288,6 @@ export function renderTaskAccordion() {
   const accordionContainer = document.querySelector("#task-accordionExample");
   if (!accordionContainer) return;
 
-  // 1. 統一取得多國語系字典檔 (優先使用全域/模組導出的 getLangDict 函式)
   const langDict = getLangDict();
 
   // 當無主任務時的空狀態渲染
@@ -515,7 +503,6 @@ export function renderTaskAccordion() {
   accordionContainer.innerHTML = accordionHTML;
 }
 
-// 關鍵修復：將渲染函式掛載到 window，供 i18n 模組呼叫
 window.renderTaskAccordion = renderTaskAccordion;
 
 export function selectMainTask(taskId) {
@@ -537,8 +524,5 @@ export function selectModalParent(taskId) {
   renderModalParentDropdown();
 }
 
-// ==========================================
-
-// 提供給既有 HTML / i18n 的全域入口
 window.renderAll = renderAll;
 window.renderTaskAccordion = renderTaskAccordion;
