@@ -1,14 +1,18 @@
+// ==========================================
+// 中文版語系字典
+// ==========================================
+
 export default {
   // SEO & Meta 標籤
   seo: {
-    title: "TaskTimer 任務計時器 | 陪你學習成長的計時小夥伴",
+    title: "TaskTimer | 陪你學習成長的計時小夥伴",
     description:
       "一款陪你學習成長的任務計時小夥伴！不用註冊帳號、打開就能用，所有資料都安心留在你的裝置裡。",
     keywords:
       "TaskTimer, 任務計時器, 時間追蹤, 學習工具, Local-First, IndexedDB, 鐵人賽",
-    ogTitle: "TaskTimer | 高效專注的在地優先計時工具",
+    ogTitle: "TaskTimer | 陪你學習成長的計時小夥伴",
     ogDescription:
-      "免註冊，專為學習打造的計時工具夥伴！TaskTimer 幫你紀錄學習歷程，資料 100% 自己掌握更放心。",
+      "免註冊，專為學習打造的計時工具！TaskTimer 幫你紀錄學習歷程，資料 100% 自己掌握更放心。",
     twitterDescription: "免註冊、在地資料儲存的任務計時與管理工具。",
   },
 
@@ -30,7 +34,7 @@ export default {
 
   manageMainTaskModalTitle: "管理主任務",
   addMainTaskTitle: "新增主任務",
-  mainTaskPlaceholder: "主任務名稱（例如：切版練習）",
+  mainTaskPlaceholder: "主任務名稱（例如：學習JavaScript）",
   currentMainTask: "現有主任務列表",
   closeBtn: "關閉",
   modalSubtaskParentBtn: "請新增主任務",
@@ -39,12 +43,12 @@ export default {
   addNewSubTask: "建立子任務",
   belongTo: "歸屬主任務",
   subTaskName: "子任務名稱",
-  subTaskPlaceholder: "例如：修改程式碼",
+  subTaskPlaceholder: "例如：if運用練習",
   cancel: "取消",
   dropdownSubtaskBtn: "請先新增子任務",
   noSubtasks: "尚無子任務，請點擊「新增子任務」",
   toastInitDBFailed: "本地資料載入失敗，以暫存模式運作",
-  toastDuplicateTaskPrefix: "失敗：已存在名為「",
+  toastDuplicateTaskPrefix: "新增失敗：已存在名為「",
   toastDuplicateTaskSuffix: "」的主任務",
   toastAddMainTaskSuccessPrefix: "已成功新增主任務「",
   toastAddMainTaskSuccessSuffix: "」",
@@ -122,7 +126,7 @@ export default {
   saveRecord: "儲存紀錄",
   toastSaveSessionSuccess: "已成功儲存本次計時！",
   confirmIdle: (minutes) =>
-    `⏰ 您已經閒置超過 ${minutes} 分鐘囉，要幫您結束並儲存當前這筆任務計時嗎？`,
+    `您已經閒置超過 ${minutes} 分鐘囉，要幫您結束並儲存當前這筆計時嗎？`,
   toastOffline: "⚠️ 目前處於離線狀態，資料將會安全存於本地 IndexedDB",
   toastOnline: "🟢 已恢復網路連線",
   toastDiscardSession: "已捨棄本次計時",
@@ -145,17 +149,17 @@ export default {
   deleteRecordTitle: "刪除紀錄",
 
   //QA
-  qaTitle1: "TaskTimer 任務計時器的主要特色是什麼？",
+  qaTitle1: "TaskTimer 的主要特色是什麼？",
   qaBody1:
-    "TaskTimer 是一款主打「極簡、專注、在地優先（Local-First）」的任務計時工具。結合了任務清單與時間統計，無須註冊帳號即可隨開即用。",
+    "TaskTimer 不僅是便利的計時工具，更結合了任務拆解的核心觀念。協助你練習將龐大的學習目標細分為小步驟，並且記錄每個小步驟的學習時間和狀態，並可以透過學習進度條，視覺化自己的進步。",
 
-  qaTitle2: "如果計時到一半不小心按到「停止」，資料會遺失嗎？",
+  qaTitle2: "如果計時到一半不小心按到「結束」，資料會遺失嗎？",
   qaBody2:
-    "不用擔心！按下停止時，系統會自動彈出確認視窗，提供「儲存紀錄」與「捨棄計時」兩種選擇。且視窗具備防誤觸機制，不會因為點擊背景或按 Esc 鍵而意外關閉。",
+    "不用擔心！按下結束時，系統會自動彈出確認視窗，提供「儲存紀錄」與「捨棄計時」兩種選擇。且視窗具備防誤觸機制，不會因為點擊背景或按 Esc 鍵而意外關閉。",
 
   qaTitle3: "未滿 1 秒的計時也會被紀錄嗎？",
   qaBody3:
-    "為了避免誤觸產生無效的垃圾資料，系統設定「計時未滿 1 秒」按下停止時會自動重置，不會跳出儲存視窗。",
+    "為了避免誤觸產生無效的資料，系統設定「計時未滿 1 秒」按下結束時會自動重置，不會跳出儲存視窗。",
 
   qaTitle4: "備註欄位是必填的嗎？",
   qaBody4:
@@ -172,7 +176,7 @@ export default {
   qaTitle7: "如何備份與還原我的資料？",
   qaBody71: "點擊「系統資料」頁籤：",
   qaBody72:
-    "匯出：點擊「下載 JSON 備份」，系統會自動產生帶有日期與版本號的備份檔。",
+    "匯出：點擊「下載 JSON 備份」，系統會自動產生帶有日期時間的備份檔。",
   qaBody73:
     "還原：點擊「選擇備份檔」，上傳先前匯出的 JSON 檔案即可完成還原（還原前請留意會覆蓋現有資料）。",
 
@@ -180,9 +184,9 @@ export default {
   qaBody8:
     "如果清理瀏覽器時勾選了「網站資料與 Cookie」或「簡化網站儲存空間」，本地 IndexedDB 資料可能會被清除。強烈建議定期匯出 JSON 備份以保安全。",
 
-  qaTitle9: "TaskTimer 支援哪些語系與主題？",
+  qaTitle9: "如果我想分享使用心得或提供建議，該如何聯繫開發者？",
   qaBody9:
-    "目前支援繁體中文、英文、日文。主題有淺色模式和深色模式，可以自行切換。",
+    "歡迎點擊頁尾的「意見反饋」！無論是功能建議、使用心得，或是遇到的問題，我們都很期待收到你的聲音，希望能成為你學習與成長路上得力的工具夥伴。",
 
   //系統資料
   backupData: "備份資料 (JSON)",
@@ -190,7 +194,7 @@ export default {
   privacyAlertNotice: `<strong>隱私與資料安全提醒：</strong><br />
       本工具採用本地儲存技術，<strong>不會上傳或收集您的任何個人資料</strong>。資料均存放於您的瀏覽器中，若您清除瀏覽器快取、使用無痕模式或更換裝置，資料將會歸零。請務必<strong>不定期手動下載 JSON 備份檔</strong>以確保資料安全。`,
   toastNoDataToExport: "目前尚無任務資料可供匯出！",
-  toastExportCSVSuccess: "CSV 備份檔案下載成功！",
+  toastExportCSVSuccess: "CSV 檔案下載成功！",
   csvHeaderMainTask: "主任務名稱",
   csvHeaderSubtask: "子任務名稱",
   csvHeaderStatus: "子任務狀態",
@@ -198,7 +202,7 @@ export default {
   csvHeaderDuration: "統計時間(分鐘)",
   csvHeaderNote: "備註",
   noSubtaskText: "無子任務",
-  csvExportFileNamePrefix: "TaskTimer_Backup",
+  csvExportFileNamePrefix: "TaskTimer_CSV",
   toastNoDataToBackup: "目前尚無任何任務資料可供備份！",
   toastExportJSONSuccess: "JSON 備份檔案已成功下載！",
   toastExportFailed: "匯出失敗，請重試",
@@ -217,7 +221,7 @@ export default {
   // privacy
   // Modal 標題與日期
   privacyTitle: "隱私權政策 (Privacy Policy)",
-  privacyLastUpdated: "最後更新日期：2026 年 10 月 3 日",
+  privacyLastUpdated: "最後更新日期：2026 年 10 月 4 日",
 
   // 章節標題
   privacySec1Title: "1. 本地資料儲存（Local Storage & IndexedDB）",

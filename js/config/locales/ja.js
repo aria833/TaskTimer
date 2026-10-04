@@ -1,16 +1,20 @@
+// ==========================================
+// 日文版語系字典
+// ==========================================
+
 export default {
   // SEO & Meta タグ
   seo: {
-    title: "TaskTimer | 成長をサポートするローカルファーストタスクタイマー",
+    title: "TaskTimer | 学習と成長に寄り添うタイマー",
     description:
-      "学習と成長に寄り添うタスクタイマー！アカウント登録不要ですぐに使え、すべてのデータは端末内に安全に保存されます。",
+      "学習と成長に寄り添うタスクタイマー！アカウント登録不要で、開くだけですぐに使えます。データはすべてあなたのデバイスに保存されます。",
     keywords:
       "TaskTimer, タスクタイマー, 時間管理, 学習ツール, Local-First, IndexedDB",
-    ogTitle: "TaskTimer | 集中力を高めるローカルファーストタイマー",
+    ogTitle: "TaskTimer | 学習と成長に寄り添うタイマー",
     ogDescription:
-      "登録不要！学習記録をサポートし、データを100%自分で管理できる安心のタイマーツールです。",
+      "登録不要で、学習のために作られたタイマー！TaskTimer が学習の記録を残し、データを100%自分で管理できる安心感を提供します。",
     twitterDescription:
-      "登録不要・ローカルデータ保存のタスクタイマー＆時間管理ツール。",
+      "登録不要・ローカルデータ保存に対応したタスクの時間計測・管理ツール。",
   },
 
   // Header & App Title
@@ -31,7 +35,7 @@ export default {
 
   manageMainTaskModalTitle: "メインタスクを管理",
   addMainTaskTitle: "メインタスクを追加",
-  mainTaskPlaceholder: "メインタスク名（例：レイアウト練習）",
+  mainTaskPlaceholder: "メインタスク名（例：JavaScriptを学ぶ）",
   currentMainTask: "現在のメインタスク一覧",
   closeBtn: "閉じる",
   modalSubtaskParentBtn: "メインタスクを追加してください",
@@ -40,7 +44,7 @@ export default {
   addNewSubTask: "サブタスクを作成",
   belongTo: "メインタスク",
   subTaskName: "サブタスク名",
-  subTaskPlaceholder: "例：コードを修正",
+  subTaskPlaceholder: "例：if文の練習",
   cancel: "キャンセル",
   dropdownSubtaskBtn: "先にサブタスクを追加してください",
 
@@ -58,7 +62,7 @@ export default {
   toastDeleteMainTaskPrefix: "メインタスク「",
   toastDeleteMainTaskSuffix: "」を削除しました",
   toastDuplicateSubtaskPrefix: "失敗：「",
-  toastDuplicateSubtaskSuffix: "」配下に同名のサブタスクが既に存在します",
+  toastDuplicateSubtaskSuffix: "」に同名のサブタスクが既に存在します",
   toastAddSubtaskSuccessPrefix: "サブタスク「",
   toastAddSubtaskSuccessSuffix: "」を追加しました",
   promptEditSubtask: "サブタスク名を編集：",
@@ -70,14 +74,14 @@ export default {
   toastSubtaskStatusUpdatedMid: "」のステータスを更新しました：",
   confirmDeleteSubtaskPrefix: "サブタスク「",
   confirmDeleteSubtaskSuffix:
-    "」を削除してもよろしいですか？\n（含まれるすべての計測記録も削除されます。この操作は元に戻せません）",
+    "」を削除してもよろしいですか？\n（含まれるすべての記録も削除されます。この操作は元に戻せません）",
   toastDeleteSubtaskPrefix: "サブタスク「",
   toastDeleteSubtaskSuffix: "」を削除しました",
   promptEditNote: "メモを編集：",
   toastUpdateNoteSuccess: "メモを更新しました！",
   confirmDeleteRecord:
-    "この計測記録を削除してもよろしいですか？\n（この操作は元に戻せません）",
-  toastDeleteRecordSuccess: "計測記録を削除しました",
+    "この記録を削除してもよろしいですか？\n（この操作は元に戻せません）",
+  toastDeleteRecordSuccess: "記録を削除しました",
   noMainTaskSelected: "メインタスク未選択",
   noSubtaskSelected: "サブタスク未選択",
   noMainTasksAvailable: "メインタスクがありません",
@@ -97,7 +101,7 @@ export default {
   currentMainTaskName: "メインタスクが選択されていません",
   currentSubtaskName: "サブタスクが選択されていません",
 
-  startTimer: "タイマー開始",
+  startTimer: "開始",
   pauseTimer: "一時停止",
   continueTimer: "再開",
   stopTimer: "終了",
@@ -128,9 +132,8 @@ export default {
   saveRecord: "記録を保存",
   toastSaveSessionSuccess: "タイマー記録を保存しました！",
   confirmIdle: (minutes) =>
-    `⏰ ${minutes}分以上操作がありません。現在のタイマー記録を終了して保存しますか？`,
-  toastOffline:
-    "⚠️ 現在オフラインです。データはローカルの IndexedDB に安全に保存されます。",
+    ` ${minutes}分以上操作がありません。現在のタイマー記録を終了して保存しますか？`,
+  toastOffline: "⚠️ 現在オフラインです。データはローカルに安全に保存されます。",
   toastOnline: "🟢 インターネット接続が復旧しました",
   toastDiscardSession: "今回のタイマー記録を破棄しました。",
 
@@ -147,14 +150,14 @@ export default {
   recordCountText: "全 {count} 件の記録",
   labelNote: "メモ",
   noNote: "メモなし",
-  noRecords: "計測履歴はありません",
+  noRecords: "履歴はありません",
   editNoteTitle: "メモを編集",
   deleteRecordTitle: "履歴を削除",
 
   //QA
   qaTitle1: "TaskTimer の主な特徴は何ですか？",
   qaBody1:
-    "TaskTimer は「シンプル・集中・Local-First（ローカルファースト）」を重視したタスクタイマーです。タスク一覧と時間の記録・集計を組み合わせており、アカウント登録なしですぐに利用できます。",
+    "TaskTimerは、便利なタイマーとしてだけでなく、タスクを細かく分けるという考え方も取り入れています。大きな学習目標を小さなステップに分け、それぞれの学習時間や進捗状況を記録する練習にも役立ちます。また、学習進捗バーを通して、自分の成長を視覚的に確認できます。",
 
   qaTitle2:
     "タイマーの途中で誤って「終了」を押した場合、データは失われますか？",
@@ -188,9 +191,10 @@ export default {
   qaBody8:
     "ブラウザのデータを削除する際に「Webサイトのデータと Cookie」や「サイトのストレージを削除」などの項目を選択すると、ローカルに保存されている IndexedDB のデータも削除される可能性があります。データを安全に保管するため、定期的に JSON バックアップをエクスポートすることをおすすめします。",
 
-  qaTitle9: "TaskTimer はどの言語とテーマに対応していますか？",
+  qaTitle9:
+    "利用した感想や意見を伝えたい場合、開発者にはどのように連絡できますか？",
   qaBody9:
-    "現在、繁体字中国語、英語、日本語に対応しています。テーマはライトモードとダークモードに対応しており、自由に切り替えることができます。",
+    "ぜひフッターの「フィードバック」からお寄せください！機能へのご提案や利用した感想、困ったことなど、皆さんの声をお待ちしています。TaskTimerが、学習と成長の道のりに寄り添う頼れるツールになれば嬉しいです。",
   //データ
   backupData: "データをバックアップ（JSON）",
   resumeData: "データを復元（JSON）",
@@ -225,7 +229,7 @@ export default {
 
   // Privacy
   privacyTitle: "プライバシーポリシー",
-  privacyLastUpdated: "最終更新日：2026年10月3日",
+  privacyLastUpdated: "最終更新日：2026年10月4日",
 
   privacySec1Title: "1. ローカルデータストレージ（LocalStorage & IndexedDB）",
   privacySec1Text:

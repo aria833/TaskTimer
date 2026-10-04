@@ -1,16 +1,25 @@
+// ==========================================
+// 英文版語系字典
+// ==========================================
+
 export default {
   // SEO & Meta Tags
   seo: {
-    title: "TaskTimer | Your Local-First Study & Focus Companion",
+    title: "TaskTimer | Your Learning & Growth Companion",
+
     description:
-      "A task timer that grows with your learning journey! No registration needed, open and use instantly with 100% local data privacy.",
+      "A task timer that supports you on your learning journey! No account required—just open and use it. All your data stays safely on your device.",
+
     keywords:
-      "TaskTimer, Task Timer, Time Tracker, Study Tool, Local-First, IndexedDB",
-    ogTitle: "TaskTimer | Efficient & Local-First Focus Timer",
+      "TaskTimer, task timer, time tracking, learning tool, Local-First, IndexedDB",
+
+    ogTitle: "TaskTimer | Your Learning & Growth Companion",
+
     ogDescription:
-      "No registration required! Designed for learning, TaskTimer tracks your process while keeping your data safe on your device.",
+      "No registration required. A timer built for learning! TaskTimer records your learning journey while keeping your data 100% under your control.",
+
     twitterDescription:
-      "No registration required, local-first task timer and focus management tool.",
+      "A task timer and management tool with no registration and local data storage.",
   },
 
   // Header & App Title
@@ -31,7 +40,7 @@ export default {
 
   manageMainTaskModalTitle: "Manage Main Tasks",
   addMainTaskTitle: "Add Main Task",
-  mainTaskPlaceholder: "Main task name (e.g., Layout Practice)",
+  mainTaskPlaceholder: "Main task name (e.g., Learn JavaScript)",
   currentMainTask: "Current Main Tasks",
   closeBtn: "Close",
   modalSubtaskParentBtn: "Please add a main task",
@@ -40,7 +49,7 @@ export default {
   addNewSubTask: "Create Subtask",
   belongTo: "Main Task",
   subTaskName: "Subtask Name",
-  subTaskPlaceholder: "e.g., Modify Code",
+  subTaskPlaceholder: "e.g., Practice using if statements",
   cancel: "Cancel",
   dropdownSubtaskBtn: "Please add a subtask first",
   toastInitDBFailed: "Failed to load local data. Running in temporary mode.",
@@ -96,7 +105,7 @@ export default {
   currentMainTaskName: "No main task selected",
   currentSubtaskName: "No subtask selected",
 
-  startTimer: "Start Timer",
+  startTimer: "Start",
   pauseTimer: "Pause",
   continueTimer: "Resume",
   stopTimer: "End",
@@ -115,7 +124,7 @@ export default {
   showSeconds: "Show Seconds",
 
   backupReminder:
-    "Your data is stored only in your browser. To prevent data loss when clearing your cache, please download a backup regularly from System Data.",
+    "Your data is stored only in your browser. To prevent data loss when clearing your cache, please download a backup regularly from System Data page.",
 
   completeTimer: "Timer Completed!",
   sessionDuration: "Session Duration",
@@ -123,11 +132,11 @@ export default {
   noteArea: "Write down what you completed or any thoughts you have...",
   isCompleted: "Mark this task as completed",
 
-  discardRecord: "Discard This Session",
+  discardRecord: "Discard Record",
   saveRecord: "Save Record",
   toastSaveSessionSuccess: "The timer record was saved successfully!",
   confirmIdle: (minutes) =>
-    `⏰ You've been idle for more than ${minutes} minutes. Would you like to end and save the current timer session?`,
+    `You've been idle for more than ${minutes} minutes. Would you like to end and save the current timer session?`,
   toastOffline:
     "⚠️ You are currently offline. Your data will be safely stored in local IndexedDB.",
   toastOnline: "🟢 Internet connection restored",
@@ -153,16 +162,16 @@ export default {
   //QA
   qaTitle1: "What are the main features of TaskTimer?",
   qaBody1:
-    "TaskTimer is a task timer designed around simplicity, focus, and a Local-First approach. It combines task lists with time tracking, and requires no account registration, so you can start using it right away.",
+    "TaskTimer is more than just a convenient timer. It also incorporates the core concept of task breakdown, helping you practice breaking down large learning goals into smaller steps. You can record the learning time and status of each step, and visualize your progress with a learning progress bar.",
 
   qaTitle2:
-    'Will my data be lost if I accidentally press "Stop" while the timer is running?',
+    'Will my data be lost if I accidentally press "End" while the timer is running?',
   qaBody2:
-    'Don\'t worry! When you press Stop, a confirmation window will automatically appear with two options: "Save Record" and "Discard Session." The window also has safeguards against accidental dismissal, so it cannot be closed accidentally by clicking the background or pressing the Esc key.',
+    'Don\'t worry! When you press End, a confirmation window will automatically appear with two options: "Save Record" and "Discard Record" The window also has safeguards against accidental dismissal, so it cannot be closed accidentally by clicking the background or pressing the Esc key.',
 
   qaTitle3: "Will sessions shorter than 1 second be recorded?",
   qaBody3:
-    "To prevent accidental clicks from creating invalid records, sessions shorter than 1 second are automatically reset when you press Stop. The save confirmation window will not appear.",
+    "To prevent accidental clicks from creating invalid records, sessions shorter than 1 second are automatically reset when you press End. The save confirmation window will not appear.",
 
   qaTitle4: "Is the note field required?",
   qaBody4:
@@ -170,26 +179,27 @@ export default {
 
   qaTitle5: "Will my tasks and time records be uploaded to a server?",
   qaBody5:
-    "No. TaskTimer uses a Local-First architecture. All tasks, notes, and time records are stored locally in your browser using IndexedDB. We do not collect any personal information.",
+    "No. TaskTimer uses a Local-First architecture. All tasks, notes, and time records are stored locally in your browser. We do not collect any personal information.",
 
   qaTitle6: "Will my data still be available if I switch browsers or devices?",
   qaBody6:
     'Because your data is stored locally in a single browser, it will not be automatically synchronized when you switch devices or clear your browser cache. We recommend using the "JSON Backup Export" feature on the "System Data" page to transfer your data between devices.',
 
   qaTitle7: "How do I back up and restore my data?",
-  qaBody71: 'Go to the "System Data" tab:',
+  qaBody71: 'Go to the "System Data" page:',
   qaBody72:
-    'Export: Click "Download JSON Backup". The system will automatically generate a backup file with the date and version number.',
+    'Export: Click "Download JSON Backup". The system will automatically generate a backup file with the date and time.',
   qaBody73:
     'Restore: Click "Choose Backup File" and upload a previously exported JSON file to restore your data. Please note that restoring a backup will overwrite your existing data.',
 
   qaTitle8: "Will clearing my browser history cause my data to be deleted?",
   qaBody8:
-    'If you select options such as "Website Data and Cookies" or "Clear Site Storage" when clearing your browser data, your local IndexedDB data may also be deleted. We strongly recommend exporting a JSON backup regularly to keep your data safe.',
+    'If you select options such as "Website Data and Cookies" or "Clear Site Storage" when clearing your browser data, your local data may also be deleted. We strongly recommend exporting a JSON backup regularly to keep your data safe.',
 
-  qaTitle9: "Which languages and themes does TaskTimer support?",
+  qaTitle9:
+    "How can I contact the developer if I want to share my experience or provide feedback?",
   qaBody9:
-    "TaskTimer currently supports Traditional Chinese, English, and Japanese. It offers both Light Mode and Dark Mode, which you can switch between at any time.",
+    "Feel free to click “Feedback” in the footer! Whether you have a feature suggestion, want to share your experience, or have encountered an issue, we’d love to hear from you. We hope TaskTimer can be a helpful companion on your learning and growth journey.",
 
   //data
   backupData: "Backup Data (JSON)",
@@ -225,7 +235,7 @@ export default {
 
   // Privacy
   privacyTitle: "Privacy Policy",
-  privacyLastUpdated: "Last Updated: October 3, 2026",
+  privacyLastUpdated: "Last Updated: October 4, 2026",
 
   privacySec1Title: "1. Local Data Storage (Local Storage & IndexedDB)",
   privacySec1Text:
