@@ -96,6 +96,22 @@ export default {
   pleaseSelectSubtask: "請選擇子任務",
   selectMainTask: "選擇主任務",
   noMainTaskAccordionEmpty: "目前尚無主任務，點擊「管理主任務」開始新增吧！",
+  btnCancel: "取消",
+  btnConfirm: "確定",
+  // Modal 標題
+  modalEditTaskTitle: "修改主任務名稱",
+  modalEditSubtaskTitle: "修改子任務名稱",
+
+  // 提示與 Toast
+  promptEditMainTask: "修改主任務名稱：",
+  promptEditSubtask: "修改子任務名稱：",
+  toastDuplicateTaskPrefix: "修改失敗：已存在名為「",
+  toastDuplicateTaskSuffix: "」的主任務",
+  toastUpdateMainTaskSuccess: "主任務名稱修改成功！",
+  toastSubtaskTitleEmpty: "子任務名稱不能為空！",
+  toastDuplicateSubtaskEditPrefix: "修改失敗：已有相同的子任務「",
+  toastDuplicateSubtaskEditSuffix: "」",
+  toastUpdateSubtaskSuccess: "子任務名稱修改成功！",
 
   // 計時器區塊
   currentTask: "當前任務",

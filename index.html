@@ -1406,7 +1406,50 @@
         </div>
       </div>
     </main>
-
+    <!-- 修改任務名稱 Modal (主任務與子任務共用) -->
+    <div class="modal fade" id="editTaskModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" data-i18n="modalEditTaskTitle">
+              修改主任務名稱
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <input
+              type="text"
+              id="editTaskInput"
+              class="form-control"
+              placeholder="..."
+            />
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary flex-fill"
+              data-bs-dismiss="modal"
+              data-i18n="btnCancel"
+            >
+              取消
+            </button>
+            <button
+              type="button"
+              id="btnSaveTaskName"
+              class="btn btn-primary flex-fill"
+              data-i18n="btnConfirm"
+            >
+              確定
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
     <footer
       class="bg-body-tertiary text-body-tertiary text-center py-3 d-md-none pt-4"
     >

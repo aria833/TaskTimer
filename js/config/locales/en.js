@@ -106,6 +106,22 @@ export default {
   selectMainTask: "Select Main Task",
   noMainTaskAccordionEmpty:
     'No main tasks yet. Click "Manage Main Tasks" to start adding!',
+  btnCancel: "Cancel",
+  btnConfirm: "Confirm",
+  // Modal Titles
+  modalEditTaskTitle: "Edit Main Task",
+  modalEditSubtaskTitle: "Edit Subtask",
+
+  // Prompts & Toasts
+  promptEditMainTask: "Edit Main Task Name:",
+  promptEditSubtask: "Edit Subtask Name:",
+  toastDuplicateTaskPrefix: "Update failed: Main task '",
+  toastDuplicateTaskSuffix: "' already exists.",
+  toastUpdateMainTaskSuccess: "Main task name updated successfully!",
+  toastSubtaskTitleEmpty: "Subtask name cannot be empty!",
+  toastDuplicateSubtaskEditPrefix: "Update failed: Subtask '",
+  toastDuplicateSubtaskEditSuffix: "' already exists.",
+  toastUpdateSubtaskSuccess: "Subtask name updated successfully!",
 
   // Timer
   currentTask: "Current Task",

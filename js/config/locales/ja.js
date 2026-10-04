@@ -102,6 +102,22 @@ export default {
   selectMainTask: "メインタスクを選択",
   noMainTaskAccordionEmpty:
     "メインタスクがありません。「メインタスク管理」をクリックして追加を開始しましょう！",
+  btnCancel: "キャンセル",
+  btnConfirm: "確認",
+  // モーダルタイトル
+  modalEditTaskTitle: "メインタスク名の編集",
+  modalEditSubtaskTitle: "サブタスク名の編集",
+
+  // プロンプト＆トースト
+  promptEditMainTask: "メインタスク名を変更：",
+  promptEditSubtask: "サブタスク名を変更：",
+  toastDuplicateTaskPrefix: "更新に失敗しました：「",
+  toastDuplicateTaskSuffix: "」というメインタスクは既に使用されています",
+  toastUpdateMainTaskSuccess: "メインタスク名を更新しました！",
+  toastSubtaskTitleEmpty: "サブタスク名は空欄にできません！",
+  toastDuplicateSubtaskEditPrefix: "更新に失敗しました：同じサブタスク「",
+  toastDuplicateSubtaskEditSuffix: "」が既に存在します",
+  toastUpdateSubtaskSuccess: "サブタスク名を更新しました！",
 
   // タイマー
   currentTask: "現在のタスク",

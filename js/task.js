@@ -63,33 +63,60 @@ export async function updateMainTask(taskId) {
 
   const langDict = getLangDict();
 
-  const promptTitle = langDict?.promptEditMainTask || "修改主任務名稱：";
-  const newTitle = prompt(promptTitle, task.title);
-  if (!newTitle) return;
+  const editModalEl = document.getElementById("editTaskModal");
+  const editInput = document.getElementById("editTaskInput");
+  const saveBtn = document.getElementById("btnSaveTaskName");
 
-  const cleanTitle = newTitle.trim();
-  if (!cleanTitle || cleanTitle === task.title) return;
-
-  const isDuplicate = currentTasks.some(
-    (t) => t.id !== taskId && t.title === cleanTitle,
-  );
-  if (isDuplicate) {
-    const dupPrefix =
-      langDict?.toastDuplicateTaskPrefix || "修改失敗：已存在名為「";
-    const dupSuffix = langDict?.toastDuplicateTaskSuffix || "」的主任務";
-    showToast(`${dupPrefix}${cleanTitle}${dupSuffix}`, true);
+  if (!editModalEl || !editInput || !saveBtn) {
+    console.error("找不到 Modal 相關 DOM 元素，請檢查 HTML id 設定");
     return;
   }
 
-  task.title = cleanTitle;
-
-  if (saveAllTasksToDB) {
-    await saveAllTasksToDB(currentTasks);
+  const modalTitle = editModalEl.querySelector(".modal-title");
+  if (modalTitle) {
+    modalTitle.textContent = langDict?.modalEditTaskTitle || "修改主任務名稱";
   }
 
-  showToast(langDict?.toastUpdateMainTaskSuccess || "主任務名稱修改成功！");
+  editInput.value = task.title;
 
-  renderAll();
+  const bsModal = bootstrap.Modal.getOrCreateInstance(editModalEl);
+  bsModal.show();
+
+  setTimeout(() => editInput.focus(), 150);
+
+  saveBtn.onclick = async () => {
+    const newTitle = editInput.value;
+    if (!newTitle) return;
+
+    const cleanTitle = newTitle.trim();
+    if (!cleanTitle || cleanTitle === task.title) {
+      bsModal.hide();
+      return;
+    }
+
+    const isDuplicate = currentTasks.some(
+      (t) => t.id !== taskId && t.title === cleanTitle,
+    );
+
+    if (isDuplicate) {
+      const dupPrefix =
+        langDict?.toastDuplicateTaskPrefix || "修改失敗：已存在名為「";
+      const dupSuffix = langDict?.toastDuplicateTaskSuffix || "」的主任務";
+      showToast(`${dupPrefix}${cleanTitle}${dupSuffix}`, true);
+      return;
+    }
+
+    task.title = cleanTitle;
+
+    if (saveAllTasksToDB) {
+      await saveAllTasksToDB(currentTasks);
+    }
+
+    showToast(langDict?.toastUpdateMainTaskSuccess || "主任務名稱修改成功！");
+
+    bsModal.hide();
+    renderAll();
+  };
 }
 
 export async function deleteMainTask(taskId) {
@@ -187,37 +214,71 @@ export async function updateSubtask(parentTaskId, subtaskId) {
 
   const langDict = getLangDict();
 
-  const promptTitle = langDict?.promptEditSubtask || "修改子任務名稱：";
-  const newTitle = prompt(promptTitle, subtask.title);
-  if (!newTitle) return;
+  const editModalEl = document.getElementById("editTaskModal");
+  const editInput = document.getElementById("editTaskInput");
+  const saveBtn = document.getElementById("btnSaveTaskName");
 
-  const cleanTitle = newTitle.trim();
-  if (!cleanTitle) {
-    showToast(langDict?.toastSubtaskTitleEmpty || "子任務名稱不能為空！", true);
+  if (!editModalEl || !editInput || !saveBtn) {
+    console.error("找不到 Modal 相關 DOM 元素，請檢查 HTML id 設定");
     return;
   }
 
-  const isDuplicate = parentTask.subtasks.some(
-    (s) => s.id !== subtaskId && s.title === cleanTitle,
-  );
-  if (isDuplicate) {
-    const dupEditPrefix =
-      langDict?.toastDuplicateSubtaskEditPrefix ||
-      "修改失敗：已有相同的子任務「";
-    const dupEditSuffix = langDict?.toastDuplicateSubtaskEditSuffix || "」";
-    showToast(`${dupEditPrefix}${cleanTitle}${dupEditSuffix}`, true);
-    return;
+  const modalTitle = editModalEl.querySelector(".modal-title");
+  if (modalTitle) {
+    modalTitle.textContent =
+      langDict?.modalEditSubtaskTitle || "修改子任務名稱";
   }
 
-  subtask.title = cleanTitle;
+  editInput.value = subtask.title;
 
-  if (saveAllTasksToDB) {
-    await saveAllTasksToDB(currentTasks);
-  }
+  const bsModal = bootstrap.Modal.getOrCreateInstance(editModalEl);
+  bsModal.show();
 
-  showToast(langDict?.toastUpdateSubtaskSuccess || "子任務名稱修改成功！");
+  setTimeout(() => editInput.focus(), 150);
 
-  renderAll();
+  saveBtn.onclick = async () => {
+    const newTitle = editInput.value;
+    if (!newTitle) return;
+
+    const cleanTitle = newTitle.trim();
+
+    if (!cleanTitle) {
+      showToast(
+        langDict?.toastSubtaskTitleEmpty || "子任務名稱不能為空！",
+        true,
+      );
+      return;
+    }
+
+    if (cleanTitle === subtask.title) {
+      bsModal.hide();
+      return;
+    }
+
+    const isDuplicate = parentTask.subtasks.some(
+      (s) => s.id !== subtaskId && s.title === cleanTitle,
+    );
+
+    if (isDuplicate) {
+      const dupEditPrefix =
+        langDict?.toastDuplicateSubtaskEditPrefix ||
+        "修改失敗：已有相同的子任務「";
+      const dupEditSuffix = langDict?.toastDuplicateSubtaskEditSuffix || "」";
+      showToast(`${dupEditPrefix}${cleanTitle}${dupEditSuffix}`, true);
+      return;
+    }
+
+    subtask.title = cleanTitle;
+
+    if (saveAllTasksToDB) {
+      await saveAllTasksToDB(currentTasks);
+    }
+
+    showToast(langDict?.toastUpdateSubtaskSuccess || "子任務名稱修改成功！");
+
+    bsModal.hide();
+    renderAll();
+  };
 }
 
 export async function changeSubtaskStatus(parentTaskId, subtaskId, newStatus) {
