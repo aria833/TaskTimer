@@ -1,3 +1,7 @@
+// ==========================================
+// ：.js
+// ==========================================
+
 import { translations } from "./config/locales/index.js";
 
 document.addEventListener("DOMContentLoaded", () => {

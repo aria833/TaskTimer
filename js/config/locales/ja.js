@@ -1,20 +1,27 @@
 // ==========================================
-// 日文版語系字典
+// 日文版語系字典：ja.js
 // ==========================================
 
 export default {
   // SEO & Meta タグ
   seo: {
-    title: "TaskTimer | 学習と成長に寄り添うタイマー",
-    description:
-      "学習と成長に寄り添うタスクタイマー！アカウント登録不要で、開くだけですぐに使えます。データはすべてあなたのデバイスに保存されます。",
-    keywords:
-      "TaskTimer, タスクタイマー, 時間管理, 学習ツール, Local-First, IndexedDB",
-    ogTitle: "TaskTimer | 学習と成長に寄り添うタイマー",
-    ogDescription:
-      "登録不要で、学習のために作られたタイマー！TaskTimer が学習の記録を残し、データを100%自分で管理できる安心感を提供します。",
-    twitterDescription:
-      "登録不要・ローカルデータ保存に対応したタスクの時間計測・管理ツール。",
+    index: {
+      title: "TaskTimer | 学習と成長に寄り添うタイマー",
+      description:
+        "学習と成長に寄り添うタスクタイマー！アカウント登録不要で、開くだけですぐに使えます。データはすべてあなたのデバイスに保存されます。",
+      keywords:
+        "TaskTimer, タスクタイマー, 時間管理, 学習ツール, Local-First, IndexedDB",
+      ogTitle: "TaskTimer | 学習と成長に寄り添うタイマー",
+      ogDescription:
+        "登録不要で、学習のために作られたタイマー！TaskTimer が学習の記録を残し、データを100%自分で管理できる安心感を提供します。",
+      twitterDescription:
+        "登録不要・ローカルデータ保存に対応したタスクの時間計測・管理ツール。",
+    },
+
+    privacy: {
+      title: "プライバシーポリシー｜TaskTimer",
+      ogTitle: "プライバシーポリシー｜TaskTimer",
+    },
   },
 
   // Header & App Title
@@ -250,6 +257,4 @@ export default {
   privacySec5Title: "5. 規約の変更権",
   privacySec5Text:
     "開発者は、本プライバシーポリシーをいつでも改定する権利を有します。最新版は常にこのページで公開されます。",
-
-  privacyCloseBtn: "閉じる",
 };

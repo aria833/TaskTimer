@@ -1,3 +1,7 @@
+// ==========================================
+// 語系切換與初始化邏輯：i18n.js
+// ==========================================
+
 // 載入語系字典檔
 import { translations } from "./locales/index.js";
 
@@ -5,21 +9,18 @@ import { translations } from "./locales/index.js";
 let currentLang = localStorage.getItem("app_lang") || "zh-TW";
 window.currentLang = currentLang;
 
-// ==========================================
 // 更新 <head> 中的 SEO 與 Meta 標籤
-// ==========================================
 function updateMetaTags(lang) {
-  const seo = translations[lang]?.seo;
+  const page = document.body.dataset.page || "index";
+  const seo = translations[lang]?.seo?.[page];
+
   if (!seo) return;
 
-  // 1. 更新 document.title
   document.title = seo.title;
 
-  // 2. 更新 Meta 標籤
   setMetaContent('meta[name="description"]', seo.description);
   setMetaContent('meta[name="keywords"]', seo.keywords);
 
-  // 3. 更新 Open Graph (OG) 社群標籤
   setMetaContent('meta[property="og:title"]', seo.ogTitle);
   setMetaContent('meta[property="og:description"]', seo.ogDescription);
   setMetaContent(
@@ -27,11 +28,9 @@ function updateMetaTags(lang) {
     lang === "zh-TW" ? "zh_TW" : lang === "ja" ? "ja_JP" : "en_US",
   );
 
-  // 4. 更新 Twitter Card 標籤
   setMetaContent('meta[name="twitter:title"]', seo.ogTitle);
   setMetaContent('meta[name="twitter:description"]', seo.twitterDescription);
 
-  // 5. 更新 <html> 的 lang 屬性
   document.documentElement.lang = lang;
 }
 

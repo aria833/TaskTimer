@@ -1,3 +1,7 @@
+// ==========================================
+// ：.js
+// ==========================================
+
 // 1. 優先讀取偏好並套用至 <html>，防止畫面白光閃爍
 const savedTheme = localStorage.getItem("app_theme");
 const systemPrefersDark = window.matchMedia(

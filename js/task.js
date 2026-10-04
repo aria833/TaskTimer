@@ -1,3 +1,7 @@
+// ==========================================
+// ：.js
+// ==========================================
+
 import { state } from "./state.js";
 import { showToast } from "./utils.js";
 import {
@@ -17,11 +21,9 @@ export async function addMainTask(title) {
   if (!cleanTitle) return false;
 
   // 1. 修正：透過 window.getLangDict() 取得當前語言字典
-  const langDict =
-    getLangDict();
+  const langDict = getLangDict();
   // 確保存取全域最新的 state.tasks
-  const currentTasks =
-    state.tasks;
+  const currentTasks = state.tasks;
 
   const isDuplicate = currentTasks.some((t) => t.title === cleanTitle);
   if (isDuplicate) {
@@ -60,14 +62,12 @@ export async function addMainTask(title) {
 }
 
 export async function updateMainTask(taskId) {
-  const currentTasks =
-    state.tasks;
+  const currentTasks = state.tasks;
   const task = currentTasks.find((t) => t.id === taskId);
   if (!task) return;
 
   // 1. 修正：透過 window.getLangDict() 取得當前語言字典
-  const langDict =
-    getLangDict();
+  const langDict = getLangDict();
 
   const promptTitle = langDict?.promptEditMainTask || "修改主任務名稱：";
   const newTitle = prompt(promptTitle, task.title);
@@ -101,14 +101,12 @@ export async function updateMainTask(taskId) {
 
 export async function deleteMainTask(taskId) {
   // 1. 確保存取全域最新的 state.tasks
-  const currentTasks =
-    state.tasks;
+  const currentTasks = state.tasks;
   const task = currentTasks.find((t) => t.id === taskId);
   const taskTitle = task ? task.title : "";
 
   // 2. 修正：透過 window.getLangDict() 取得當前語言字典
-  const langDict =
-    getLangDict();
+  const langDict = getLangDict();
 
   // 3. 組合 confirm 訊息
   const confirmPrefix =
@@ -153,10 +151,8 @@ export async function addSubtask(parentTaskId, title) {
   if (!cleanTitle) return false;
 
   // 1. 修正：透過 window.getLangDict() 取得當前語言字典
-  const langDict =
-    getLangDict();
-  const currentTasks =
-    state.tasks;
+  const langDict = getLangDict();
+  const currentTasks = state.tasks;
 
   const parentTask = currentTasks.find((t) => t.id === parentTaskId);
   if (!parentTask) return false;
@@ -198,8 +194,7 @@ export async function addSubtask(parentTaskId, title) {
 
 export async function updateSubtask(parentTaskId, subtaskId) {
   // 1. 確保存取全域最新的 state.tasks
-  const currentTasks =
-    state.tasks;
+  const currentTasks = state.tasks;
 
   const parentTask = currentTasks.find((t) => t.id === parentTaskId);
   if (!parentTask) return;
@@ -208,8 +203,7 @@ export async function updateSubtask(parentTaskId, subtaskId) {
   if (!subtask) return;
 
   // 2. 修正：透過 window.getLangDict() 取得當前語言字典
-  const langDict =
-    getLangDict();
+  const langDict = getLangDict();
 
   const promptTitle = langDict?.promptEditSubtask || "修改子任務名稱：";
   const newTitle = prompt(promptTitle, subtask.title);
@@ -267,8 +261,7 @@ export async function changeSubtaskStatus(parentTaskId, subtaskId, newStatus) {
   }
 
   // 1. 取得多國語系字典檔
-  const langDict =
-    getLangDict();
+  const langDict = getLangDict();
 
   // 狀態 Label 轉換
   let statusLabel = sub.status;
@@ -288,8 +281,7 @@ export async function changeSubtaskStatus(parentTaskId, subtaskId, newStatus) {
 
 export async function deleteSubtask(parentTaskId, subtaskId) {
   // 1. 確保存取全域最新的 state.tasks
-  const currentTasks =
-    state.tasks;
+  const currentTasks = state.tasks;
 
   const parentTask = currentTasks.find((t) => t.id === parentTaskId);
   if (!parentTask) return;
@@ -298,8 +290,7 @@ export async function deleteSubtask(parentTaskId, subtaskId) {
   const subTitle = subtask ? subtask.title : "";
 
   // 2. 修正：透過 window.getLangDict() 取得當前語言字典
-  const langDict =
-    getLangDict();
+  const langDict = getLangDict();
 
   const confirmPrefix =
     langDict?.confirmDeleteSubtaskPrefix || "確定要刪除子任務「";
@@ -333,8 +324,7 @@ export async function deleteSubtask(parentTaskId, subtaskId) {
 
 export async function editRecordNote(taskId, subtaskId, recordId) {
   // 1. 確保存取全域最新的 state.tasks
-  const currentTasks =
-    state.tasks;
+  const currentTasks = state.tasks;
 
   const task = currentTasks.find((t) => t.id === taskId);
   const sub = task?.subtasks.find((s) => s.id === subtaskId);
@@ -343,8 +333,7 @@ export async function editRecordNote(taskId, subtaskId, recordId) {
   if (!record) return;
 
   // 2. 修正：透過 window.getLangDict() 取得當前語言字典
-  const langDict =
-    getLangDict();
+  const langDict = getLangDict();
 
   const promptTitle = langDict?.promptEditNote || "修改備註內容：";
   const newNote = prompt(promptTitle, record.note || "");
@@ -364,8 +353,7 @@ export async function editRecordNote(taskId, subtaskId, recordId) {
 
 export async function deleteRecord(taskId, subtaskId, recordId) {
   // 1. 確保存取全域最新的 state.tasks
-  const currentTasks =
-    state.tasks;
+  const currentTasks = state.tasks;
 
   const task = currentTasks.find((t) => t.id === taskId);
   const sub = task?.subtasks.find((s) => s.id === subtaskId);
@@ -373,8 +361,7 @@ export async function deleteRecord(taskId, subtaskId, recordId) {
   if (!sub || !sub.records) return;
 
   // 2. 修正：透過 window.getLangDict() 取得當前語言字典
-  const langDict =
-    getLangDict();
+  const langDict = getLangDict();
 
   const confirmMsg =
     langDict?.confirmDeleteRecord ||

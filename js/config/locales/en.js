@@ -1,25 +1,32 @@
 // ==========================================
-// 英文版語系字典
+// 英文版語系字典：en.js
 // ==========================================
 
 export default {
   // SEO & Meta Tags
   seo: {
-    title: "TaskTimer | Your Learning & Growth Companion",
+    index: {
+      title: "TaskTimer | Your Learning & Growth Companion",
 
-    description:
-      "A task timer that supports you on your learning journey! No account required—just open and use it. All your data stays safely on your device.",
+      description:
+        "A task timer that supports you on your learning journey! No account required—just open and use it. All your data stays safely on your device.",
 
-    keywords:
-      "TaskTimer, task timer, time tracking, learning tool, Local-First, IndexedDB",
+      keywords:
+        "TaskTimer, task timer, time tracking, learning tool, Local-First, IndexedDB",
 
-    ogTitle: "TaskTimer | Your Learning & Growth Companion",
+      ogTitle: "TaskTimer | Your Learning & Growth Companion",
 
-    ogDescription:
-      "No registration required. A timer built for learning! TaskTimer records your learning journey while keeping your data 100% under your control.",
+      ogDescription:
+        "No registration required. A timer built for learning! TaskTimer records your learning journey while keeping your data 100% under your control.",
 
-    twitterDescription:
-      "A task timer and management tool with no registration and local data storage.",
+      twitterDescription:
+        "A task timer and management tool with no registration and local data storage.",
+    },
+
+    privacy: {
+      title: "Privacy Policy | TaskTimer",
+      ogTitle: "Privacy Policy | TaskTimer",
+    },
   },
 
   // Header & App Title
@@ -256,6 +263,4 @@ export default {
   privacySec5Title: "5. Right to Modify Terms",
   privacySec5Text:
     "The developer reserves the right to amend this Privacy Policy at any time. The latest version will always be posted on this page.",
-
-  privacyCloseBtn: "Close",
 };

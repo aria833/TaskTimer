@@ -1,3 +1,7 @@
+// ==========================================
+// ：.js
+// ==========================================
+
 import { state } from "./state.js";
 import { dom } from "./dom.js";
 import { formatTime, getCalculatedSeconds, showToast } from "./utils.js";

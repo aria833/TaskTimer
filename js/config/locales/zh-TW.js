@@ -1,19 +1,25 @@
 // ==========================================
-// 中文版語系字典
+// 中文版語系字典：zh-TW.js
 // ==========================================
 
 export default {
   // SEO & Meta 標籤
   seo: {
-    title: "TaskTimer | 陪你學習成長的計時小夥伴",
-    description:
-      "一款陪你學習成長的任務計時小夥伴！不用註冊帳號、打開就能用，所有資料都安心留在你的裝置裡。",
-    keywords:
-      "TaskTimer, 任務計時器, 時間追蹤, 學習工具, Local-First, IndexedDB, 鐵人賽",
-    ogTitle: "TaskTimer | 陪你學習成長的計時小夥伴",
-    ogDescription:
-      "免註冊，專為學習打造的計時工具！TaskTimer 幫你紀錄學習歷程，資料 100% 自己掌握更放心。",
-    twitterDescription: "免註冊、在地資料儲存的任務計時與管理工具。",
+    index: {
+      title: "TaskTimer | 陪你學習成長的計時小夥伴",
+      description:
+        "一款陪你學習成長的任務計時小夥伴！不用註冊帳號、打開就能用，所有資料都安心留在你的裝置裡。",
+      keywords:
+        "TaskTimer, 任務計時器, 時間追蹤, 學習工具, Local-First, IndexedDB, 鐵人賽",
+      ogTitle: "TaskTimer | 陪你學習成長的計時小夥伴",
+      ogDescription:
+        "免註冊，專為學習打造的計時工具！TaskTimer 幫你紀錄學習歷程，資料 100% 自己掌握更放心。",
+      twitterDescription: "免註冊、在地資料儲存的任務計時與管理工具。",
+    },
+    privacy: {
+      title: "隱私權政策｜TaskTimer",
+      ogTitle: "隱私權政策｜TaskTimer",
+    },
   },
 
   // Header & 系統名稱
@@ -243,6 +249,4 @@ export default {
   privacySec5Title: "5. 條款修改權",
   privacySec5Text:
     "開發者保留隨時修訂本隱私權政策之權利。最新修訂版本將隨時更新於此頁面。",
-
-  privacyCloseBtn: "關閉",
 };
