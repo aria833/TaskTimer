@@ -83,7 +83,7 @@
             id="navbarNav"
           >
             <div
-              class="d-flex justify-content-between flex-md-row align-items-start align-items-md-center gap-3 gap-md-0"
+              class="d-flex justify-content-between flex-md-row align-items-center align-items-md-center gap-3 gap-md-0"
             >
               <!-- 語系切換選單 -->
               <select
@@ -231,7 +231,7 @@
                         aria-labelledby="manageTaskLabel"
                         aria-hidden="true"
                       >
-                        <div class="modal-dialog">
+                        <div class="modal-dialog modal-dialog-centered">
                           <div class="modal-content">
                             <!-- 視窗標題 -->
                             <div class="modal-header">
@@ -363,7 +363,7 @@
                         aria-labelledby="addSubTaskLabel"
                         aria-hidden="true"
                       >
-                        <div class="modal-dialog">
+                        <div class="modal-dialog modal-dialog-centered">
                           <div class="modal-content">
                             <!-- 視窗標題 -->
                             <div class="modal-header">
@@ -564,10 +564,12 @@
 
                   <!-- 控制與設定區塊 -->
                   <div
-                    class="border-top pt-3 mb-4 d-flex justify-content-between"
+                    class="border-top pt-3 mb-4 d-md-flex justify-content-md-between"
                   >
                     <!-- 1. 閒置時間設定 (下拉選單) -->
-                    <div class="d-flex align-items-center justify-content-end">
+                    <div
+                      class="d-flex align-items-center justify-content-md-end mb-2 mb-md-0"
+                    >
                       <label
                         for="select-idle-time"
                         class="form-label text-secondary small fw-medium me-2 mb-0 text-nowrap"
@@ -590,15 +592,20 @@
                     </div>
                     <!-- 2. 是否顯示秒數 (Switch 開關) -->
                     <div class="d-flex align-items-center">
-                      <div class="form-check form-switch mb-0">
-                        <input
-                          class="form-check-input"
-                          type="checkbox"
-                          id="switch-show-seconds"
-                          checked
-                        />
+                      <div
+                        class="d-flex align-items-center gap-2 flex-row-reverse flex-md-row"
+                      >
+                        <div class="form-check form-switch mb-0">
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="switch-show-seconds"
+                            checked
+                          />
+                        </div>
+
                         <label
-                          class="form-check-label text-secondary small fw-medium"
+                          class="text-secondary small fw-medium mb-0"
                           for="switch-show-seconds"
                           data-i18n="showSeconds"
                         >
@@ -775,7 +782,7 @@
                       aria-labelledby="listManageTaskLabel"
                       aria-hidden="true"
                     >
-                      <div class="modal-dialog">
+                      <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
                           <!-- 視窗標題 -->
                           <div class="modal-header">
@@ -876,7 +883,7 @@
                       aria-labelledby="listAddSubTaskLabel"
                       aria-hidden="true"
                     >
-                      <div class="modal-dialog">
+                      <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
                           <!-- 視窗標題 -->
                           <div class="modal-header">
@@ -1364,7 +1371,7 @@
                 <!-- 下層：版權宣告與版本號（置於正中間） -->
                 <p class="mb-0 small">
                   Copyright © 2026 <strong>TaskTimer</strong>
-                  <span class="badge text-bg-secondary ms-1">v1.0.0</span>
+                  <span class="badge text-bg-secondary ms-1">v1.1.0</span>
                   <span class="ms-1">All Rights Reserved.</span>
                 </p>
               </div>
@@ -1379,11 +1386,8 @@
     >
       <div class="container d-flex flex-column align-items-center gap-2">
         <!-- 上層：開發者標示與意見回饋按鈕 -->
+
         <div class="d-flex align-items-center gap-3 small">
-          <span class="d-inline-flex align-items-center gap-1">
-            Created by <strong>Aria_Carrot</strong>🥕
-          </span>
-          <span>•</span>
           <button
             type="button"
             class="btn btn-link btn-sm text-reset p-0 text-decoration-none"
@@ -1406,9 +1410,12 @@
         <!-- 下層：版權宣告與版本號（置於正中間） -->
         <p class="mb-0 small">
           Copyright © 2026 <strong>TaskTimer</strong>
-          <span class="badge text-bg-secondary ms-1">v1.0.0</span>
+          <span class="badge text-bg-secondary ms-1">v1.1.0</span>
           <span class="ms-1">All Rights Reserved.</span>
         </p>
+        <span class="d-inline-flex align-items-center gap-1 small">
+          Created by <strong>Aria_Carrot</strong>🥕
+        </span>
       </div>
     </footer>
 

@@ -3,94 +3,219 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>TaskTimer | Privacy Policy</title>
+
+    <!-- 載入樣式 -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./stylesheets/all.css" />
+    <!-- 主題控制檔 theme.js -->
+    <script src="./js/theme.js"></script>
   </head>
   <body>
-    <!-- 隱私權政策 Modal -->
-    <div
-      class="modal fade"
-      id="privacyModal"
-      tabindex="-1"
-      aria-labelledby="privacyModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-dialog-scrollable modal-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5
-              class="modal-title"
-              id="privacyModalLabel"
-              data-i18n="privacyTitle"
+    <header class="sticky-top">
+      <nav class="navbar navbar-expand-md bg-body border-bottom shadow-sm">
+        <div class="container">
+          <span class="navbar-brand mb-0 h1" data-i18n="appName"
+            >TaskTimer</span
+          >
+
+          <!-- 漢堡選單按鈕（手機版顯示，md 以上隱藏） -->
+          <button
+            class="navbar-toggler border-0 shadow-none px-1"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNav"
+            aria-controls="navbarNav"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+
+          <!-- 折疊選單內容 -->
+          <div
+            class="collapse navbar-collapse justify-content-end mt-3 mt-md-0"
+            id="navbarNav"
+          >
+            <div
+              class="d-flex justify-content-between flex-md-row align-items-center align-items-md-center gap-3 gap-md-0"
             >
-              🔒 隱私權政策 (Privacy Policy)
-            </h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body text-start lh-base">
-            <p class="text-secondary small" data-i18n="privacyLastUpdated">
-              最後更新日期：2026 年 10 月 3 日
-            </p>
+              <!-- 語系切換選單 -->
+              <select
+                id="languageSelect"
+                class="form-select form-select-sm border-secondary-subtle rounded-pill me-0 me-md-3"
+                style="width: auto; cursor: pointer"
+                onchange="changeLanguage(this.value)"
+              >
+                <option value="zh-TW">繁體中文</option>
+                <option value="en">English</option>
+                <option value="ja">日本語</option>
+              </select>
 
-            <h6 class="fw-bold mt-3" data-i18n="privacySec1Title">
-              1. 本地資料儲存（Local Storage & IndexedDB）
-            </h6>
-            <p data-i18n="privacySec1Text">
-              TaskTimer
-              為純前端工具型應用程式。您的所有任務紀錄、計時歷史、分類設定與深色模式偏好，皆僅透過瀏覽器儲存在您的裝置本地端（LocalStorage
-              /
-              IndexedDB）。我們不會將您的個人任務資料傳輸或儲存至任何遠端伺服器。
-            </p>
-
-            <h6 class="fw-bold mt-3" data-i18n="privacySec2Title">
-              2. 意見回饋與聯絡資料
-            </h6>
-            <p data-i18n="privacySec2Text">
-              當您使用網站的「意見回饋」功能時，您所填寫的姓名、電子郵件地址與回饋內容，將透過第三方服務
-              <strong>EmailJS</strong>
-              安全地傳送至開發者信箱。此資料僅用於問題排查與回復您的訊息，絕不作為商業行銷或轉售用途。
-            </p>
-
-            <h6 class="fw-bold mt-3" data-i18n="privacySec3Title">
-              3. 網站分析與 Cookie 技術
-            </h6>
-            <p data-i18n="privacySec3Text">
-              為提升使用者體驗與優化網站功能，本網站可能會使用第三方分析工具（如
-              Google
-              Analytics）收集匿名使用數據（包括訪問頁面、停留時間、裝置類型等）。這些數據不包含任何可識別個人身分的資訊。
-            </p>
-
-            <h6 class="fw-bold mt-3" data-i18n="privacySec4Title">
-              4. 外部連結與第三方服務
-            </h6>
-            <p data-i18n="privacySec4Text">
-              本網站可能包含第三方網站（如 GitHub、第三方
-              CDN）的連結。對於這些外部網站的隱私做法或內容，本網站不負相關責任。
-            </p>
-
-            <h6 class="fw-bold mt-3" data-i18n="privacySec5Title">
-              5. 條款修改權
-            </h6>
-            <p data-i18n="privacySec5Text">
-              開發者保留隨時修訂本隱私權政策之權利。最新修訂版本將隨時更新於此頁面。
-            </p>
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary btn-sm"
-              data-bs-dismiss="modal"
-              data-i18n="privacyCloseBtn"
-            >
-              關閉
-            </button>
+              <!-- 深色模式 Switch 切換開關 -->
+              <div
+                class="form-check form-switch mb-0 d-flex align-items-center gap-2"
+              >
+                <input
+                  class="form-check-input mt-0 switch-lg"
+                  type="checkbox"
+                  role="switch"
+                  id="darkModeToggle"
+                  style="cursor: pointer"
+                  onchange="toggleDarkMode(this.checked)"
+                />
+                <label
+                  class="form-check-label user-select-none mb-0 fs-sm text-body"
+                  for="darkModeToggle"
+                  style="cursor: pointer"
+                >
+                  <span id="themeIcon" data-i18n="darkModeLabel">深色模式</span>
+                </label>
+              </div>
+            </div>
           </div>
         </div>
+      </nav>
+    </header>
+    <main
+      class="py-4 bg-body-tertiary flex-grow-1 d-flex flex-column min-vh-main"
+    >
+      <div class="container">
+        <h1 data-i18n="privacyTitle">隱私權政策 (Privacy Policy)</h1>
+        <p class="text-secondary small" data-i18n="privacyLastUpdated">
+          最後更新日期：2026 年 10 月 3 日
+        </p>
+
+        <h6 class="fw-bold mt-3" data-i18n="privacySec1Title">
+          1. 本地資料儲存（Local Storage & IndexedDB）
+        </h6>
+        <p data-i18n="privacySec1Text">
+          TaskTimer
+          為純前端工具型應用程式。您的所有任務紀錄、計時歷史、分類設定與深色模式偏好，皆僅透過瀏覽器儲存在您的裝置本地端（LocalStorage
+          / IndexedDB）。我們不會將您的個人任務資料傳輸或儲存至任何遠端伺服器。
+        </p>
+
+        <h6 class="fw-bold mt-3" data-i18n="privacySec2Title">
+          2. 意見回饋與聯絡資料
+        </h6>
+        <p data-i18n="privacySec2Text">
+          當您使用網站的「意見回饋」功能時，您所填寫的姓名、電子郵件地址與回饋內容，將透過第三方服務
+          <strong>EmailJS</strong>
+          安全地傳送至開發者信箱。此資料僅用於問題排查與回復您的訊息，絕不作為商業行銷或轉售用途。
+        </p>
+
+        <h6 class="fw-bold mt-3" data-i18n="privacySec3Title">
+          3. 網站分析與 Cookie 技術
+        </h6>
+        <p data-i18n="privacySec3Text">
+          為提升使用者體驗與優化網站功能，本網站可能會使用第三方分析工具（如
+          Google
+          Analytics）收集匿名使用數據（包括訪問頁面、停留時間、裝置類型等）。這些數據不包含任何可識別個人身分的資訊。
+        </p>
+
+        <h6 class="fw-bold mt-3" data-i18n="privacySec4Title">
+          4. 外部連結與第三方服務
+        </h6>
+        <p data-i18n="privacySec4Text">
+          本網站可能包含第三方網站（如 GitHub、第三方
+          CDN）的連結。對於這些外部網站的隱私做法或內容，本網站不負相關責任。
+        </p>
+
+        <h6 class="fw-bold mt-3" data-i18n="privacySec5Title">5. 條款修改權</h6>
+        <p data-i18n="privacySec5Text">
+          開發者保留隨時修訂本隱私權政策之權利。最新修訂版本將隨時更新於此頁面。
+        </p>
       </div>
-    </div>
+      <footer
+        class="bg-body-tertiary text-body-tertiary text-center py-3 d-none d-md-block mt-auto pt-5"
+      >
+        <div class="container d-flex flex-column align-items-center gap-2">
+          <div class="d-flex align-items-center gap-3 small">
+            <span class="d-inline-flex align-items-center gap-1">
+              Created by <strong>Aria_Carrot</strong>🥕
+            </span>
+            <span>•</span>
+            <button
+              type="button"
+              class="btn btn-link btn-sm text-reset p-0 text-decoration-none"
+              data-bs-toggle="modal"
+              data-bs-target="#feedbackModal"
+              data-i18n="footerFeedbackBtn"
+            >
+              意見回饋
+            </button>
+            <span>•</span>
+            <a
+              href="/privacy.html"
+              target="_blank"
+              id="privacyLink"
+              data-i18n="footerPrivacyBtn"
+              class="text-decoration-none"
+              >隱私權政策</a
+            >
+          </div>
+
+          <p class="mb-0 small">
+            Copyright © 2026 <strong>TaskTimer</strong>
+            <span class="badge text-bg-secondary ms-1">v1.1.0</span>
+            <span class="ms-1">All Rights Reserved.</span>
+          </p>
+        </div>
+      </footer>
+    </main>
+    <footer
+      class="bg-body-tertiary text-body-tertiary text-center py-3 d-md-none pt-4"
+    >
+      <div class="container d-flex flex-column align-items-center gap-2">
+        <!-- 上層：開發者標示與意見回饋按鈕 -->
+
+        <div class="d-flex align-items-center gap-3 small">
+          <button
+            type="button"
+            class="btn btn-link btn-sm text-reset p-0 text-decoration-none"
+            data-bs-toggle="modal"
+            data-bs-target="#feedbackModal"
+            data-i18n="footerFeedbackBtn"
+          >
+            意見回饋
+          </button>
+          <span>•</span>
+          <a
+            href="/privacy.html"
+            target="_blank"
+            data-i18n="footerPrivacyBtn"
+            class="text-decoration-none"
+            >隱私權政策</a
+          >
+        </div>
+
+        <!-- 下層：版權宣告與版本號（置於正中間） -->
+        <p class="mb-0 small">
+          Copyright © 2026 <strong>TaskTimer</strong>
+          <span class="badge text-bg-secondary ms-1">v1.1.0</span>
+          <span class="ms-1">All Rights Reserved.</span>
+        </p>
+        <span class="d-inline-flex align-items-center gap-1 small">
+          Created by <strong>Aria_Carrot</strong>🥕
+        </span>
+      </div>
+    </footer>
+    <!--載入Bootstrap JS-->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+      crossorigin="anonymous"
+    ></script>
+    <!-- 引入 privacy.js -->
+    <script type="module" src="./js/privacy.js"></script>
+    <!--載入 main.js -->
+    <script type="module" src="./js/all.js"></script>
   </body>
 </html>
