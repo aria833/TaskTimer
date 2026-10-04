@@ -58,3 +58,7 @@ p {
 .cursor-pointer:hover {
   opacity: 0.8;
 }
+
+.min-vh-main {
+  min-height: calc(100vh - 150px);
+}

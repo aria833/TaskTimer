@@ -1,7 +1,5 @@
 @charset "UTF-8";
-/* 可以先將所有物件加上邊框，來判斷範圍
-    border會佔據距離，outline不會
-
+/* 將所有物件加上 outline 來判斷範圍
 *,
 *:before,
 *:after {
@@ -61,8 +59,6 @@ p {
   opacity: 0.8;
 }
 
-@media (min-width: 768px) {
-  .w-md-100 {
-    width: 100%;
-  }
+.min-vh-main {
+  min-height: calc(100vh - 150px);
 }/*# sourceMappingURL=all.css.map */
