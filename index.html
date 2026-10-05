@@ -668,126 +668,6 @@
                 </div>
               </div>
 
-              <!-- Toast 容器 (定位於底部中央) -->
-              <div
-                class="toast-container position-fixed bottom-0 start-50 translate-middle-x p-3"
-                style="z-index: 1100"
-              >
-                <div
-                  id="actionToast"
-                  class="toast align-items-center text-white bg-dark border-0 slide-up-toast"
-                  role="alert"
-                  aria-live="assertive"
-                  aria-atomic="true"
-                >
-                  <div class="d-flex">
-                    <div class="toast-body" id="toast-message">
-                      <!-- 提示訊息 -->
-                    </div>
-                    <button
-                      type="button"
-                      class="btn-close btn-close-white me-2 m-auto"
-                      data-bs-dismiss="toast"
-                      aria-label="Close"
-                    ></button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- 計時結束紀錄 Modal -->
-              <div
-                class="modal fade"
-                id="saveTimerModal"
-                data-bs-backdrop="static"
-                data-bs-keyboard="false"
-                tabindex="-1"
-                aria-labelledby="saveTimerModalLabel"
-                aria-hidden="true"
-              >
-                <div class="modal-dialog modal-dialog-centered">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5
-                        class="modal-title font-weight-bold"
-                        id="saveTimerModalLabel"
-                      >
-                        <i class="bi bi-check-circle-fill text-success me-2"></i
-                        ><span data-i18n="completeTimer">完成計時！</span>
-                      </h5>
-                    </div>
-                    <div class="modal-body">
-                      <!-- 顯示當次專注累積時間 -->
-                      <div class="text-center bg-light p-3 rounded mb-3">
-                        <span
-                          class="text-muted d-block small mb-1"
-                          data-i18n="sessionDuration"
-                          >本次計時時長</span
-                        >
-                        <h3
-                          class="mb-0 text-primary font-monospace"
-                          id="modal-focus-time"
-                        >
-                          00:00:00
-                        </h3>
-                      </div>
-
-                      <!-- 輸入欄位 -->
-                      <form id="record-form">
-                        <div class="mb-3">
-                          <label
-                            for="modal-note"
-                            class="form-label"
-                            data-i18n="noteTitle"
-                            >備註（選填）</label
-                          >
-                          <textarea
-                            class="form-control"
-                            id="modal-note"
-                            rows="3"
-                            placeholder="記錄一下完成項目或是個人想法吧..."
-                            data-i18n-placeholder="noteArea"
-                          ></textarea>
-                        </div>
-                        <div class="form-check">
-                          <input
-                            class="form-check-input"
-                            type="checkbox"
-                            id="modal-is-completed"
-                          />
-                          <label
-                            class="form-check-label"
-                            for="modal-is-completed"
-                            data-i18n="isCompleted"
-                          >
-                            將此任務標記為已完成
-                          </label>
-                        </div>
-                      </form>
-                    </div>
-                    <div class="modal-footer d-flex justify-content-between">
-                      <!-- 左側：捨棄按鈕 -->
-                      <button
-                        type="button"
-                        class="btn btn-outline-danger"
-                        id="btn-discard-session"
-                      >
-                        <i class="bi bi-trash me-1"></i
-                        ><span data-i18n="discardRecord">捨棄此次計時</span>
-                      </button>
-                      <!-- 右側：儲存按鈕 -->
-                      <button
-                        type="button"
-                        class="btn btn-primary"
-                        id="btn-save-session"
-                      >
-                        <i class="bi bi-save me-1"></i
-                        ><span data-i18n="saveRecord">儲存紀錄</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
               <!-- 2. 任務列表內容 -->
               <div
                 class="tab-pane fade"
@@ -815,92 +695,6 @@
                       >
                     </button>
 
-                    <!-- 管理主任務 Modal -->
-                    <div
-                      class="modal fade"
-                      id="listManageTask"
-                      tabindex="-1"
-                      aria-labelledby="listManageTaskLabel"
-                      aria-hidden="true"
-                    >
-                      <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                          <!-- 視窗標題 -->
-                          <div class="modal-header">
-                            <h5 class="modal-title" id="listManageTaskLabel">
-                              <i class="bi bi-gear-fill text-primary me-2"></i
-                              ><span data-i18n="manageMainTaskModalTitle"
-                                >管理主任務</span
-                              >
-                            </h5>
-                            <button
-                              type="button"
-                              class="btn-close"
-                              data-bs-dismiss="modal"
-                              aria-label="Close"
-                            ></button>
-                          </div>
-
-                          <!-- 視窗內容 -->
-                          <div class="modal-body">
-                            <div>
-                              <p
-                                class="mb-1 fw-bold fs-sm"
-                                data-i18n="addMainTaskTitle"
-                              >
-                                新增主任務
-                              </p>
-                              <div class="input-group mb-3 border-bottom pb-3">
-                                <input
-                                  type="text"
-                                  id="list-input-new-main-task"
-                                  class="form-control"
-                                  placeholder="主任務名稱（例如：切版練習）"
-                                  aria-label="taskname"
-                                  data-i18n-placeholder="mainTaskPlaceholder"
-                                />
-                                <button
-                                  class="btn btn-primary"
-                                  type="button"
-                                  id="list-btn-add-main-task"
-                                  data-i18n="addBtn"
-                                >
-                                  新增
-                                </button>
-                              </div>
-                            </div>
-
-                            <div>
-                              <p
-                                class="mb-1 fw-bold fs-sm"
-                                data-i18n="currentMainTask"
-                              >
-                                現有主任務列表
-                              </p>
-                              <ul
-                                id="list-manage-main-task-list"
-                                class="border list-unstyled rounded mb-0"
-                              >
-                                <!-- 動態渲染主任務列表 -->
-                              </ul>
-                            </div>
-                          </div>
-
-                          <!-- Footer -->
-                          <div class="modal-footer">
-                            <button
-                              type="button"
-                              class="btn btn-outline-primary"
-                              data-bs-dismiss="modal"
-                              data-i18n="closeBtn"
-                            >
-                              關閉
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
                     <!-- 新增子任務按鈕 -->
                     <button
                       type="button"
@@ -915,104 +709,6 @@
                         >新增子任務</span
                       >
                     </button>
-
-                    <!-- 新增子任務 Modal -->
-                    <div
-                      class="modal fade"
-                      id="listAddSubTask"
-                      tabindex="-1"
-                      aria-labelledby="listAddSubTaskLabel"
-                      aria-hidden="true"
-                    >
-                      <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                          <!-- 視窗標題 -->
-                          <div class="modal-header">
-                            <h5 class="modal-title" id="listAddSubTaskLabel">
-                              <i class="bi bi-plus-square text-primary me-2"></i
-                              ><span data-i18n="addSubTaskModalTitle"
-                                >新增子任務</span
-                              >
-                            </h5>
-                            <button
-                              type="button"
-                              class="btn-close"
-                              data-bs-dismiss="modal"
-                              aria-label="Close"
-                            ></button>
-                          </div>
-
-                          <!-- 視窗內容 -->
-                          <div class="modal-body">
-                            <div class="mb-3">
-                              <p
-                                class="mb-1 fw-bold fs-sm"
-                                data-i18n="belongTo"
-                              >
-                                歸屬主任務
-                              </p>
-                              <div class="dropdown w-100">
-                                <button
-                                  id="list-modal-subtask-parent-btn"
-                                  class="btn bg-body-tertiary border text-secondary w-100 d-flex justify-content-between align-items-center"
-                                  type="button"
-                                  data-bs-toggle="dropdown"
-                                  aria-expanded="false"
-                                >
-                                  選擇主任務
-                                  <i class="bi bi-chevron-down"></i>
-                                </button>
-                                <ul
-                                  id="list-modal-subtask-parent-menu"
-                                  class="dropdown-menu w-100"
-                                >
-                                  <!-- 動態渲染主任務選單 -->
-                                </ul>
-                              </div>
-                            </div>
-                            <div>
-                              <p
-                                class="mb-1 fw-bold fs-sm"
-                                data-i18n="subTaskName"
-                              >
-                                子任務名稱
-                              </p>
-                              <div class="input-group">
-                                <input
-                                  type="text"
-                                  id="list-input-new-subtask-name"
-                                  class="form-control"
-                                  placeholder="例如：修改程式碼"
-                                  aria-label="subtask"
-                                  data-i18n-placeholder="subTaskPlaceholder"
-                                />
-                              </div>
-                            </div>
-                          </div>
-
-                          <!-- Footer -->
-                          <div class="modal-footer">
-                            <button
-                              type="button"
-                              class="btn btn-light"
-                              data-bs-dismiss="modal"
-                              data-i18n="cancel"
-                            >
-                              取消
-                            </button>
-
-                            <button
-                              type="button"
-                              id="list-btn-confirm-add-subtask"
-                              class="btn btn-primary"
-                              data-i18n="addNewSubTask"
-                            >
-                              建立子任務
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
                   </div>
 
                   <button
@@ -1041,7 +737,7 @@
                   class="accordion shadow-sm border-0 rounded"
                   id="task-accordionExample"
                 >
-                  <!-- 裡面的內容由 all.js 中的 renderTaskAccordion() 自動注入畫面 -->
+                  <!-- 裡面的內容由 all.js 中的 renderTaskAccordion() 自動渲染畫面 -->
                 </div>
               </div>
 
@@ -1304,7 +1000,7 @@
                         aria-controls="qa-collapseNine"
                         data-i18n="qaTitle9"
                       >
-                        TaskTimer 支援哪些語系與主題？
+                        如果我想分享使用心得或提供建議，該如何聯繫開發者？
                       </button>
                     </h2>
                     <div
@@ -1315,7 +1011,7 @@
                     >
                       <div class="accordion-body">
                         <p data-i18n="qaBody9">
-                          目前支援繁體中文、英文、日文。主題有淺色模式和深色模式，可以自行切換。
+                          歡迎點擊頁尾的「意見反饋」！無論是功能建議、使用心得，或是遇到的問題，我們都很期待收到你的聲音，希望能成為你學習與成長路上得力的工具夥伴。
                         </p>
                       </div>
                     </div>
@@ -1333,7 +1029,7 @@
                 <div
                   class="bg-body p-4 rounded border shadow-sm mb-3 d-flex flex-column"
                 >
-                  <!-- 1. 隱私與備份提醒 Alert -->
+                  <!-- 隱私與備份提醒 Alert -->
                   <div
                     class="alert alert-warning d-flex align-items-start mb-3"
                     role="alert"
@@ -1383,21 +1079,18 @@
               <div
                 class="container d-flex flex-column align-items-center gap-2"
               >
-                <!-- 上層：開發者標示與意見回饋按鈕 -->
                 <div class="d-flex align-items-center gap-3 small">
                   <span class="d-inline-flex align-items-center gap-1">
                     Created by <strong>Aria_Carrot</strong>🥕
                   </span>
                   <span>•</span>
-                  <button
-                    type="button"
+                  <a
+                    href="mailto:aria_carrotlab@gmail.com?subject=TaskTimer%20意見回饋"
                     class="btn btn-link btn-sm text-reset p-0 text-decoration-none"
-                    data-bs-toggle="modal"
-                    data-bs-target="#feedbackModal"
                     data-i18n="footerFeedbackBtn"
                   >
                     意見回饋
-                  </button>
+                  </a>
                   <span>•</span>
                   <a
                     href="/privacy.html"
@@ -1409,7 +1102,6 @@
                   >
                 </div>
 
-                <!-- 下層：版權宣告與版本號（置於正中間） -->
                 <p class="mb-0 small">
                   Copyright © 2026 <strong>TaskTimer</strong>
                   <span class="badge text-bg-secondary ms-1">v1.1.0</span>
@@ -1421,6 +1113,280 @@
         </div>
       </div>
     </main>
+
+    <!-- Modal 區域-->
+    <!-- Toast 容器 (底部中央) -->
+    <div
+      class="toast-container position-fixed bottom-0 start-50 translate-middle-x p-3"
+      style="z-index: 1100"
+    >
+      <div
+        id="actionToast"
+        class="toast align-items-center text-white bg-dark border-0 slide-up-toast"
+        role="alert"
+        aria-live="assertive"
+        aria-atomic="true"
+      >
+        <div class="d-flex">
+          <div class="toast-body" id="toast-message">
+            <!-- 提示訊息 -->
+          </div>
+          <button
+            type="button"
+            class="btn-close btn-close-white me-2 m-auto"
+            data-bs-dismiss="toast"
+            aria-label="Close"
+          ></button>
+        </div>
+      </div>
+    </div>
+    <!-- 計時結束紀錄 Modal -->
+    <div
+      class="modal fade"
+      id="saveTimerModal"
+      data-bs-backdrop="static"
+      data-bs-keyboard="false"
+      tabindex="-1"
+      aria-labelledby="saveTimerModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title font-weight-bold" id="saveTimerModalLabel">
+              <i class="bi bi-check-circle-fill text-success me-2"></i
+              ><span data-i18n="completeTimer">完成計時！</span>
+            </h5>
+          </div>
+          <div class="modal-body">
+            <!-- 顯示當次專注累積時間 -->
+            <div class="text-center bg-light p-3 rounded mb-3">
+              <span
+                class="text-muted d-block small mb-1"
+                data-i18n="sessionDuration"
+                >本次計時時長</span
+              >
+              <h3
+                class="mb-0 text-primary font-monospace"
+                id="modal-focus-time"
+              >
+                00:00:00
+              </h3>
+            </div>
+
+            <!-- 輸入欄位 -->
+            <form id="record-form">
+              <div class="mb-3">
+                <label for="modal-note" class="form-label" data-i18n="noteTitle"
+                  >備註（選填）</label
+                >
+                <textarea
+                  class="form-control"
+                  id="modal-note"
+                  rows="3"
+                  placeholder="記錄一下完成項目或是個人想法吧..."
+                  data-i18n-placeholder="noteArea"
+                ></textarea>
+              </div>
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="modal-is-completed"
+                />
+                <label
+                  class="form-check-label"
+                  for="modal-is-completed"
+                  data-i18n="isCompleted"
+                >
+                  將此任務標記為已完成
+                </label>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer d-flex justify-content-between">
+            <!-- 左側：捨棄按鈕 -->
+            <button
+              type="button"
+              class="btn btn-outline-danger"
+              id="btn-discard-session"
+            >
+              <i class="bi bi-trash me-1"></i
+              ><span data-i18n="discardRecord">捨棄此次計時</span>
+            </button>
+            <!-- 右側：儲存按鈕 -->
+            <button type="button" class="btn btn-primary" id="btn-save-session">
+              <i class="bi bi-save me-1"></i
+              ><span data-i18n="saveRecord">儲存紀錄</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 管理主任務 Modal -->
+    <div
+      class="modal fade"
+      id="listManageTask"
+      tabindex="-1"
+      aria-labelledby="listManageTaskLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <!-- 視窗標題 -->
+          <div class="modal-header">
+            <h5 class="modal-title" id="listManageTaskLabel">
+              <i class="bi bi-gear-fill text-primary me-2"></i
+              ><span data-i18n="manageMainTaskModalTitle">管理主任務</span>
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+
+          <!-- 視窗內容 -->
+          <div class="modal-body">
+            <div>
+              <p class="mb-1 fw-bold fs-sm" data-i18n="addMainTaskTitle">
+                新增主任務
+              </p>
+              <div class="input-group mb-3 border-bottom pb-3">
+                <input
+                  type="text"
+                  id="list-input-new-main-task"
+                  class="form-control"
+                  placeholder="主任務名稱（例如：切版練習）"
+                  aria-label="taskname"
+                  data-i18n-placeholder="mainTaskPlaceholder"
+                />
+                <button
+                  class="btn btn-primary"
+                  type="button"
+                  id="list-btn-add-main-task"
+                  data-i18n="addBtn"
+                >
+                  新增
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <p class="mb-1 fw-bold fs-sm" data-i18n="currentMainTask">
+                現有主任務列表
+              </p>
+              <ul
+                id="list-manage-main-task-list"
+                class="border list-unstyled rounded mb-0"
+              >
+                <!-- 動態渲染主任務列表 -->
+              </ul>
+            </div>
+          </div>
+
+          <!-- Footer -->
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-outline-primary"
+              data-bs-dismiss="modal"
+              data-i18n="closeBtn"
+            >
+              關閉
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 新增子任務 Modal -->
+    <div
+      class="modal fade"
+      id="listAddSubTask"
+      tabindex="-1"
+      aria-labelledby="listAddSubTaskLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <!-- 視窗標題 -->
+          <div class="modal-header">
+            <h5 class="modal-title" id="listAddSubTaskLabel">
+              <i class="bi bi-plus-square text-primary me-2"></i
+              ><span data-i18n="addSubTaskModalTitle">新增子任務</span>
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+
+          <!-- 視窗內容 -->
+          <div class="modal-body">
+            <div class="mb-3">
+              <p class="mb-1 fw-bold fs-sm" data-i18n="belongTo">歸屬主任務</p>
+              <div class="dropdown w-100">
+                <button
+                  id="list-modal-subtask-parent-btn"
+                  class="btn bg-body-tertiary border text-secondary w-100 d-flex justify-content-between align-items-center"
+                  type="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  選擇主任務
+                  <i class="bi bi-chevron-down"></i>
+                </button>
+                <ul
+                  id="list-modal-subtask-parent-menu"
+                  class="dropdown-menu w-100"
+                >
+                  <!-- 動態渲染主任務選單 -->
+                </ul>
+              </div>
+            </div>
+            <div>
+              <p class="mb-1 fw-bold fs-sm" data-i18n="subTaskName">
+                子任務名稱
+              </p>
+              <div class="input-group">
+                <input
+                  type="text"
+                  id="list-input-new-subtask-name"
+                  class="form-control"
+                  placeholder="例如：修改程式碼"
+                  aria-label="subtask"
+                  data-i18n-placeholder="subTaskPlaceholder"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Footer -->
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-light"
+              data-bs-dismiss="modal"
+              data-i18n="cancel"
+            >
+              取消
+            </button>
+
+            <button
+              type="button"
+              id="list-btn-confirm-add-subtask"
+              class="btn btn-primary"
+              data-i18n="addNewSubTask"
+            >
+              建立子任務
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- 修改任務名稱 Modal (主任務與子任務共用) -->
     <div class="modal fade" id="editTaskModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
@@ -1465,22 +1431,19 @@
         </div>
       </div>
     </div>
+
     <footer
       class="bg-body-tertiary text-body-tertiary text-center py-3 d-md-none pt-4"
     >
       <div class="container d-flex flex-column align-items-center gap-2">
-        <!-- 上層：開發者標示與意見回饋按鈕 -->
-
         <div class="d-flex align-items-center gap-3 small">
-          <button
-            type="button"
+          <a
+            href="mailto:aria_carrotlab@gmail.com?subject=TaskTimer%20意見回饋"
             class="btn btn-link btn-sm text-reset p-0 text-decoration-none"
-            data-bs-toggle="modal"
-            data-bs-target="#feedbackModal"
             data-i18n="footerFeedbackBtn"
           >
             意見回饋
-          </button>
+          </a>
           <span>•</span>
           <a
             href="/privacy.html"
@@ -1490,8 +1453,6 @@
             >隱私權政策</a
           >
         </div>
-
-        <!-- 下層：版權宣告與版本號（置於正中間） -->
         <p class="mb-0 small">
           Copyright © 2026 <strong>TaskTimer</strong>
           <span class="badge text-bg-secondary ms-1">v1.1.0</span>

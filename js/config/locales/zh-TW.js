@@ -114,7 +114,7 @@ export default {
   toastUpdateSubtaskSuccess: "子任務名稱修改成功！",
 
   // 計時器區塊
-  currentTask: "當前任務",
+  currentTask: "當前任務：",
   currentMainTaskName: "未選取主任務",
   currentSubtaskName: "未選取子任務",
 

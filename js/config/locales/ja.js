@@ -120,7 +120,7 @@ export default {
   toastUpdateSubtaskSuccess: "サブタスク名を更新しました！",
 
   // タイマー
-  currentTask: "現在のタスク",
+  currentTask: "現在のタスク：",
   currentMainTaskName: "メインタスクが選択されていません",
   currentSubtaskName: "サブタスクが選択されていません",
 
