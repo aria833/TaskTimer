@@ -30,7 +30,7 @@
     <meta property="og:site_name" content="TaskTimer" />
     <meta property="og:locale" content="zh_TW" />
     <!-- TODO:替換實際部署 URL 與預覽圖連結 -->
-    <!-- <meta property="og:url" content="https://your-username.github.io/task-timer/" /> -->
+    <meta property="og:url" content="https://tasktimer.aria-carrotlab.com/" />
     <!-- <meta property="og:image" content="https://your-username.github.io/task-timer/assets/og-cover.png" /> -->
 
     <!-- Twitter (X) Card 社群卡片 -->
@@ -75,6 +75,21 @@
     <link rel="stylesheet" href="./stylesheets/all.css" />
     <!-- 主題控制檔 theme.js -->
     <script src="./js/theme.js"></script>
+
+    <!-- Google tag (gtag.js) -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-SZD9X7XMWG"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "G-SZD9X7XMWG");
+    </script>
   </head>
   <body
     class="text-bg-light d-flex flex-column min-vh-main text-body bg-body-tertiary"
