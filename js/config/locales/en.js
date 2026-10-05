@@ -7,20 +7,14 @@ export default {
   seo: {
     index: {
       title: "TaskTimer | Your Learning & Growth Companion",
-
       description:
-        "A task timer that supports you on your learning journey! No account required—just open and use it. All your data stays safely on your device.",
-
-      keywords:
-        "TaskTimer, task timer, time tracking, learning tool, Local-First, IndexedDB",
-
+        "TaskTimer is a registration-free task timer and time tracking tool for learning, work, and project management. Your data is stored locally on your device and ready to use right in your browser.",
+      keywords: "TaskTimer, task timer, time tracking, learning tool",
       ogTitle: "TaskTimer | Your Learning & Growth Companion",
-
       ogDescription:
-        "No registration required. A timer built for learning! TaskTimer records your learning journey while keeping your data 100% under your control.",
-
+        "A registration-free task timer that’s ready to use right away. Break down tasks, track your time, and keep all your data on your device.",
       twitterDescription:
-        "A task timer and management tool with no registration and local data storage.",
+        "A registration-free task timer and time tracking tool for learning, work, and project management.",
     },
 
     privacy: {

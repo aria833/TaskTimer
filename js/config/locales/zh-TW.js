@@ -8,13 +8,13 @@ export default {
     index: {
       title: "TaskTimer | 陪你學習成長的計時小夥伴",
       description:
-        "一款陪你學習成長的任務計時小夥伴！不用註冊帳號、打開就能用，所有資料都安心留在你的裝置裡。",
-      keywords:
-        "TaskTimer, 任務計時器, 時間追蹤, 學習工具, Local-First, IndexedDB, 鐵人賽",
+        "TaskTimer 是一款免註冊的任務計時器與時間追蹤工具，適合學習、工作與專案管理。資料儲存在裝置本機，打開瀏覽器即可使用。",
+      keywords: "TaskTimer, 任務計時器, 時間追蹤, 學習工具",
       ogTitle: "TaskTimer | 陪你學習成長的計時小夥伴",
       ogDescription:
-        "免註冊，專為學習打造的計時工具！TaskTimer 幫你紀錄學習歷程，資料 100% 自己掌握更放心。",
-      twitterDescription: "免註冊、在地資料儲存的任務計時與管理工具。",
+        "免註冊、打開就能使用的任務計時器。拆解任務、記錄時間，所有資料留在你的裝置裡。",
+      twitterDescription:
+        "免註冊的任務計時器與時間追蹤工具，適合學習、工作與專案管理",
     },
     privacy: {
       title: "隱私權政策｜TaskTimer",
