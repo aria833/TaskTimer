@@ -14,6 +14,7 @@ import {
   stopTimer,
   discardSession,
   saveSession,
+  resetTimerUI,
 } from "./timer.js";
 import { addMainTask, addSubtask } from "./task.js";
 import { renderAll } from "./render.js";
@@ -29,6 +30,50 @@ if (dom.btnDiscardSession)
   dom.btnDiscardSession.addEventListener("click", discardSession);
 if (dom.btnSaveSession)
   dom.btnSaveSession.addEventListener("click", saveSession);
+
+// 判斷是否有尚未結束的計時
+function hasUnfinishedSession() {
+  return (
+    state.isRunning || state.elapsedTime > 0 || state.currentSessionSeconds > 0
+  );
+}
+
+const tabList = document.querySelector("#list-tab");
+
+if (tabList) {
+  tabList.addEventListener("show.bs.tab", (event) => {
+    const targetTab = event.target;
+
+    const isTimerTab =
+      targetTab?.getAttribute("data-bs-target") === "#list-timer";
+
+    const timerTab = document.querySelector("#list-timer-list");
+
+    const isLeavingTimer =
+      timerTab?.classList.contains("active") && !isTimerTab;
+
+    if (isLeavingTimer && hasUnfinishedSession()) {
+      const langDict = getLangDict();
+
+      const message =
+        langDict?.confirmLeaveTimer ||
+        "目前有尚未結束的計時紀錄，確定要離開計時頁面嗎？計時將不會儲存。";
+
+      if (!window.confirm(message)) {
+        event.preventDefault();
+      } else {
+        resetTimerUI();
+      }
+    }
+  });
+}
+
+// 關閉或重新整理瀏覽器前提醒。瀏覽器會顯示自己的通用確認訊息。
+window.addEventListener("beforeunload", (event) => {
+  if (!hasUnfinishedSession()) return;
+  event.preventDefault();
+  event.returnValue = "";
+});
 
 // 顯示/隱藏秒數 Switch 監聽
 if (dom.switchShowSeconds) {

@@ -265,4 +265,7 @@ export default {
   privacySec5Title: "5. 條款修改權",
   privacySec5Text:
     "開發者保留隨時修訂本隱私權政策之權利。最新修訂版本將隨時更新於此頁面。",
+
+  confirmLeaveTimer:
+    "目前有尚未結束的計時紀錄，確定要離開計時器頁面嗎？計時不會自動儲存。",
 };

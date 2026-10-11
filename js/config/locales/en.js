@@ -273,4 +273,7 @@ export default {
   privacySec5Title: "5. Right to Modify Terms",
   privacySec5Text:
     "The developer reserves the right to amend this Privacy Policy at any time. The latest version will always be posted on this page.",
+
+  confirmLeaveTimer:
+    "You have an unfinished timer session. Are you sure you want to leave the Timer page? The session will not be saved.",
 };
