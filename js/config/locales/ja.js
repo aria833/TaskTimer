@@ -133,7 +133,7 @@ export default {
   noteInfo:
     "タイマーを終了すると、このメモは時間記録と一緒にタスク一覧に保存されます。",
 
-  idleTimer: "アイドル通知",
+  idleTimer: "無操作警告",
   idle15: "15分",
   idle30: "30分",
   idle45: "45分",

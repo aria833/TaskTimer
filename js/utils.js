@@ -21,16 +21,12 @@ export function showToast(message, isDanger = false) {
   dom.actionToast.show();
 }
 
-/**
- * 格式化時間顯示
- * @param {number} totalSeconds
- * @returns {string} 00:00:00 (開啟秒數) 或 00:00 (關閉秒數)
- */
-export function formatTime(totalSeconds) {
+// 格式化時間顯示
+export function formatTime(totalSeconds, forceShowSeconds = false) {
   const hrs = String(Math.floor(totalSeconds / 3600)).padStart(2, "0");
   const mins = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, "0");
 
-  if (state.showSeconds) {
+  if (state.showSeconds || forceShowSeconds) {
     const secs = String(totalSeconds % 60).padStart(2, "0");
     return `${hrs}:${mins}:${secs}`;
   }

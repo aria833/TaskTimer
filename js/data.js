@@ -1,5 +1,6 @@
 // ==========================================
 // 資料結構整理：data.js
+// 處理CSV匯出、JSON匯入匯出
 // ==========================================
 
 import { state } from "./state.js";
@@ -136,7 +137,7 @@ export function exportDataToJSON() {
 
   try {
     const backupData = {
-      version: "1.0.0",
+      version: "1.1.1",
       exportedAt: new Date().toISOString(),
       data: currentTasks,
     };

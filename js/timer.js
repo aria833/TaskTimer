@@ -167,7 +167,10 @@ export function stopTimer() {
   state.isRunning = false;
 
   if (dom.modalFocusTime) {
-    dom.modalFocusTime.textContent = formatTime(state.currentSessionSeconds);
+    dom.modalFocusTime.textContent = formatTime(
+      state.currentSessionSeconds,
+      true,
+    );
   }
 
   const currentMainNote = dom.mainNoteInput
