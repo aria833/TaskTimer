@@ -38,7 +38,7 @@
       crossorigin="anonymous"
     ></script>
   </head>
-  <body data-page="privacy">
+  <body data-page="privacy" class="min-vh-100 d-flex flex-column">
     <header class="sticky-top">
       <nav class="navbar navbar-expand-md bg-body border-bottom shadow-sm">
         <div class="container">
@@ -107,53 +107,64 @@
         </div>
       </nav>
     </header>
-    <main
-      class="py-4 bg-body-tertiary flex-grow-1 d-flex flex-column min-vh-main"
-    >
+    <main class="py-4 bg-body-tertiary flex-grow-1 d-flex flex-column">
       <div class="container">
         <h1 data-i18n="privacyTitle">隱私權政策 (Privacy Policy)</h1>
         <p class="text-secondary small" data-i18n="privacyLastUpdated">
-          最後更新日期：2026 年 10 月 3 日
+          最後更新日期：2026 年 10 月 11 日
         </p>
 
         <h6 class="fw-bold mt-3" data-i18n="privacySec1Title">
           1. 本地資料儲存（Local Storage & IndexedDB）
         </h6>
         <p data-i18n="privacySec1Text">
-          TaskTimer
-          為純前端工具型應用程式。您的所有任務紀錄、計時歷史、分類設定與深色模式偏好，皆僅透過瀏覽器儲存在您的裝置本地端（LocalStorage
-          / IndexedDB）。我們不會將您的個人任務資料傳輸或儲存至任何遠端伺服器。
+          TaskTimer 的任務、子任務、備註與計時紀錄會儲存在目前瀏覽器的
+          IndexedDB；語言、主題、秒數顯示與閒置提醒等偏好設定會使用
+          LocalStorage。這些應用程式資料不會由 TaskTimer
+          主動上傳至開發者的伺服器。若清除網站資料或更換瀏覽器／裝置，本地資料可能會遺失，請使用系統資料功能定期匯出備份。
         </p>
 
         <h6 class="fw-bold mt-3" data-i18n="privacySec2Title">
           2. 意見回饋與聯絡資料
         </h6>
         <p data-i18n="privacySec2Text">
-          當您使用網站的「意見回饋」功能時，您所填寫的姓名、電子郵件地址與回饋內容，將透過第三方服務
-          <strong>EmailJS</strong>
-          安全地傳送至開發者信箱。此資料僅用於問題排查與回復您的訊息，絕不作為商業行銷或轉售用途。
+          TaskTimer
+          目前不要求註冊帳號，也不會在應用程式內建立使用者個人檔案。若您透過外部管道主動聯絡開發者，您提供的聯絡資訊與訊息只會用於處理該次詢問；請勿在訊息中提供不必要的敏感或機密資料。
         </p>
 
         <h6 class="fw-bold mt-3" data-i18n="privacySec3Title">
           3. 網站分析與 Cookie 技術
         </h6>
         <p data-i18n="privacySec3Text">
-          為提升使用者體驗與優化網站功能，本網站可能會使用第三方分析工具（如
+          網站載入 Google Analytics（Google tag）以衡量網站使用情況，也載入
+          Google AdSense 提供廣告。這些第三方服務可能使用
+          Cookie、類似技術或裝置／瀏覽器資訊處理造訪、使用情況及廣告相關資料；實際資料處理方式依
           Google
-          Analytics）收集匿名使用數據（包括訪問頁面、停留時間、裝置類型等）。這些數據不包含任何可識別個人身分的資訊。
+          的政策與您的設定而定。請勿將這些第三方處理描述為完全匿名或絕不涉及識別資訊。
         </p>
 
         <h6 class="fw-bold mt-3" data-i18n="privacySec4Title">
-          4. 外部連結與第三方服務
+          4. 第三方服務與外部資源
         </h6>
         <p data-i18n="privacySec4Text">
-          本網站可能包含第三方網站（如 GitHub、第三方
-          CDN）的連結。對於這些外部網站的隱私做法或內容，本網站不負相關責任。
+          網站使用 Bootstrap、Bootstrap Icons 等由第三方 CDN
+          提供的外部資源。載入這些資源時，您的瀏覽器會向相應服務提供者發出請求，服務提供者可能因此取得
+          IP 位址、瀏覽器資訊等技術資料。第三方服務各自依其隱私政策處理資料。
         </p>
 
-        <h6 class="fw-bold mt-3" data-i18n="privacySec5Title">5. 條款修改權</h6>
+        <h6 class="fw-bold mt-3" data-i18n="privacySec5Title">
+          5. 資料安全與使用者選擇
+        </h6>
         <p data-i18n="privacySec5Text">
-          開發者保留隨時修訂本隱私權政策之權利。最新修訂版本將隨時更新於此頁面。
+          任務內容與計時紀錄主要儲存在您的瀏覽器中，請自行妥善保管裝置並定期匯出備份。您可以透過瀏覽器設定管理或刪除網站儲存資料，也可以依瀏覽器提供的功能管理
+          Cookie；停用或限制第三方 Cookie 可能影響部分分析或廣告功能。
+        </p>
+
+        <h6 class="fw-bold mt-3" data-i18n="privacySec6Title">
+          6. 政策更新與聯絡
+        </h6>
+        <p data-i18n="privacySec6Text">
+          本政策可能因產品功能或適用規範變更而更新。更新版本會發布於本頁面，並更新最後修訂日期。
         </p>
       </div>
       <footer
