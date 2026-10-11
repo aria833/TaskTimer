@@ -20,6 +20,8 @@ export const state = {
     10,
   ),
   idleTimer: null,
+  idleLastActivityAt: 0,
+  idlePromptOpen: false,
 
   STATUS_MAP: {
     not_started: {

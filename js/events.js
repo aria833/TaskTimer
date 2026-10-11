@@ -160,6 +160,41 @@ if (dom.listBtnConfirmAddSubtask && dom.listInputNewSubtaskName) {
   });
 }
 
+// 閒置提醒：切回頁面時重新檢查
+const userEvents = [
+  "pointermove",
+  "pointerdown",
+  "keydown",
+  "wheel",
+  "scroll",
+  "touchstart",
+];
+
+userEvents.forEach((evt) => {
+  window.addEventListener(evt, resetIdleTimer, {
+    passive: true,
+  });
+});
+
+// 閒置提醒：切回頁面時重新檢查
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden || !state.isRunning || state.idlePromptOpen) {
+    return;
+  }
+
+  const idleMs = Math.max(1, Number(state.idleMinutes) || 45) * 60 * 1000;
+
+  const elapsedIdleMs = Date.now() - (state.idleLastActivityAt || Date.now());
+
+  if (elapsedIdleMs >= idleMs) {
+    clearTimeout(state.idleTimer);
+    state.idleTimer = null;
+    onUserIdle();
+  } else {
+    scheduleIdleCheck(idleMs - elapsedIdleMs);
+  }
+});
+
 // 應用程式初始化（連線 IndexedDB、閒置監聽、離線監控）
 export async function initApp() {
   try {

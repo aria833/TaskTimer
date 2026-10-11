@@ -10,6 +10,34 @@ import { saveAllTasksToDB } from "./db.js";
 import { getLangDict } from "./config/i18n.js";
 
 // 閒置偵測與離線狀態控制
+function scheduleIdleCheck(delay) {
+  clearTimeout(state.idleTimer);
+
+  if (!state.isRunning || state.idlePromptOpen) return;
+
+  state.idleTimer = setTimeout(
+    () => {
+      state.idleTimer = null;
+
+      if (document.hidden) return;
+      if (!state.isRunning) return;
+
+      const idleMs = Math.max(1, Number(state.idleMinutes) || 45) * 60 * 1000;
+
+      const elapsedIdleMs =
+        Date.now() - (state.idleLastActivityAt || Date.now());
+
+      if (elapsedIdleMs < idleMs) {
+        scheduleIdleCheck(idleMs - elapsedIdleMs);
+        return;
+      }
+
+      onUserIdle();
+    },
+    Math.max(0, delay),
+  );
+}
+
 export function resetIdleTimer() {
   clearTimeout(state.idleTimer);
 
