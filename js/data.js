@@ -137,7 +137,7 @@ export function exportDataToJSON() {
 
   try {
     const backupData = {
-      version: "1.1.3",
+      version: "1.1.5",
       exportedAt: new Date().toISOString(),
       data: currentTasks,
     };

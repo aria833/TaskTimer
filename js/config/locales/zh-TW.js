@@ -241,30 +241,26 @@ export default {
   footerPrivacyBtn: "隱私權政策",
 
   // privacy
-  // Modal 標題與日期
-  privacyTitle: "隱私權政策 (Privacy Policy)",
-  privacyLastUpdated: "最後更新日期：2026 年 10 月 4 日",
-
-  // 章節標題
-  privacySec1Title: "1. 本地資料儲存（Local Storage & IndexedDB）",
+  privacyTitle: "隱私權政策｜TaskTimer",
+  privacyLastUpdated: "最後更新日期：2026 年 10 月 11 日",
+  privacySec1Title: "1. 本地資料儲存",
   privacySec1Text:
-    "TaskTimer 為純前端工具型應用程式。您的所有任務紀錄、計時歷史、分類設定與深色模式偏好，皆僅透過瀏覽器儲存在您的裝置本地端（LocalStorage / IndexedDB）。我們不會將您的個人任務資料傳輸或儲存至任何遠端伺服器。",
-
-  privacySec2Title: "2. 意見回饋與聯絡資料",
+    "TaskTimer 的任務、子任務、備註與計時紀錄儲存在目前瀏覽器的 IndexedDB；語言、主題、秒數顯示與閒置提醒等偏好設定使用 LocalStorage。TaskTimer 不會主動將這些應用程式資料上傳至開發者的伺服器。清除網站資料或更換瀏覽器／裝置可能導致本地資料遺失，請定期使用系統資料功能匯出備份。",
+  privacySec2Title: "2. 帳號與聯絡資訊",
   privacySec2Text:
-    "當您使用網站的「意見回饋」功能時，您所填寫的姓名、電子郵件地址與回饋內容，將透過第三方服務 EmailJS 安全地傳送至開發者信箱。此資料僅用於問題排查與回復您的訊息，絕不作為商業行銷或轉售用途。",
-
-  privacySec3Title: "3. 網站分析與 Cookie 技術",
+    "TaskTimer 不要求註冊帳號，也不會在應用程式內建立使用者個人檔案。若您透過外部管道主動聯絡開發者，您提供的聯絡資訊與訊息會用於處理該次詢問；請勿提供不必要的敏感或機密資料。",
+  privacySec3Title: "3. Google Analytics、廣告與 Cookie",
   privacySec3Text:
-    "為提升使用者體驗與優化網站功能，本網站可能會使用第三方分析工具（如 Google Analytics）收集匿名使用數據（包括訪問頁面、停留時間、裝置類型等）。這些數據不包含任何可識別個人身分的資訊。",
-
-  privacySec4Title: "4. 外部連結與第三方服務",
+    "本網站載入 Google Analytics（Google tag）以衡量網站使用情況，也載入 Google AdSense 提供廣告。這些第三方服務可能使用 Cookie、類似技術或裝置／瀏覽器資訊處理造訪、使用情況及廣告相關資料；實際資料處理方式依 Google 的政策與您的設定而定。第三方資料處理不應被理解為完全匿名或絕不涉及識別資訊。",
+  privacySec4Title: "4. 第三方服務與外部資源",
   privacySec4Text:
-    "本網站可能包含第三方網站（如 GitHub、第三方 CDN）的連結。對於這些外部網站的隱私做法或內容，本網站不負相關責任。",
-
-  privacySec5Title: "5. 條款修改權",
+    "網站使用 Bootstrap、Bootstrap Icons 等由第三方 CDN 提供的外部資源。載入這些資源時，瀏覽器會向相應服務提供者發出請求，對方可能因此取得 IP 位址、瀏覽器資訊等技術資料。第三方服務各自依其隱私政策處理資料。",
+  privacySec5Title: "5. 資料安全與使用者選擇",
   privacySec5Text:
-    "開發者保留隨時修訂本隱私權政策之權利。最新修訂版本將隨時更新於此頁面。",
+    "任務內容與計時紀錄主要儲存在您的瀏覽器中，請妥善保管裝置並定期匯出備份。您可以透過瀏覽器設定管理或刪除網站儲存資料，也可以依瀏覽器提供的功能管理 Cookie；停用或限制第三方 Cookie 可能影響部分分析或廣告功能。",
+  privacySec6Title: "6. 政策更新與聯絡",
+  privacySec6Text:
+    "本政策可能因產品功能或適用規範變更而更新。更新版本會發布於本頁面，並更新最後修訂日期。",
 
   confirmLeaveTimer:
     "目前有尚未結束的計時紀錄，確定要離開計時器頁面嗎？計時不會自動儲存。",

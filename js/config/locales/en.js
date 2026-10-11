@@ -251,28 +251,26 @@ export default {
   footerPrivacyBtn: "Privacy Policy",
 
   // Privacy
-  privacyTitle: "Privacy Policy",
-  privacyLastUpdated: "Last Updated: October 4, 2026",
-
-  privacySec1Title: "1. Local Data Storage (Local Storage & IndexedDB)",
+  privacyTitle: "Privacy Policy | TaskTimer",
+  privacyLastUpdated: "Last updated: October 11, 2026",
+  privacySec1Title: "1. Local Data Storage",
   privacySec1Text:
-    "TaskTimer is a pure client-side web application. All your task records, timer history, category settings, and dark mode preferences are stored locally in your browser (LocalStorage / IndexedDB). We do not transmit or store your personal task data on any remote servers.",
-
-  privacySec2Title: "2. Feedback & Contact Information",
+    "TaskTimer stores tasks, subtasks, notes, and timer records in the current browser’s IndexedDB. Preferences such as language, theme, seconds display, and idle reminder settings are stored in LocalStorage. TaskTimer does not actively upload this application data to a developer-operated server. Clearing website data or changing browsers/devices may erase local data, so please export backups regularly using the System Data tools.",
+  privacySec2Title: "2. Accounts and Contact Information",
   privacySec2Text:
-    "When you use the 'Feedback' feature, the name, email address, and message you provide are securely transmitted to the developer's mailbox via EmailJS. This information is strictly used for troubleshooting and replying to your inquiry, and will never be used for marketing or resold.",
-
-  privacySec3Title: "3. Website Analytics & Cookie Technology",
+    "TaskTimer does not require an account and does not create an in-app user profile. If you contact the developer through an external channel, the contact information and message you provide will be used to respond to that inquiry. Please do not include unnecessary sensitive or confidential information.",
+  privacySec3Title: "3. Google Analytics, Advertising, and Cookies",
   privacySec3Text:
-    "To improve user experience, this website may use third-party analytics tools (such as Google Analytics) to collect anonymous usage data (e.g., visited pages, time spent, device type). This data contains no personally identifiable information.",
-
-  privacySec4Title: "4. External Links & Third-Party Services",
+    "This website loads Google Analytics (Google tag) to measure website usage and Google AdSense to display ads. These third-party services may use cookies, similar technologies, or device/browser information to process visit, usage, and advertising-related data. Actual processing depends on Google’s policies and your settings; this should not be interpreted as a guarantee that all such data is fully anonymous or never identifiable.",
+  privacySec4Title: "4. Third-Party Services and External Resources",
   privacySec4Text:
-    "This website may contain links to third-party sites (e.g., GitHub, external CDNs). We are not responsible for the privacy practices or content of these external sites.",
-
-  privacySec5Title: "5. Right to Modify Terms",
+    "The website loads external resources such as Bootstrap and Bootstrap Icons from third-party CDNs. When these resources load, your browser sends requests to the relevant providers, who may receive technical information such as your IP address and browser details. Each third-party provider handles data under its own privacy policy.",
+  privacySec5Title: "5. Data Safety and Your Choices",
   privacySec5Text:
-    "The developer reserves the right to amend this Privacy Policy at any time. The latest version will always be posted on this page.",
+    "Task content and timer records are primarily stored in your browser. Please secure your device and export backups regularly. You can manage or delete website storage through your browser settings and manage cookies using browser-provided controls. Disabling or restricting third-party cookies may affect some analytics or advertising features.",
+  privacySec6Title: "6. Policy Updates and Contact",
+  privacySec6Text:
+    "This policy may be updated when product features or applicable requirements change. The latest version and its revision date will be published on this page.",
 
   confirmLeaveTimer:
     "You have an unfinished timer session. Are you sure you want to leave the Timer page? The session will not be saved.",
