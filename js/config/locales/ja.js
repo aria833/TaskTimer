@@ -160,7 +160,7 @@ export default {
   toastDiscardSession: "今回のタイマー記録を破棄しました。",
 
   //タスクリスト
-  downloadCSV: "CSVファイルをダウンロード",
+  downloadCSV: "CSVをダウンロード",
   statusNotStarted: "未着手",
   statusInProgress: "進行中",
   statusCompleted: "完了",

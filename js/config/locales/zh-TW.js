@@ -154,7 +154,7 @@ export default {
   toastDiscardSession: "已捨棄本次計時",
 
   //任務列表
-  downloadCSV: "下載CSV檔案",
+  downloadCSV: "下載CSV",
   statusNotStarted: "未開始",
   statusInProgress: "進行中",
   statusCompleted: "已完成",
