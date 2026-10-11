@@ -316,7 +316,12 @@ export function renderTaskAccordion() {
       const subtasksHTML =
         task.subtasks.length === 0
           ? `<li class="list-group-item text-muted text-center py-3">${langDict?.noSubtasks || "尚無子任務，請點擊「新增子任務」"}</li>`
-          : task.subtasks
+          : [...task.subtasks]
+              .sort(
+                (a, b) =>
+                  (state.STATUS_ORDER[a.status || "not_started"] || 99) -
+                  (state.STATUS_ORDER[b.status || "not_started"] || 99),
+              )
               .map((sub) => {
                 const subStatus = sub.status || "not_started";
                 const subBadge = state.STATUS_MAP[subStatus];
