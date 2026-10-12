@@ -26,7 +26,7 @@ export const state = {
   STATUS_MAP: {
     not_started: {
       key: "statusNotStarted",
-      class: "bg-secondary-subtle text-secondary",
+      class: "bg-secondary-subtle text-body-secondary",
       defaultText: "未開始",
     },
     in_progress: {

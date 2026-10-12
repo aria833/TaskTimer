@@ -343,7 +343,7 @@ export function renderTaskAccordion() {
                           <p class="fw-bold mb-0 fs-sm">${recIdx + 1}. ${rec.timeRange}</p>
                           <div class="d-flex align-items-center">
                             <span class="badge rounded-pill text-bg-light me-1">${rec.durationMinutes}${langDict?.unitMinute || "分鐘"}</span>
-                            <button type="button" class="btn btn-sm p-0 text-secondary me-2" title="${langDict?.editNoteTitle || "編輯備註"}" onclick="editRecordNote('${task.id}', '${sub.id}', '${rec.id}')">
+                            <button type="button" class="btn btn-sm p-0 text-body-secondary me-2" title="${langDict?.editNoteTitle || "編輯備註"}" onclick="editRecordNote('${task.id}', '${sub.id}', '${rec.id}')">
                               <i class="bi bi-pencil"></i>
                             </button>
                             <button type="button" class="btn btn-sm p-0 text-danger" title="${langDict?.deleteRecordTitle || "刪除紀錄"}" onclick="deleteRecord('${task.id}', '${sub.id}', '${rec.id}')">
@@ -351,7 +351,7 @@ export function renderTaskAccordion() {
                             </button>
                           </div>
                         </div>
-                        <p class="ps-3 mb-0 fs-sm text-secondary">
+                        <p class="ps-3 mb-0 fs-sm text-body-secondary">
                           ${rec.note ? `${langDict?.labelNote || "備註"}：${rec.note}` : langDict?.noNote || "無備註"}
                         </p>
                       </div>
@@ -388,7 +388,7 @@ export function renderTaskAccordion() {
                         </div>
 
                         <div class="d-flex align-items-center mb-1">
-                          <p class="me-2 mb-0 fs-sm text-secondary">${langDict?.labelTotal || "總計"}： ${subReadableTime}</p>
+                          <p class="me-2 mb-0 fs-sm text-body-secondary">${langDict?.labelTotal || "總計"}： ${subReadableTime}</p>
                           <button
                             class="btn btn-noborder p-0 fs-sm text-primary"
                             type="button"
@@ -480,7 +480,7 @@ export function renderTaskAccordion() {
                         ${progress}%
                       </div>
                     </div>
-                    <p class="text-nowrap d-none d-md-flex fs-sm text-secondary mb-0">
+                    <p class="text-nowrap d-none d-md-flex fs-sm text-body-secondary mb-0">
                       ${langDict?.labelTotal || "總計"}：${readableTotalTime}
                     </p>
                   </div>
