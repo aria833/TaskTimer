@@ -184,7 +184,7 @@ export default {
   qaTitle2:
     'Will my data be lost if I accidentally press "End" while the timer is running?',
   qaBody2:
-    'Don\'t worry! When you press End, a confirmation window will automatically appear with two options: "Save Record" and "Discard Record" The window also has safeguards against accidental dismissal, so it cannot be closed accidentally by clicking the background or pressing the Esc key.',
+    'Don\'t worry! When you press End, a confirmation window will automatically appear with two options: "Save Record" and "Discard Record".',
 
   qaTitle3: "Will sessions shorter than 1 second be recorded?",
   qaBody3:
